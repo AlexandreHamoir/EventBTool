@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.theory.core.theoryRoot org.eventb.core.comment="Comment" org.eventb.core.configuration="org.eventb.theory.core.thy">
+    <org.eventb.theory.core.importTheoryProject name="'" org.eventb.theory.core.importTheoryProject="/TheoryTest">
+        <org.eventb.theory.core.importTheory name="'" org.eventb.theory.core.importTheory="/TheoryTest/TestImport.dtf|org.eventb.theory.core.deployedTheoryRoot#TestImport"/>
+    </org.eventb.theory.core.importTheoryProject>
+    <org.eventb.theory.core.typeParameter name="(" org.eventb.core.comment="Comment Type Parameters" org.eventb.core.identifier="S"/>
+    <org.eventb.theory.core.datatypeDefinition name=")" org.eventb.core.comment="Comment Datatype" org.eventb.core.identifier="dt">
+        <org.eventb.theory.core.typeArgument name="'" org.eventb.theory.core.givenType="S"/>
+        <org.eventb.theory.core.datatypeConstructor name="(" org.eventb.core.comment="Comment Constructor Datatype" org.eventb.core.identifier="dtc">
+            <org.eventb.theory.core.constructorArgument name="'" org.eventb.core.comment="Comment Destructor Datatype" org.eventb.core.identifier="dest" org.eventb.theory.core.type="S"/>
+        </org.eventb.theory.core.datatypeConstructor>
+    </org.eventb.theory.core.datatypeDefinition>
+    <org.eventb.theory.core.newOperatorDefinition name="*" org.eventb.core.comment="Comment Operator Direct" org.eventb.core.label="OpDirect" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX">
+        <org.eventb.theory.core.operatorArgument name="'" org.eventb.core.comment="Comment Operator Direct Arg" org.eventb.core.expression="S" org.eventb.core.identifier="opArg"/>
+        <org.eventb.theory.core.directOperatorDefinition name="(" org.eventb.core.comment="Comment Operator Direct Arg" org.eventb.theory.core.formula="opArg"/>
+        <org.eventb.theory.core.operatorWDcondition name=")" org.eventb.core.comment="Comment Operator Direct WDC" org.eventb.core.predicate="opArg∈S"/>
+    </org.eventb.theory.core.newOperatorDefinition>
+    <org.eventb.theory.core.axiomaticDefinitionsBlock name="+" org.eventb.core.comment="Comment Axiomatic Definition" org.eventb.core.label="AxiomDef">
+        <org.eventb.theory.core.axiomaticTypeDefinition name="'" org.eventb.core.comment="Comment Axiomatic Definition TYPE" org.eventb.core.identifier="T"/>
+        <org.eventb.theory.core.axiomaticOperatorDefinition name="(" org.eventb.core.comment="Comment" org.eventb.core.label="xOpDef" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX" org.eventb.theory.core.type="ℤ">
+            <org.eventb.theory.core.operatorArgument name="'" org.eventb.core.comment="Comment" org.eventb.core.expression="ℕ" org.eventb.core.identifier="opArg"/>
+            <org.eventb.theory.core.operatorWDcondition name="(" org.eventb.core.comment="Comment" org.eventb.core.predicate="opArg = 3"/>
+        </org.eventb.theory.core.axiomaticOperatorDefinition>
+        <org.eventb.theory.core.axiomaticDefinitionAxiom name=")" org.eventb.core.comment="Comment" org.eventb.core.label="axm" org.eventb.core.predicate="xOpDef(3) = 0"/>
+    </org.eventb.theory.core.axiomaticDefinitionsBlock>
+    <org.eventb.theory.core.theorem name="," org.eventb.core.comment="Comment" org.eventb.core.label="thm" org.eventb.core.predicate="∀ n · n ∈ ℕ ∧ xOpDef(n) = 0 ⇒ n=3"/>
+</org.eventb.theory.core.theoryRoot>
