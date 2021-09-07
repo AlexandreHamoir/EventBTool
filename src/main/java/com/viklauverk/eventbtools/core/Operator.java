@@ -58,4 +58,9 @@ public class Operator
     {
       // TODO
     }
+
+    public void addArgument(Arguments arg)
+    {
+      //TODO
+    }
 }

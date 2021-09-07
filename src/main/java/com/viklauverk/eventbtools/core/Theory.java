@@ -35,8 +35,8 @@ import org.dom4j.io.SAXReader;
 
 public class Theory
 {
-    private static LogModule log = LogModule.lookup("theory"); //TODO Add to LogModule
-    private static LogModule log_codegen = LogModule.lookup("codegen"); //TODO Add to LogModule
+    private static LogModule log = LogModule.lookup("theory");
+    private static LogModule log_codegen = LogModule.lookup("codegen");
 
     private SymbolTable symbol_table_;
 
@@ -46,11 +46,11 @@ public class Theory
     private List<Theory> imports_ordering_ = new ArrayList<>();
     private List<String> imports_names_ = new ArrayList<>();
 
-    private Map<String,TypeParameters> type_parameters_ = new HashMap<>(); // TODO Create TypeParameters class
+    private Map<String,TypeParameters> type_parameters_ = new HashMap<>();
     private List<TypeParameters> type_parameters_ordering_ = new ArrayList<>();
     private List<String> type_parameters_names_ = new ArrayList<>();
 
-    private Map<String,Datatype> datatype_ = new HashMap<>(); // TODO Create Datatype class
+    private Map<String,Datatype> datatype_ = new HashMap<>(); // TODO Finish Datatype class
     private List<Datatype> datatype_ordering_ = new ArrayList<>();
     private List<String> datatype_names_ = new ArrayList<>();
 
@@ -66,16 +66,12 @@ public class Theory
     // private List<ProofRules> proof_rules_ordering_ = new ArrayList<>();
     // private List<String> proof_rules_names_ = new ArrayList<>();
 
-    // These are the calculated types that variables can be of.
-    // private Map<String,Type> types_;
-    // private List<String> type_names_;
-
-    String comment_; // Usually the copyright notice.
+    String comment_;
 
     File source_;
     Sys sys_;
 
-    public Theory(String n, Sys s, File f) // TODO make
+    public Theory(String n, Sys s, File f) // TODO Finish
     {
         name_ = n;
 
@@ -300,10 +296,9 @@ public class Theory
         List<Node> type_parameters = document.selectNodes("//org.eventb.theory.core.typeParameter");
         for (Node tp : type_parameters)
         {
-            String n = tp.valueOf("@org.eventb.core.identifier");
-            String c = tp.valueOf("@org.eventb.core.comment");
-            TypeParameters type_param = new TypeParameters(n, c);
-            addTypeParameters(type_param);
+            String name = tp.valueOf("@org.eventb.core.identifier");
+            String comment = tp.valueOf("@org.eventb.core.comment");
+            addTypeParameters(new TypeParameters(name, comment));
         }
 
         List<Node> datatypes = document.selectNodes("//org.eventb.theory.core.datatypeDefinition");
@@ -312,6 +307,7 @@ public class Theory
             String name = dt.valueOf("@org.eventb.core.identifier");
             String comment = dt.valueOf("@org.eventb.core.comment");
             //TODO Finish
+            addDatatype(new Datatype(name,comment));
         }
 
         List<Node> operators = document.selectNodes("//org.eventb.theory.core.newOperatorDefinition");
@@ -322,20 +318,35 @@ public class Theory
             boolean associative = op.valueOf("@org.eventb.theory.core.associative").equals("true");
             boolean commutative = op.valueOf("@org.eventb.theory.core.commutative").equals("true");
 
+            Operator operator = new Operator(name,associative,commutative,comment);
+
             List<Node> arguments = op.selectNodes("org.eventb.theory.core.operatorArgument");
             for (Node arg : arguments)
             {
                 String i = arg.valueOf("@org.eventb.core.identifier");
                 String e = arg.valueOf("@org.eventb.core.expression");
                 String c = arg.valueOf("@org.eventb.core.comment");
-                /*operators.addArgument(new Argument(i, e, c));*/ 
-                //TODO 1. Create addArgument function. 
-                //TODO 2. Finish the Argument class.
+                //TODO Finish the Argument class.
+                //operator.addArgument(new Argument(i, e, c)); 
             }
 
-            //TODO Finish
-            //TODO 1. Add direct definition
-            //TODO 2. Add WDConditions
+            List<Node> well_def_cond = op.selectNodes("org.eventb.theory.core.operatorWDcondition");
+            for (Node wdc : well_def_cond)
+            {
+                String well_def = wdc.valueOf("@org.eventb.core.predicate");
+                //String c = wdc.valueOf("@org.eventb.core.comment");
+                //operator.addWDC(well_def); //TODO
+            }
+
+            List<Node> direct_def = op.selectNodes("org.eventb.theory.core.directOperatorDefinition");
+            for (Node dd : direct_def)
+            {
+                String d = dd.valueOf("@org.eventb.theory.core.formula");
+                //String c = dd.valueOf("@org.eventb.core.comment");
+                //operator.addDirectDef(d); //TODO
+            }
+
+            addOperator(operator);
         }
 
         List<Node> axiom_def = document.selectNodes("//org.eventb.theory.core.axiomaticDefinitionsBlock");
