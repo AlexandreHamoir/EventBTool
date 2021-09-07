@@ -39,6 +39,14 @@ public class Operator
         comment_ = c;
     }
 
+    public Operator(String n, boolean as, boolean com, String c)
+    {
+        name_ = n;
+        comment_ = c;
+        isAssociative = as;
+        isCommutative = com;
+    }
+
     public String name()
     {
       return name_;
