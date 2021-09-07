@@ -35,8 +35,8 @@ import org.dom4j.io.SAXReader;
 
 public class Theory
 {
-    private static LogModule log = LogModule.lookup("theory"); //Add to LogModule
-    private static LogModule log_codegen = LogModule.lookup("codegen");
+    private static LogModule log = LogModule.lookup("theory"); //TODO Add to LogModule
+    private static LogModule log_codegen = LogModule.lookup("codegen"); //TODO Add to LogModule
 
     private SymbolTable symbol_table_;
 
@@ -69,12 +69,6 @@ public class Theory
     // These are the calculated types that variables can be of.
     // private Map<String,Type> types_;
     // private List<String> type_names_;
-
-    // The concrete events (merged with extended events) in
-    // more abstract machines.
-    // private Map<String,Event> concrete_events_ = new HashMap<>();
-    // private List<Event> concrete_event_ordering_ = new ArrayList<>();
-    // private List<String> concrete_event_names_ = new ArrayList<>();
 
     String comment_; // Usually the copyright notice.
 
@@ -151,7 +145,7 @@ public class Theory
         return imports_names_;
     }
 
-    public void addTheory(Theory imp)
+    public void addImport(Theory imp)
     {
         imports_.put(imp.name(), imp);
         imports_ordering_.add(imp);
@@ -287,62 +281,87 @@ public class Theory
         Document document = reader.read(source_);
         log.debug("loading theory "+source_);
 
-        // List<Node> machine_comment = document.selectNodes("//org.eventb.core.machineFile");
+        List<Node> theory_comment = document.selectNodes("//org.eventb.theory.core.theoryRoot");
 
-        // for (Node m : machine_comment)
-        // {
-        //     comment_ = m.valueOf("@org.eventb.core.comment");
-        // }
+        for (Node m : theory_comment)
+        {
+            comment_ = m.valueOf("@org.eventb.core.comment");
+        }
 
-        // List<Node> refines_machine = document.selectNodes("//org.eventb.core.refinesMachine");
-        // for (Node r : refines_machine)
-        // {
-        //     String m = r.valueOf("@org.eventb.core.target");
-        //     Machine mch = sys_.getMachine(m);
-        //     if (mch == null) log.error("Error while loading machine %s, could not find refined machine %s", name(), m);
-        //     if (refines_ != null) log.error("Error while loading machine %s, cannot refine more than one mache.");
-        //     refines_ = mch;
-        // }
+        List<Node> import_theory = document.selectNodes("//org.eventb.theory.core.importTheory");
+        for (Node i : import_theory)
+        {
+            String t = i.valueOf("@org.eventb.theory.core.importTheory");
+            /*Theory import = sys_.getTheory(t); // TODO add getTheory in the system
+            if (import == null) log.error("Error while loading theory %s, could not find imported theory %s", name(), m);
+            addImport(import);*/
+        }
 
-        // List<Node> contexts = document.selectNodes("//org.eventb.core.seesContext");
-        // for (Node c : contexts)
-        // {
-        //     String t = c.valueOf("@org.eventb.core.target");
-        //     Context context = sys_.getContext(t);
-        //     if (context == null) log.error("Error while loading machine %s, could not find context %s", name(), t);
-        //     addContext(context);
-        // }
+        List<Node> type_parameters = document.selectNodes("//org.eventb.theory.core.typeParameter");
+        for (Node tp : type_parameters)
+        {
+            String n = tp.valueOf("@org.eventb.core.identifier");
+            String c = tp.valueOf("@org.eventb.core.comment");
+            TypeParameters type_param = new TypeParameters(n, c);
+            addTypeParameters(type_param);
+        }
 
-        // List<Node> variables = document.selectNodes("//org.eventb.core.variable");
-        // for (Node v : variables)
-        // {
-        //     String n = v.valueOf("@org.eventb.core.identifier");
-        //     String c = v.valueOf("@org.eventb.core.comment");
-        //     Variable var = new Variable(n, c);
-        //     addVariable(var);
-        // }
+        List<Node> datatypes = document.selectNodes("//org.eventb.theory.core.datatypeDefinition");
+        for (Node dt : datatypes)
+        {
+            String name = dt.valueOf("@org.eventb.core.identifier");
+            String comment = dt.valueOf("@org.eventb.core.comment");
+            //TODO Finish
+        }
 
-        // List<Node> invariants = document.selectNodes("//org.eventb.core.invariant");
-        // for (Node i : invariants)
-        // {
-        //     String name = i.valueOf("@org.eventb.core.label").trim(); // Clean any spurious newlines at end of label.
-        //     String fs = i.valueOf("@org.eventb.core.predicate");
-        //     String comment = i.valueOf("@org.eventb.core.comment");
-        //     String theorem = i.valueOf("@org.eventb.core.theorem");
-        //     boolean is_theorem = theorem.equals("true");
-        //     Invariant invar = new Invariant(name, fs, comment, is_theorem);
-        //     addInvariant(invar);
-        // }
+        List<Node> operators = document.selectNodes("//org.eventb.theory.core.newOperatorDefinition");
+        for (Node op : operators)
+        {
+            String name = op.valueOf("@org.eventb.core.label");
+            String comment = op.valueOf("@org.eventb.core.comment");
+            boolean associative = op.valueOf("@org.eventb.theory.core.associative").equals("true");
+            boolean commutative = op.valueOf("@org.eventb.theory.core.commutative").equals("true");
 
-        // List<Node> variants = document.selectNodes("//org.eventb.core.variant");
-        // for (Node i : variants)
-        // {
-        //     String name = i.valueOf("@org.eventb.core.label");
-        //     String expression = i.valueOf("@org.eventb.core.expression");
-        //     String comment = Util.trimLines(i.valueOf("@org.eventb.core.comment"));
-        //     Variant variant = new Variant(name, expression, comment);
-        //     addVariant(variant);
-        // }
+            List<Node> arguments = op.selectNodes("org.eventb.theory.core.operatorArgument");
+            for (Node arg : arguments)
+            {
+                String i = arg.valueOf("@org.eventb.core.identifier");
+                String e = arg.valueOf("@org.eventb.core.expression");
+                String c = arg.valueOf("@org.eventb.core.comment");
+                /*operators.addArgument(new Argument(i, e, c));*/ 
+                //TODO 1. Create addArgument function. 
+                //TODO 2. Finish the Argument class.
+            }
+
+            //TODO Finish
+            //TODO 1. Add direct definition
+            //TODO 2. Add WDConditions
+        }
+
+        List<Node> axiom_def = document.selectNodes("//org.eventb.theory.core.axiomaticDefinitionsBlock");
+        for (Node axd : axiom_def)
+        {
+            String name = axd.valueOf("@org.eventb.core.label");
+            String comment = axd.valueOf("@org.eventb.core.comment");
+
+            List<Node> axiomatic_type_def = axd.selectNodes("org.eventb.theory.core.axiomaticTypeDefinition");
+            for (Node ax_td : axiomatic_type_def)
+            {
+                //TODO Finish
+            }
+
+            List<Node> axiomatic_op_def = axd.selectNodes("org.eventb.theory.core.axiomaticOperatorDefinition");
+            for (Node ax_op : axiomatic_op_def)
+            {
+                //TODO Finish
+            }
+
+            List<Node> axiom = axd.selectNodes("org.eventb.theory.core.axiomaticDefinitionAxiom");
+            for (Node ax : axiom)
+            {
+                //TODO Finish
+            }
+        }
 
         // List<Node> events = document.selectNodes("//org.eventb.core.event");
         // for (Node e : events)
