@@ -128,21 +128,6 @@ public class Theory
         return !comment_.equals("");
     }
 
-    // public Machine refines()
-    // {
-    //     return refines_;
-    // }
-
-    // public boolean hasRefines()
-    // {
-    //     return refines_ != null;
-    // }
-
-    // public String machineOrRefinement()
-    // {
-    //     return (refines_ == null) ? "machine" : "refinement";
-    // }
-
 // -----------------------------------------------------------------------------
 //    IMPORTS
 // -----------------------------------------------------------------------------
@@ -206,17 +191,17 @@ public class Theory
 // -----------------------------------------------------------------------------
 //    DATATYPES
 // -----------------------------------------------------------------------------
-    public Datatypes getDatatypes(String name)
+    public Datatype getDatatype(String name)
     {
         return datatype_.get(name);
     }
 
-    public List<Datatypes> datatypesOrdering()
+    public List<Datatype> datatypesOrdering()
     {
         return datatype_ordering_;
     }
 
-    public boolean hasDatatypes()
+    public boolean hasDatatype()
     {
         return datatype_.size() > 0;
     }
@@ -226,7 +211,7 @@ public class Theory
         return datatype_names_;
     }
 
-    public void addDatatypes(Datatypes datatype)
+    public void addDatatype(Datatype datatype)
     {
         datatype_.put(datatype.name(), datatype);
         datatype_ordering_.add(datatype);
@@ -298,9 +283,9 @@ public class Theory
 // -----------------------------------------------------------------------------
     public void load() throws Exception
     {
-        // SAXReader reader = new SAXReader();
-        // Document document = reader.read(source_);
-        // log.debug("loading machine "+source_);
+        SAXReader reader = new SAXReader();
+        Document document = reader.read(source_);
+        log.debug("loading theory "+source_);
 
         // List<Node> machine_comment = document.selectNodes("//org.eventb.core.machineFile");
 

@@ -36,10 +36,10 @@ public class Datatype
 
     public String name()
     {
-      return name_
+      return name_;
     }
 
-    public String comment();
+    public String comment()
     {
       return comment_;
     }

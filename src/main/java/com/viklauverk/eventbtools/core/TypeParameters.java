@@ -23,12 +23,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
-public class TypeParameter
+public class TypeParameters
 {
     private String name_;
     private String comment_;
 
-    public TypeParameter(String n, String c)
+    public TypeParameters(String n, String c)
     {
         name_ = n;
         comment_ = c;
@@ -36,10 +36,10 @@ public class TypeParameter
 
     public String name()
     {
-      return name_
+      return name_;
     }
 
-    public String comment();
+    public String comment()
     {
       return comment_;
     }
