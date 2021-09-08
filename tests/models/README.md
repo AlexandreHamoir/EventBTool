@@ -53,6 +53,12 @@ x*x = input, ie x will become the square root.
 
 [SquareRoot.pdf](SquareRoot.pdf)
 
+## TheoryTest
+This project tests code generation for theories from the Theory plugin.
+
+
+[TheoryTest.pdf](TheoryTest.pdf)
+
 ## TypingTests
 I assume that typing can be made arbitrarily smart, however
 I do not yet know the limits of how much typing Rodin can do.
