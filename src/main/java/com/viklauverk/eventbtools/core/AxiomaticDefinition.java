@@ -26,7 +26,7 @@ import java.util.HashMap;
 public class AxiomaticDefinition
 {
     private String name_;
-    private Map<String,TypeDef> tyd_ = new HashMap<>();
+    private Map<String,TypeDef> tyd_ = new HashMap<>(); //TODO Change to Type or TypeParameter?
     private Map<String,Operator> opd_ = new HashMap<>();
     private Map<String,Axiom> ax_ = new HashMap<>();
     private String comment_;
@@ -54,6 +54,22 @@ public class AxiomaticDefinition
 
     public void parse(SymbolTable st)
     {
-      // TODO
+        //TODO
     }
+
+    public void addOperator(TypeDef tyd)
+    {
+        tyd_.put(tyd.name(),tyd);
+    }
+
+    public void addOperator(Operator opd)
+    {
+        opd_.put(opd.name(),opd);
+    }
+
+    public void addAxiom(Axiom ax)
+    {
+        ax_.put(ax.name(), ax);
+    }
+
 }

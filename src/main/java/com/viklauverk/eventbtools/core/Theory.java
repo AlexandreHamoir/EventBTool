@@ -354,6 +354,7 @@ public class Theory
         {
             String name = axd.valueOf("@org.eventb.core.label");
             String comment = axd.valueOf("@org.eventb.core.comment");
+            AxiomaticDefinition axiomatic_definition = new AxiomaticDefinition(name,comment);
 
             List<Node> axiomatic_type_def = axd.selectNodes("org.eventb.theory.core.axiomaticTypeDefinition");
             for (Node ax_td : axiomatic_type_def)
@@ -370,8 +371,13 @@ public class Theory
             List<Node> axiom = axd.selectNodes("org.eventb.theory.core.axiomaticDefinitionAxiom");
             for (Node ax : axiom)
             {
-                //TODO Finish
+                String l = ax.valueOf("@org.eventb.core.label");
+                String p = ax.valueOf("@org.eventb.core.predicate");
+                String c = ax.valueOf("@org.eventb.core.comment");
+                axiomatic_definition.addAxiom(new Axiom(l,p,c));
             }
+
+            addAxiomaticDefinition(axiomatic_definition);
         }
 
         // List<Node> events = document.selectNodes("//org.eventb.core.event");
@@ -467,7 +473,7 @@ public class Theory
 // -----------------------------------------------------------------------------
 //    PARSE
 // -----------------------------------------------------------------------------
-    public void parse(SymbolTable st)
+    public void parse()
     {
         // buildSymbolTable(st);
 

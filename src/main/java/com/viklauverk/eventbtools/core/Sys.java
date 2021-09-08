@@ -42,6 +42,10 @@ public class Sys
     private Map<String,SymbolTable> all_symbol_tables_;
     private Typing typing_;
 
+    private Map<String,Theory> theories_;
+    private List<Theory> theorie_ordering_;
+    private List<String> theorie_names_;
+
     private Map<String,Context> contexts_;
     private List<Context> context_ordering_;
     private List<String> context_names_;
@@ -57,6 +61,9 @@ public class Sys
     {
         project_info_ = "";
 
+        theories_ = new HashMap<>();
+        theorie_ordering_ = new ArrayList<>();
+        theorie_names_ = new ArrayList<>();
         contexts_ = new HashMap<>();
         context_ordering_ = new ArrayList<>();
         context_names_ = new ArrayList<>();
@@ -129,6 +136,28 @@ public class Sys
         return typing_;
     }
 
+    public void addTheory(Theory t)
+    {
+        theories_.put(t.name(), t);
+        theorie_ordering_.add(t);
+        theorie_names_ = theories_.keySet().stream().sorted().collect(Collectors.toList());
+    }
+
+    public Theory getTheory(String name)
+    {
+        return theories_.get(name);
+    }
+
+    public List<Theory> theoryOrdering()
+    {
+        return theorie_ordering_;
+    }
+
+    public List<String> theoryNames()
+    {
+        return theorie_names_;
+    }
+
     public void addContext(Context c)
     {
         contexts_.put(c.name(), c);
@@ -173,6 +202,7 @@ public class Sys
         return machine_names_;
     }
 
+    //TODO Bad name :c
     public String loadMachinesAndContexts(String path) throws Exception
     {
         if (path == null || path.equals("")) return "";
@@ -185,6 +215,7 @@ public class Sys
         }
 
         // First create empty object instances for each context and machine.
+        populateTheories(dir);
         populateContexts(dir);
         populateMachines(dir);
 
@@ -192,22 +223,25 @@ public class Sys
         // contexts and machines since we have prepopulated those maps.
         // These will also add the known symbols for sets,constants and variables
         // to the SymbolTables that are needed for parsing the formulas.
+        loadTheories();
         loadContexts();
         loadMachines();
 
         // Now we can actually parse the formulas and figure out the types.
+        parseTheoryFormulas();
         parseContextFormulas();
         parseMachineFormulas();
 
-        if (contextNames().size() == 0 && machineNames().size() == 0)
+
+        if (contextNames().size() == 0 && machineNames().size() == 0 && theoryNames().size() == 0)
         {
-            log.info("No contexts or machines found in %s\n",  path);
+            log.info("No contexts, machines or theories found in %s\n",  path);
         }
 
         // Load the projct.info file, if it exists.
         loadProjectInfo(dir);
 
-        return "read "+contextNames().size()+" contexts and "+machineNames().size()+" machines";
+        return "read "+contextNames().size()+" contexts, "+machineNames().size()+" machines, "+theoryNames().size()+" theories";
     }
 
     private List<Pair<String,File>> eachFileEndingIn(File dir, String suffix)
@@ -227,6 +261,20 @@ public class Sys
             }
         }
         return result;
+    }
+
+    private void populateTheories(File dir) throws Exception
+    {
+        List<Pair<String,File>> files = eachFileEndingIn(dir, ".tuf");
+
+        for (Pair<String,File> p : files)
+        {
+            String name = p.left;
+            File file = p.right;
+            Theory t = new Theory(name, this, file);
+            addTheory(t);
+            log.debug("found theory "+name);
+        }
     }
 
     private void populateContexts(File dir) throws Exception
@@ -254,6 +302,15 @@ public class Sys
             Machine m = new Machine(name, this, file);
             addMachine(m);
             log.debug("found machine "+m.name());
+        }
+    }
+
+    private void loadTheories() throws Exception
+    {
+        for (String name : theoryNames())
+        {
+            Theory t = getTheory(name);
+            t.load();
         }
     }
 
@@ -288,6 +345,15 @@ public class Sys
                 lines.close();
                 log.debug("found project.info");
             }
+        }
+    }
+
+    private void parseTheoryFormulas()
+    {
+        for (String name : theoryNames())
+        {
+            Theory t = getTheory(name);
+            t.parse();
         }
     }
 
