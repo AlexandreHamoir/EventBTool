@@ -1,6 +1,6 @@
 /*
  Copyright (C) 2021 Viklauverk AB
- Author Fredrik Öhrström
+ Author Fredrik Öhrström & Marius Hinge
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU Affero General Public License as published by
@@ -241,7 +241,8 @@ public class Sys
         // Load the projct.info file, if it exists.
         loadProjectInfo(dir);
 
-        return "read "+contextNames().size()+" contexts, "+machineNames().size()+" machines, "+theoryNames().size()+" theories";
+        /*return "read "+contextNames().size()+" contexts, "+machineNames().size()+" machines, "+theoryNames().size()+" theories";*/
+        return "read "+contextNames().size()+" contexts and "+machineNames().size()+" machines";
     }
 
     private List<Pair<String,File>> eachFileEndingIn(File dir, String suffix)
