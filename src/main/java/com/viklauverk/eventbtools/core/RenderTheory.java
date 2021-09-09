@@ -29,7 +29,7 @@ public class RenderTheory extends CommonRenderFunctions
 
     public void visit_ImportsStart(Theory th) { }
 /*
-    public void visit_Imports(Theory th, Theory import) { } 
+    public void visit_Import(Theory th, Theory import) { } 
     //TODO Does not work? Weird compilation error...
     // RenderTheory.java:[31,48] <identifier> expected
 */
