@@ -79,14 +79,13 @@ public class RenderTheoryUnicode extends RenderTheory
         cnvs().endLine();
 
         cnvs().startAlignments(Canvas.align_2col);
-
     }
 
     @Override
     public void visit_TypeParameter(Theory th, TypeParameters type_parameter)
     {
         cnvs().startAlignedLine();
-        cnvs().set(type_parameter.name()); //TODO Modify?
+        cnvs().set(type_parameter.name()); //TODO Modify cnvs().set => cnvs().typeParam?
         cnvs().align();
         cnvs().comment(type_parameter.comment());
         cnvs().stopAlignedLine();

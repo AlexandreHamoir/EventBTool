@@ -23,7 +23,32 @@ import com.viklauverk.eventbtools.core.Formula;
 import java.util.List;
 import java.util.LinkedList;
 
-public class RenderTheoryTeX extends RenderTheory
+public class RenderTheoryTeX extends RenderTheoryUnicode
 {
-    //TODO
+    @Override
+    public void visit_TypeParametersStart(Theory th)
+    {
+        cnvs().append("\\subsection{\\footnotesize ");
+        for (String tpn : th.typeParametersNames())
+        {
+            cnvs().set(tpn); //TODO Modify cnvs().set => cnvs().typeParam?
+            cnvs().append(" ");
+        }
+        cnvs().append("}\n");
+        super.visit_TypeParametersStart(th);
+    }
+
+    @Override
+    public void visit_DatatypesStart(Theory th)
+    {
+        cnvs().append("\\subsection{\\footnotesize ");
+        for (String dtn : th.DatatypesNames())
+        {
+            cnvs().set(dtn); //TODO Modify cnvs().set => cnvs().datatype?
+            cnvs().append(" ");
+        }
+        cnvs().append("}\n");
+        super.visit_DatatypesStart(th);
+    }
+
 }

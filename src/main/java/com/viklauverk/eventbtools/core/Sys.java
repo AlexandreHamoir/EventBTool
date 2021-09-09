@@ -408,6 +408,15 @@ public class Sys
         AllRenders ar = lookupRenders(RenderTarget.TERMINAL,
                                       canvas);
 
+        //TODO Add theories
+        /*if (ss.showingTheory())
+        {
+            for (Theory t : theoryOrdering())
+            {
+                ar.walkTheory(th, pattern);
+            }
+        }*/
+
         if (ss.showingContexts())
         {
             for (Context c : contextOrdering())
