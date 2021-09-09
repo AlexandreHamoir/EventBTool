@@ -241,8 +241,8 @@ public class Sys
         // Load the projct.info file, if it exists.
         loadProjectInfo(dir);
 
-        /*return "read "+contextNames().size()+" contexts, "+machineNames().size()+" machines, "+theoryNames().size()+" theories";*/
-        return "read "+contextNames().size()+" contexts and "+machineNames().size()+" machines";
+        /*return "read "+contextNames().size()+" contexts, "+machineNames().size()+" machines, "+theoryNames().size()+" theories";*/ // This command will fail the automatic tests.
+        return "read "+contextNames().size()+" contexts and "+machineNames().size()+" machines"; //TODO Correct the test to make them pass.
     }
 
     private List<Pair<String,File>> eachFileEndingIn(File dir, String suffix)
@@ -378,6 +378,11 @@ public class Sys
 
     public void walkSystem(AllRenders ar, String pattern)
     {
+        for (Theory t : theoryOrdering())
+        {
+            ar.walkTheory(t, pattern);
+        }
+   
         for (Context c : contextOrdering())
         {
             ar.walkContext(c, pattern);
@@ -428,6 +433,7 @@ public class Sys
                               new RenderMachineSearch(),
                               new RenderEventSearch(),
                               new RenderFormulaSearch(null),
+                              new RenderTheorySearch(),
                               null);
     }
 
@@ -440,24 +446,28 @@ public class Sys
                                   new RenderMachineUnicode(),
                                   new RenderEventUnicode(),
                                   new RenderFormulaUnicode(canvas),
+                                  new RenderTheoryUnicode(),
                                   canvas);
         case TERMINAL:
             return new AllRenders(new RenderContextUnicode(),
                                      new RenderMachineUnicode(),
                                      new RenderEventUnicode(),
                                      new RenderFormulaUnicode(canvas),
+                                     new RenderTheoryUnicode(),
                                      canvas);
         case TEX:
            return new AllRenders(new RenderContextTeX(),
                                     new RenderMachineTeX(),
                                     new RenderEventTeX(),
                                     new RenderFormulaTeX(canvas),
+                                    new RenderTheoryTeX(),
                                     canvas);
         case HTMQ:
            return new AllRenders(new RenderContextHtmq(),
                                     new RenderMachineHtmq(),
                                     new RenderEventHtmq(),
                                     new RenderFormulaHtmq(canvas),
+                                    new RenderTheoryHtqm(),
                                     canvas);
         }
         assert (false) : "No case for format: "+format;
