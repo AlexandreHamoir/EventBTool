@@ -25,5 +25,92 @@ import com.viklauverk.eventbtools.core.Formula;
 
 public class RenderTheory extends CommonRenderFunctions
 {
-    //TODO
+    public void visit_TheoryStart(Theory th) { }
+
+    public void visit_ImportsStart(Theory th) { }
+/*
+    public void visit_Imports(Theory th, Theory import) { } 
+    //TODO Does not work? Weird compilation error...
+    // RenderTheory.java:[31,48] <identifier> expected
+*/
+    public void visit_ImportsEnd(Theory th) { }
+
+    public void visit_HeadingComplete(Theory th) { }
+
+    public void visit_TypeParametersStart(Theory th) { }
+    public void visit_TypeParameter(Theory th, TypeParameters type_parameter) { }
+    public void visit_TypeParametersEnd(Theory th) { }
+
+    public void visit_DatatypesStart(Theory th) { }
+    public void visit_Datatype(Theory th, Datatype datatype) { }
+    public void visit_DatatypesEnd(Theory th) { }
+
+    public void visit_OperatorsStart(Theory th) { }
+    public void visit_Operator(Theory th, Operator operator) { }
+    public void visit_OperatorsEnd(Theory th) { }
+
+    public void visit_AxiomaticDefinitionsStart(Theory th) { }
+    public void visit_AxiomaticDefinition(Theory th, AxiomaticDefinition axiomatic_definition) { }
+    public void visit_AxiomaticDefinitionsEnd(Theory th) { }
+
+    public void visit_TheoremsStart(Theory th) { }
+    public void visit_Theorem(Theory th, Theorem theorem) { }
+    public void visit_TheoremsEnd(Theory th) { }
+
+    public void visit_TheoryEnd(Theory th) { }
+
+    protected String buildTheoryPartName(Theory th)
+    {
+        return th.name();
+    }
+
+    protected String buildTheoryTypeParametersPartName(Theory th)
+    {
+        return th.name()+"/type_parameters";
+    }
+
+    protected String buildTheoryTypeParameterPartName(Theory th, TypeParameters tp)
+    {
+        return th.name()+"/type_parameter/"+tp.name();
+    }
+
+    protected String buildTheoryDatatypesPartName(Theory th)
+    {
+        return th.name()+"/datatypes";
+    }
+
+    protected String buildTheoryDatatypePartName(Theory th, Datatype dt)
+    {
+        return th.name()+"/datatype/"+dt.name();
+    }
+
+    protected String buildTheoryOperatorsPartName(Theory th)
+    {
+        return th.name()+"/operators";
+    }
+
+    protected String buildTheoryOperatorPartName(Theory th, Operator op)
+    {
+        return th.name()+"/operator/"+op.name();
+    }
+
+    protected String buildTheoryAxiomaticDefinitionsPartName(Theory th)
+    {
+        return th.name()+"/axiomatic_definitions";
+    }
+
+    protected String buildTheoryAxiomaticDefinitionPartName(Theory th, AxiomaticDefinition axd)
+    {
+        return th.name()+"/axiomatic_definition/"+axd.name();
+    }
+
+    protected String buildTheoryTheoremsPartName(Theory th)
+    {
+        return th.name()+"/theorems";
+    }
+
+    protected String buildTheoryTheoremPartName(Theory th, Theorem thm)
+    {
+        return th.name()+"/theorem/"+thm.name();
+    }
 }
