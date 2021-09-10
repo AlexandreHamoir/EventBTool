@@ -409,13 +409,13 @@ public class Sys
                                       canvas);
 
         //TODO Add theories
-        /*if (ss.showingTheory())
+        if (ss.showingTheories())
         {
-            for (Theory t : theoryOrdering())
+            for (Theory th : theoryOrdering())
             {
                 ar.walkTheory(th, pattern);
             }
-        }*/
+        }
 
         if (ss.showingContexts())
         {

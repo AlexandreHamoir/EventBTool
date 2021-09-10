@@ -312,15 +312,15 @@ public class Theory
         Document document = reader.read(source_);
         log.debug("loading theory "+source_);
 
-        List<Node> theory_comment = document.selectNodes("//org.eventb.theory.core.theoryRoot");
+        List<Node> list = document.selectNodes("//org.eventb.theory.core.theoryRoot");
 
-        for (Node m : theory_comment)
+        for (Node m : list)
         {
             comment_ = m.valueOf("@org.eventb.core.comment");
         }
 
-        List<Node> import_theory = document.selectNodes("//org.eventb.theory.core.importTheory");
-        for (Node i : import_theory)
+        list = document.selectNodes("//org.eventb.theory.core.importTheory");
+        for (Node i : list)
         {
             String t = i.valueOf("@org.eventb.theory.core.importTheory");
             /*Theory import = sys_.getTheory(t); // TODO add getTheory in the system
@@ -328,16 +328,16 @@ public class Theory
             addImport(import);*/
         }
 
-        List<Node> type_parameters = document.selectNodes("//org.eventb.theory.core.typeParameter");
-        for (Node tp : type_parameters)
+        list = document.selectNodes("//org.eventb.theory.core.typeParameter");
+        for (Node tp : list)
         {
             String name = tp.valueOf("@org.eventb.core.identifier");
             String comment = tp.valueOf("@org.eventb.core.comment");
             addTypeParameters(new TypeParameters(name, comment));
         }
 
-        List<Node> datatypes = document.selectNodes("//org.eventb.theory.core.datatypeDefinition");
-        for (Node dt : datatypes)
+        list = document.selectNodes("//org.eventb.theory.core.datatypeDefinition");
+        for (Node dt : list)
         {
             String name = dt.valueOf("@org.eventb.core.identifier");
             String comment = dt.valueOf("@org.eventb.core.comment");
@@ -345,8 +345,8 @@ public class Theory
             addDatatype(new Datatype(name,comment));
         }
 
-        List<Node> operators = document.selectNodes("//org.eventb.theory.core.newOperatorDefinition");
-        for (Node op : operators)
+        list = document.selectNodes("//org.eventb.theory.core.newOperatorDefinition");
+        for (Node op : list)
         {
             String name = op.valueOf("@org.eventb.core.label");
             String comment = op.valueOf("@org.eventb.core.comment");
@@ -384,8 +384,8 @@ public class Theory
             addOperator(operator);
         }
 
-        List<Node> axiom_def = document.selectNodes("//org.eventb.theory.core.axiomaticDefinitionsBlock");
-        for (Node axd : axiom_def)
+        list = document.selectNodes("//org.eventb.theory.core.axiomaticDefinitionsBlock");
+        for (Node axd : list)
         {
             String name = axd.valueOf("@org.eventb.core.label");
             String comment = axd.valueOf("@org.eventb.core.comment");
@@ -415,61 +415,16 @@ public class Theory
             addAxiomaticDefinition(axiomatic_definition);
         }
 
-        // List<Node> events = document.selectNodes("//org.eventb.core.event");
-        // for (Node e : events)
-        // {
-        //     String name = e.valueOf("@org.eventb.core.label");
-        //     String comment = e.valueOf("@org.eventb.core.comment");
-        //     boolean ext = e.valueOf("@org.eventb.core.extended").equals("true");
-        //     Convergence convergence = Convergence.from(e.valueOf("@org.eventb.core.convergence"));
-        //     Event event = new Event(name, ext, comment, this, convergence);
-        //     addEvent(event);
+        list = document.selectNodes("//org.eventb.theory.core.theorem");
+        for (Node n : list)
+        {
+            String name = n.valueOf("@org.eventb.core.label");
+            String pred = n.valueOf("@org.eventb.core.predicate");
+            String comment = n.valueOf("@org.eventb.core.comment");
 
-        //     List<Node> refines = e.selectNodes("org.eventb.core.refinesEvent");
-        //     for (Node r : refines)
-        //     {
-        //         String identifier = r.valueOf("@org.eventb.core.target");
-        //         event.addRefinesEventName(identifier);
-        //     }
-        //     if (event.name().equals("INITIALISATION") && event.extended())
-        //     {
-        //         event.addRefinesEventName("INITIALISATION");
-        //     }
-        //     List<Node> parameters = e.selectNodes("org.eventb.core.parameter");
-        //     for (Node p : parameters)
-        //     {
-        //         String i = p.valueOf("@org.eventb.core.identifier");
-        //         String c = p.valueOf("@org.eventb.core.comment");
-        //         event.addParameter(new Variable(i, c));
-        //     }
-
-        //     List<Node> guards = e.selectNodes("org.eventb.core.guard");
-        //     for (Node g : guards)
-        //     {
-        //         String l = g.valueOf("@org.eventb.core.label");
-        //         String p = g.valueOf("@org.eventb.core.predicate");
-        //         String c = g.valueOf("@org.eventb.core.comment");
-        //         event.addGuard(new Guard(l, p, c));
-        //     }
-
-        //     List<Node> witnesses = e.selectNodes("org.eventb.core.witness");
-        //     for (Node w : witnesses)
-        //     {
-        //         String l = w.valueOf("@org.eventb.core.label");
-        //         String p = w.valueOf("@org.eventb.core.predicate");
-        //         String c = w.valueOf("@org.eventb.core.comment");
-        //         event.addWitness(new Witness(l, p, c));
-        //     }
-
-        //     List<Node> actions = e.selectNodes("org.eventb.core.action");
-        //     for (Node a : actions)
-        //     {
-        //         String l = a.valueOf("@org.eventb.core.label");
-        //         String f = a.valueOf("@org.eventb.core.assignment");
-        //         String c = a.valueOf("@org.eventb.core.comment");
-        //         event.addAction(new Action(l, f, c));
-        //     }
-        // }
+            Theorem t = new Theorem(name, pred, comment);
+            addTheorem(t);
+        }
     }
 
 // -----------------------------------------------------------------------------
