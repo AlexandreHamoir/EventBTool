@@ -67,7 +67,7 @@ public class RenderTheory extends CommonRenderFunctions
 
     protected String buildTheoryTypeParameterPartName(Theory th, TypeParameters tp)
     {
-        return th.name()+"/type_parameter/"+tp.name();
+        return th.name()+"/type_parameters/"+tp.name();
     }
 
     protected String buildTheoryDatatypesPartName(Theory th)
@@ -77,7 +77,7 @@ public class RenderTheory extends CommonRenderFunctions
 
     protected String buildTheoryDatatypePartName(Theory th, Datatype dt)
     {
-        return th.name()+"/datatype/"+dt.name();
+        return th.name()+"/datatypes/"+dt.name();
     }
 
     protected String buildTheoryOperatorsPartName(Theory th)
@@ -87,7 +87,7 @@ public class RenderTheory extends CommonRenderFunctions
 
     protected String buildTheoryOperatorPartName(Theory th, Operator op)
     {
-        return th.name()+"/operator/"+op.name();
+        return th.name()+"/operators/"+op.name();
     }
 
     protected String buildTheoryAxiomaticDefinitionsPartName(Theory th)
@@ -97,7 +97,7 @@ public class RenderTheory extends CommonRenderFunctions
 
     protected String buildTheoryAxiomaticDefinitionPartName(Theory th, AxiomaticDefinition axd)
     {
-        return th.name()+"/axiomatic_definition/"+axd.name();
+        return th.name()+"/axiomatic_definitions/"+axd.name();
     }
 
     protected String buildTheoryTheoremsPartName(Theory th)
@@ -107,6 +107,6 @@ public class RenderTheory extends CommonRenderFunctions
 
     protected String buildTheoryTheoremPartName(Theory th, Theorem thm)
     {
-        return th.name()+"/theorem/"+thm.name();
+        return th.name()+"/theorems/"+thm.name();
     }
 }

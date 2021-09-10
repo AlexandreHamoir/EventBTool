@@ -20,80 +20,97 @@ package com.viklauverk.eventbtools.core;
 
 public class VisitTheory
 {
-    /** Walk the Event-B context ctx and invoke the visitor functions in rc
-        for each part of the ctx. Also only visit parts that matches the pattern.
+    /** Walk the Event-B theory th and invoke the visitor functions in rt
+        for each part of the th. Also only visit parts that matches the pattern.
     */
     public static void walk(RenderTheory rt, Theory th, String pattern)
     {
-        //TODO
-/*        boolean m = Util.match(ctx.name()+"/", pattern);
-        if (m) rc.visit_ContextStart(ctx);
+        boolean m = Util.match(th.name()+"/", pattern);
+        if (m) rt.visit_TheoryStart(th);
 
-        if (m && ctx.hasExtend())
+        if (m && th.hasImports())
         {
-            rc.visit_ExtendsStart(ctx);
-            rc.visit_Extend(ctx, ctx.extendsContext());
-            rc.visit_ExtendsEnd(ctx);
+            boolean i = Util.match(th.name()+"/imports/", pattern);
+            if (i) rt.visit_ImportsStart(th);
+            for (Theory imp : th.importsOrdering())
+            {
+                boolean ii = Util.match(th.name()+"/imports/"+imp.name()+"/", pattern);
+                if (ii) rt.visit_Import(th, imp);
+            }
+            if (i) rt.visit_ImportsEnd(th);
         }
 
-        if (m) rc.visit_HeadingComplete(ctx);
+        if (m) rt.visit_HeadingComplete(th);
 
-        if (ctx.hasSets())
+        if (th.hasTypeParameters())
         {
-            boolean s = Util.match(ctx.name()+"/sets/", pattern);
+            boolean t = Util.match(th.name()+"/type_parameters/", pattern);
 
-            if (s) rc.visit_SetsStart(ctx);
-            for (CarrierSet set : ctx.setOrdering())
+            if (t) rt.visit_TypeParametersStart(th);
+            for (TypeParameters tp : th.typeParametersOrdering())
             {
-                boolean ss = Util.match(ctx.name()+"/sets/"+set.name()+"/", pattern);
-                if (ss)
+                boolean tt = Util.match(th.name()+"/type_parameters/"+tp.name()+"/", pattern);
+                if (tt)
                 {
-                    rc.visit_Set(ctx, set);
+                    rt.visit_TypeParameter(th, tp);
                 }
             }
-            if (s) rc.visit_SetsEnd(ctx);
+            if (t) rt.visit_TypeParametersEnd(th);
         }
 
-        if (ctx.hasConstants())
+        if (th.hasDatatype())
         {
-            boolean c = Util.match(ctx.name()+"/constants/", pattern);
+            boolean d = Util.match(th.name()+"/datatypes/", pattern);
 
-            if (c) rc.visit_ConstantsStart(ctx);
-            for (Constant constant : ctx.constantOrdering())
+            if (d) rt.visit_DatatypesStart(th);
+            for (Datatype dt : th.datatypesOrdering())
             {
-                boolean cc =  Util.match(ctx.name()+"/constants/"+constant.name()+"/", pattern);
-                if (cc) rc.visit_Constant(ctx, constant);
+                boolean dd =  Util.match(th.name()+"/datatypes/"+dt.name()+"/", pattern);
+                if (dd) rt.visit_Datatype(th, dt);
             }
-            if (c) rc.visit_ConstantsEnd(ctx);
+            if (d) rt.visit_DatatypesEnd(th);
         }
 
-        if (ctx.hasAxioms())
+        if (th.hasOperator())
         {
-            boolean a = Util.match(ctx.name()+"/axioms/", pattern);
+            boolean o = Util.match(th.name()+"/operators/", pattern);
 
-            if (a) rc.visit_AxiomsStart(ctx);
-            for (Axiom axi : ctx.axiomOrdering())
+            if (o) rt.visit_OperatorsStart(th);
+            for (Operator op : th.operatorOrdering())
             {
-                boolean aa =  Util.match(ctx.name()+"/axioms/"+axi.name()+"/", pattern);
-                if (aa) rc.visit_Axiom(ctx, axi);
+                boolean oo =  Util.match(th.name()+"/operators/"+op.name()+"/", pattern);
+                if (oo) rt.visit_Operator(th, op);
             }
-            if (a) rc.visit_AxiomsEnd(ctx);
+            if (o) rt.visit_OperatorsEnd(th);
         }
 
-        if (ctx.hasTheorems())
+        if (th.hasAxiomaticDefinition())
         {
-            boolean t = Util.match(ctx.name()+"/theorems/", pattern);
+            boolean a = Util.match(th.name()+"/axiomatic_definitions/", pattern);
 
-            if (t) rc.visit_TheoremsStart(ctx);
-            for (Theorem the : ctx.theoremOrdering())
+            if (a) rt.visit_AxiomaticDefinitionsStart(th);
+            for (AxiomaticDefinition axd : th.axiomaticDefinitionOrdering())
             {
-                boolean tt =  Util.match(ctx.name()+"/theorems/"+the.name()+"/", pattern);
-                if (tt) rc.visit_Theorem(ctx, the);
+                boolean aa =  Util.match(th.name()+"/axiomatic_definitions/"+axd.name()+"/", pattern);
+                if (aa) rt.visit_AxiomaticDefinition(th, axd);
             }
-            if (t) rc.visit_TheoremsEnd(ctx);
+            if (a) rt.visit_AxiomaticDefinitionsEnd(th);
         }
 
-        if (m) rc.visit_ContextEnd(ctx);
-*/    
+        if (th.hasTheorems())
+        {
+            boolean t = Util.match(th.name()+"/theorems/", pattern);
+
+            if (t) rt.visit_TheoremsStart(th);
+            for (Theorem the : th.theoremOrdering())
+            {
+                boolean tt =  Util.match(th.name()+"/theorems/"+the.name()+"/", pattern);
+                if (tt) rt.visit_Theorem(th, the);
+            }
+            if (t) rt.visit_TheoremsEnd(th);
+        }
+
+        if (m) rt.visit_TheoryEnd(th);
+    
     }
 }
