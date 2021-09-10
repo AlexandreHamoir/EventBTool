@@ -51,14 +51,12 @@ public class RenderTheoryUnicode extends RenderTheory
         cnvs().space();
     }
 
-/*  //TODO same weird compilation error
     @Override
-    public void visit_Import(Theory th, Theory import)
+    public void visit_Import(Theory th, Theory imp)
     {
-        cnvs().id(import.name());
+        cnvs().id(imp.name());
         cnvs().space();
     }
-*/
 
     @Override
     public void visit_ImportsEnd(Theory th)

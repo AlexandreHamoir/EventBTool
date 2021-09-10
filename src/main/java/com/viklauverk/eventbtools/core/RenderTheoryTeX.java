@@ -42,7 +42,7 @@ public class RenderTheoryTeX extends RenderTheoryUnicode
     public void visit_DatatypesStart(Theory th)
     {
         cnvs().append("\\subsection{\\footnotesize ");
-        for (String dtn : th.DatatypesNames())
+        for (String dtn : th.datatypeNames())
         {
             cnvs().set(dtn); //TODO Modify cnvs().set => cnvs().datatype?
             cnvs().append(" ");
