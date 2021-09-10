@@ -62,9 +62,9 @@ public class Theory
     private List<AxiomaticDefinition> axiom_def_ordering_ = new ArrayList<>();
     private List<String> axiom_def_names_ = new ArrayList<>();
 
-    // private Map<String,Theorem> theorems_ = new HashMap<>();
-    // private List<Theorem> theorem_ordering_ = new ArrayList<>();
-    // private List<String> theorem_names_ = new ArrayList<>();
+    private Map<String,Theorem> theorems_ = new HashMap<>();
+    private List<Theorem> theorem_ordering_ = new ArrayList<>();
+    private List<String> theorem_names_ = new ArrayList<>();
 
     // private Map<String,ProofRules> proof_rules_ = new HashMap<>(); // TODO Create ProofRules class
     // private List<ProofRules> proof_rules_ordering_ = new ArrayList<>();
@@ -243,7 +243,7 @@ public class Theory
     }
 
 // -----------------------------------------------------------------------------
-//    VARIANT
+//    AXIOMATIC DEFINITION
 // -----------------------------------------------------------------------------
     public AxiomaticDefinition getAxiomaticDefinition(String name)
     {
@@ -273,7 +273,38 @@ public class Theory
     }
 
 // -----------------------------------------------------------------------------
-//    LOAD TODO
+//    THEOREMS
+// -----------------------------------------------------------------------------
+
+    public Theorem getTheorem(String name)
+    {
+        return theorems_.get(name);
+    }
+
+    public List<Theorem> theoremOrdering()
+    {
+        return theorem_ordering_;
+    }
+
+    public boolean hasTheorems()
+    {
+        return theorem_ordering_.size() > 0;
+    }
+    
+    public List<String> theoremNames()
+    {
+        return theorem_names_;
+    }
+
+    public void addTheorem(Theorem t)
+    {
+        theorems_.put(t.name(), t);
+        theorem_ordering_.add(t);
+        theorem_names_ = theorems_.keySet().stream().sorted().collect(Collectors.toList());
+    }
+
+// -----------------------------------------------------------------------------
+//    LOAD
 // -----------------------------------------------------------------------------
     public void load() throws Exception
     {
