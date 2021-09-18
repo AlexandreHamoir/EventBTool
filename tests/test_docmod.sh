@@ -36,7 +36,7 @@ OK
 +++++
 x∈BOOL∧y∈S⇒ E=F
 +++++
-read 1 contexts and 1 machines
+read 1 contexts, 1 machines, 0 theories
 Elevator enterDest grd_1:
 ┌──────────┐
 │grd_1: d∈ℕ│
