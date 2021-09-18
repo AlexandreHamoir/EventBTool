@@ -241,8 +241,7 @@ public class Sys
         // Load the projct.info file, if it exists.
         loadProjectInfo(dir);
 
-        return "read "+contextNames().size()+" contexts, "+machineNames().size()+" machines, "+theoryNames().size()+" theories"; // This command will fail the automatic tests.
-        // return "read "+contextNames().size()+" contexts and "+machineNames().size()+" machines"; //TODO Correct the test to make them pass.
+        return "read "+contextNames().size()+" contexts, "+machineNames().size()+" machines, "+theoryNames().size()+" theories";
     }
 
     private List<Pair<String,File>> eachFileEndingIn(File dir, String suffix)
@@ -408,7 +407,6 @@ public class Sys
         AllRenders ar = lookupRenders(RenderTarget.TERMINAL,
                                       canvas);
 
-        //TODO Add theories
         if (ss.showingTheories())
         {
             for (Theory th : theoryOrdering())

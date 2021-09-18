@@ -23,6 +23,7 @@ public enum RenderTarget
     PLAIN,    // Render using plain unicode (can even be limited to ASCII)
     TERMINAL, // Use PLAIN but allow ansi-sequences for colors and positioning.
     TEX,      // Use PLAIN but use tex for symbols, colors and positioning.
+    THEORY,   // Use PLAIN Supports theories.
     HTMQ;     // Use PLAIN but use htmq that can later be converted into html.
 
     public static RenderTarget lookup(String s)
@@ -33,6 +34,7 @@ public enum RenderTarget
         case "terminal": return TERMINAL;
         case "tex": return TEX;
         case "htmq": return HTMQ;
+        case "thy": return THEORY;
         }
 
         return null;

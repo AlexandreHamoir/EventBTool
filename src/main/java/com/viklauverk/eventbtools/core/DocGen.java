@@ -35,6 +35,8 @@ public class DocGen
             return new DocGenTeX(cs, ds, sys);
         case HTMQ:
             return new DocGenHtmq(cs, ds, sys);
+        case THEORY:
+            return new DocGenTheoryTeX(cs,ds,sys);
         }
         assert (false) : "Missing case for render target: "+ds.renderTarget();
         return null;

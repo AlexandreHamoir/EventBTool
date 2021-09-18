@@ -58,7 +58,7 @@ public class DocGenTheoryTeX extends BaseDocGen
         cnvs.append("EVBT(show template \"TeXDefinitions\")\n");
 
         cnvs.append("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n");
-        cnvs.append("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n");
+        cnvs.append("%THY%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n");
         cnvs.append("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n");
 
         cnvs.append("\\makeindex\n");
