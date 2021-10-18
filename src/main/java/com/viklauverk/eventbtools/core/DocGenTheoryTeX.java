@@ -84,7 +84,7 @@ public class DocGenTheoryTeX extends BaseDocGen
         {
             cnvs.append("\\pagebreak\n\n");
             cnvs.append("\\section{\\KEYWL{THEORY}\\small\\ "+Util.texSafe(th)+"}\n\n");
-            cnvs.append("EVBT(show part tex \""+th+"\")\n");
+            cnvs.append("EVBT(show part \""+th+"\")\n");
         }
 
         for (String ctx : sys().contextNames())

@@ -92,6 +92,11 @@ public class Operator
         return args_names_;
     }
 
+    public boolean hasArguments()
+    {
+        return args_.size() > 0;
+    }
+
     public void addArgument(Arguments arg)
     {
         args_.put(arg.name(), arg);
@@ -118,4 +123,8 @@ public class Operator
         return directDefinition_;
     }
 
+    public boolean hasDirectDef()
+    {
+        return directDefinition_ != null;
+    }
 }

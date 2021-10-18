@@ -225,7 +225,7 @@ public class Theory
         return operator_ordering_;
     }
 
-    public boolean hasOperator()
+    public boolean hasOperators()
     {
         return operator_.size() > 0;
     }
