@@ -23,5 +23,5 @@
         </org.eventb.theory.core.axiomaticOperatorDefinition>
         <org.eventb.theory.core.axiomaticDefinitionAxiom name=")" org.eventb.core.comment="Comment" org.eventb.core.label="axm" org.eventb.core.predicate="xOpDef(3) = 0"/>
     </org.eventb.theory.core.axiomaticDefinitionsBlock>
-    <org.eventb.theory.core.theorem name="," org.eventb.core.comment="Comment" org.eventb.core.label="thm" org.eventb.core.predicate="∀ n · n ∈ ℕ ∧ xOpDef(n) = 0 ⇒ n=3"/>
+    <org.eventb.theory.core.theorem name="," org.eventb.core.comment="Comment Theorem" org.eventb.core.label="thm" org.eventb.core.predicate="∀ n · n ∈ ℕ ∧ OpDirect(n) = 0 ⇒ n=3"/>
 </org.eventb.theory.core.theoryRoot>

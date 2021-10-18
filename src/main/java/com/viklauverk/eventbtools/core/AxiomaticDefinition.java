@@ -26,9 +26,16 @@ import java.util.HashMap;
 public class AxiomaticDefinition
 {
     private String name_;
-    private Map<String,TypeDef> tyd_ = new HashMap<>(); //TODO Change to Type or TypeParameter?
+
+    private Map<String,TypeParameters> tyd_ = new HashMap<>();
+    private List<TypeParameters> tyd_ordering_ = new ArrayList<>();
+
     private Map<String,Operator> opd_ = new HashMap<>();
+    private List<Operator> opd_ordering_ = new ArrayList<>();
+
     private Map<String,Axiom> ax_ = new HashMap<>();
+    private List<Axiom> ax_ordering_ = new ArrayList<>();
+
     private String comment_;
 
     public AxiomaticDefinition(String n, String c)
@@ -54,22 +61,49 @@ public class AxiomaticDefinition
 
     public void parse(SymbolTable st)
     {
-        //TODO
+        //TODO?
     }
 
-    public void addOperator(TypeDef tyd)
+// -----------------------------------------------------------------------------
+//    TYPE DEF
+// -----------------------------------------------------------------------------
+    public void addTypeDef(TypeParameters tyd)
     {
         tyd_.put(tyd.name(),tyd);
+        tyd_ordering_.add(tyd);
     }
 
+    public List<TypeParameters> typeDefOrdering()
+    {
+        return tyd_ordering_;
+    }
+
+// -----------------------------------------------------------------------------
+//    OPERATOR
+// -----------------------------------------------------------------------------
     public void addOperator(Operator opd)
     {
         opd_.put(opd.name(),opd);
+        opd_ordering_.add(opd);
     }
 
+    public List<Operator> operatorOrdering()
+    {
+        return opd_ordering_;
+    }
+
+// -----------------------------------------------------------------------------
+//    AXIOM
+// -----------------------------------------------------------------------------
     public void addAxiom(Axiom ax)
     {
         ax_.put(ax.name(), ax);
+        ax_ordering_.add(ax);
+    }
+
+    public List<Axiom> axiomOrdering()
+    {
+        return ax_ordering_;
     }
 
 }

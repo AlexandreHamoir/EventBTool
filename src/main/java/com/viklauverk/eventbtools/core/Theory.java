@@ -335,7 +335,7 @@ public class Theory
             String comment = tp.valueOf("@org.eventb.core.comment");
             addTypeParameters(new TypeParameters(name, comment));
         }
-
+/*
         list = document.selectNodes("//org.eventb.theory.core.datatypeDefinition");
         for (Node dt : list)
         {
@@ -344,7 +344,7 @@ public class Theory
             //TODO Finish
             addDatatype(new Datatype(name,comment));
         }
-
+*/
         list = document.selectNodes("//org.eventb.theory.core.newOperatorDefinition");
         for (Node op : list)
         {
@@ -361,24 +361,28 @@ public class Theory
                 String i = arg.valueOf("@org.eventb.core.identifier");
                 String e = arg.valueOf("@org.eventb.core.expression");
                 String c = arg.valueOf("@org.eventb.core.comment");
-                //TODO Finish the Argument class.
-                //operator.addArgument(new Argument(i, e, c)); 
+
+                operator.addArgument(new Arguments(i, e, c)); 
             }
 
             List<Node> well_def_cond = op.selectNodes("org.eventb.theory.core.operatorWDcondition");
             for (Node wdc : well_def_cond)
             {
                 String well_def = wdc.valueOf("@org.eventb.core.predicate");
+                //TODO
                 //String c = wdc.valueOf("@org.eventb.core.comment");
-                //operator.addWDC(well_def); //TODO
+                //operator.addWDC(well_def);
             }
 
+            /* TODO Only Direct definition possible for now */
             List<Node> direct_def = op.selectNodes("org.eventb.theory.core.directOperatorDefinition");
             for (Node dd : direct_def)
             {
+                String i = operator.name()+"_direct_def";
                 String d = dd.valueOf("@org.eventb.theory.core.formula");
-                //String c = dd.valueOf("@org.eventb.core.comment");
-                //operator.addDirectDef(d); //TODO
+                String c = dd.valueOf("@org.eventb.core.comment");
+
+                operator.setDirectDef(new IsAFormula(i,d,c));
             }
 
             addOperator(operator);
@@ -394,13 +398,21 @@ public class Theory
             List<Node> axiomatic_type_def = axd.selectNodes("org.eventb.theory.core.axiomaticTypeDefinition");
             for (Node ax_td : axiomatic_type_def)
             {
-                //TODO Finish
+                String l = ax_td.valueOf("@org.eventb.core.identifier");
+                String c = ax_td.valueOf("@org.eventb.core.comment");
+                axiomatic_definition.addTypeDef(new TypeParameters(l, c));
             }
 
             List<Node> axiomatic_op_def = axd.selectNodes("org.eventb.theory.core.axiomaticOperatorDefinition");
             for (Node ax_op : axiomatic_op_def)
             {
-                //TODO Finish
+                String l = ax_op.valueOf("@org.eventb.core.label");
+                String c = ax_op.valueOf("@org.eventb.core.comment");
+                boolean associative = ax_op.valueOf("@org.eventb.theory.core.associative").equals("true");
+                boolean commutative = ax_op.valueOf("@org.eventb.theory.core.commutative").equals("true");
+
+                Operator operator = new Operator(l,associative,commutative,c);
+                axiomatic_definition.addOperator(operator);
             }
 
             List<Node> axiom = axd.selectNodes("org.eventb.theory.core.axiomaticDefinitionAxiom");
@@ -430,34 +442,57 @@ public class Theory
 // -----------------------------------------------------------------------------
 //    buildSymbolTable
 // -----------------------------------------------------------------------------
-    private void buildSymbolTable(SymbolTable parent)
+    private void buildSymbolTable()
     {
-        // if (symbol_table_ != null) return;
+        if (symbol_table_ != null) return;
 
-        // symbol_table_ = sys_.newSymbolTable(name_, parent);
+        symbol_table_ = sys_.newSymbolTable(name_, null);
 
-        // if (refines_ != null)
-        // {
-        //     refines_.buildSymbolTable(parent);
-        //     symbol_table_.addParent(refines_.symbolTable());
-        // }
+        if ( hasImports() )
+        {
+            for (Theory i : importsOrdering()) {
+                i.buildSymbolTable();
+                symbol_table_.addParent(i.symbolTable());
+            }
+        }
 
-        // for (Context c : contextOrdering())
-        // {
-        //     symbol_table_.addParent(c.symbolTable());
-        // }
+        for (TypeParameters tp : typeParametersOrdering())
+        {
+            log.debug("added type parameter set %s to symbol table %s", tp.name(), symbol_table_.name());
+            symbol_table_.addSet(tp);
+        }
 
-        // for (Variable v : variableOrdering())
-        // {
-        //     Variable vv  = symbol_table_.getVariable(v.name());
-        //     if (vv != null)
-        //     {
-        //         SymbolTable st = symbol_table_.whichSymbolTableForVariable(v.name());
-        //         log.debug("variable %s refines %s in %s", v, v, st.name());
-        //         v.setRefines(vv);
-        //     }
-        //     symbol_table_.addVariable(v);
-        // }
+/*        for (Datatype dt : datatypesOrdering())
+        {
+            TODO
+            for (Constructor cst : constructorOrdering())
+            {
+                TODO
+                for (Destructor dst : destructorOrdering())
+                {
+                    TODO
+                }
+            }
+        }
+*/
+        for (Operator op : operatorOrdering())
+        {
+            symbol_table_.addAnySymbols(op.name());
+        }
+
+        for (AxiomaticDefinition axd : axiomaticDefinitionOrdering())
+        {
+            for (TypeParameters axd_td : axd.typeDefOrdering())
+            {
+                symbol_table_.addSet(axd_td);
+            }
+
+            for (Operator axd_op : axd.operatorOrdering())
+            {
+                symbol_table_.addAnySymbols(axd_op.name());
+            }
+        }
+
     }
 
 // -----------------------------------------------------------------------------
@@ -465,165 +500,36 @@ public class Theory
 // -----------------------------------------------------------------------------
     public void parse()
     {
-        // buildSymbolTable(st);
+        buildSymbolTable();
+        log.debug("parsing %s", name());
 
-        // log.debug("parsing %s", name());
+        for (TypeParameters tp : typeParametersOrdering())
+        {
+            Formula f = FormulaFactory.newSetSymbol(tp.name());
+            Type type = sys().typing().lookupType(f);
+            log.debug("adding Type Parameter set type: "+type.name());
+        }
 
-        // for (String name : invariantNames())
-        // {
-        //     Invariant i = getInvariant(name);
-        //     i.parse(symbol_table_);
-        //     sys().typing().extractInfoFromInvariant(i.formula(), symbol_table_);
-        // }
+/*        for (Datatype dt : datatypesOrdering())
+            for (Constructor cst : constructorOrdering())
+                for (Datatype dst : destructorOrdering())
+                    dst.parse();
+*/
 
-        // for (String name : variantNames())
-        // {
-        //     Variant i = getVariant(name);
-        //     i.parse(symbol_table_);
-        //     //sys().typing().extractInfoFromInvariant(i.formula(), symbol_table_);
-        // }
+        for (AxiomaticDefinition axd : axiomaticDefinitionOrdering())
+        {
 
-        // for (String name : eventNames())
-        // {
-        //     Event e = getEvent(name);
-        //     e.parse();
-        // }
+        }
+
+        for (Operator op : operatorOrdering())
+        {
+            op.parse(symbol_table_);
+        }
+
+        for (Theorem t : theoremOrdering())
+        {
+            t.parse(symbol_table_);
+            sys().typing().extractInfoFromAxiom(t.formula(), symbol_table_);
+        }
     }
-
-// -----------------------------------------------------------------------------
-//    ???
-// -----------------------------------------------------------------------------
-    public void showw(ShowSettings ss, Canvas canvas)
-    {
-        // StringBuilder o = new StringBuilder();
-        // o.append(name_);
-        // if (refines_ != null)
-        // {
-        //     o.append(" ⊏ ");
-        //     o.append(refines_.name());
-        // }
-        // o.append("\n");
-        // o.append("-\n");
-        // for (Context c : contextOrdering())
-        // {
-        //     o.append(c.name());
-        //     o.append("\n");
-        // }
-        // o.append("-\n");
-        // for (Variable v : variableOrdering())
-        // {
-        //     if (v.comment().length() > 0)
-        //     {
-        //         String cc = "";
-        //         if (ss.showingComments())
-        //         {
-        //             cc = "    "+v.comment();
-        //         }
-        //         o.append(v.name()+cc);
-        //         o.append("\n");
-        //     }
-        // }
-        // if (ss.showingInvariants())
-        // {
-        //     o.append("-\n");
-        //     for (Invariant inv : invariantOrdering())
-        //     {
-        //         o.append(inv.writeFormulaStringToCanvas(canvas));
-        //         o.append("\n");
-        //     }
-        // }
-        // o.append("-\n");
-        // for (Event e : eventOrdering())
-        // {
-        //     if (!e.isEmpty())
-        //     {
-        //         o.append(e.name());
-        //         o.append("\n");
-        //     }
-        // }
-        // String f = canvas.frame("", o.toString(), Canvas.dline);
-        // String comment = "";
-        // if (ss.showingComments())
-        // {
-        //     comment = Canvas.flow(canvas.layoutWidth(), comment_);
-        // }
-        // canvas.flush();
-        // canvas.appendBox("\n\n"+comment);
-        // canvas.flush();
-        // canvas.appendBox(f);
-        // canvas.flush();
-        // canvas.appendBox("\n\n");
-        // canvas.flush();
-
-        // if (ss.showingEvents())
-        // {
-        //     for (Event e : eventOrdering())
-        //     {
-        //         if (!e.isEmpty())
-        //         {
-        //             e.show(ss, canvas);
-        //         }
-        //     }
-        // }
-    }
-
-    // public Event getConcreteEvent(String name)
-    // {
-    //     return concrete_events_.get(name);
-    // }
-
-    // public List<Event> concreteEventOrdering()
-    // {
-    //     return concrete_event_ordering_;
-    // }
-
-    // public List<String> concreteEventNames()
-    // {
-    //     return concrete_event_names_;
-    // }
-
-    public void buildImplementation() throws Exception
-    {
-        // log_codegen.debug("Building implementation for %s", this);
-        // for (Event e : eventOrdering())
-        // {
-        //     buildConcreteEvent(e);
-        // }
-        // log_codegen.debug("Done building implementation for %s", this);
-        // concrete_event_names_ = concrete_events_.keySet().stream().sorted().collect(Collectors.toList());
-    }
-
-    private void buildConcreteEvent(Event eventt) throws Exception
-    {
-    //     Event concrete_event = eventt.deepCopy();
-    //     log_codegen.debug("Building concrete event %s:%s", eventt.machine(), concrete_event);
-    //     concrete_events_.put(concrete_event.name(), concrete_event);
-    //     concrete_event_ordering_.add(concrete_event);
-    //     Event i = concrete_event;
-
-    //     // Check if the event extends another event.
-    //     while (i.extended())
-    //     {
-    //         Event extended = i.refinesEvents().get(0);
-    //         String extended_event_name = extended.name();
-    //         log_codegen.debug("Spec says event %s extends %s::%s", i.name(), i.machine().refines(), extended_event_name);
-
-    //         Machine mch = i.machine().refines();
-    //         Event extended_event = mch.getEvent(extended_event_name);
-    //         if (extended_event == null)
-    //         {
-    //             log_codegen.error("Could not find extended event %s in machine %s!",
-    //                               extended_event_name, mch.name());
-    //         }
-    //         else
-    //         {
-    //             concrete_event.extendFrom(extended_event);
-    //             log_codegen.debug("Extended from %s in %s", extended_event, mch);
-    //             i = extended_event;
-    //             // Loop around to check if this one also extends from another event.
-    //         }
-    //     }
-    //     log_codegen.debug("Done building concrete event %s", concrete_event);
-    }
-
 }

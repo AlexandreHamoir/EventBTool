@@ -232,7 +232,6 @@ public class Sys
         parseContextFormulas();
         parseMachineFormulas();
 
-
         if (contextNames().size() == 0 && machineNames().size() == 0 && theoryNames().size() == 0)
         {
             log.info("No contexts, machines or theories found in %s\n",  path);

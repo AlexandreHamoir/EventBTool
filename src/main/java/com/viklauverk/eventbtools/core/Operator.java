@@ -26,11 +26,16 @@ import java.util.HashMap;
 public class Operator
 {
     private String name_;
-    private boolean isAssociative = false;
-    private boolean isCommutative = false;
-    private Map<String,Arguments> args = new HashMap<>();
-    private Map<String,WDConditions> wdconditions = new HashMap<>() ;
-    private IsAFormula directDefinition;
+    private boolean isAssociative_ = false;
+    private boolean isCommutative_ = false;
+
+    private Map<String,Arguments> args_ = new HashMap<>();
+    private List<Arguments> args_ordering_ = new ArrayList<>();
+    private List<String> args_names_ = new ArrayList<>();
+
+    // private Map<String,WDConditions> wdconditions = new HashMap<>() ;
+
+    private IsAFormula directDefinition_;
     private String comment_;
 
     public Operator(String n, String c)
@@ -43,8 +48,8 @@ public class Operator
     {
         name_ = n;
         comment_ = c;
-        isAssociative = as;
-        isCommutative = com;
+        isAssociative_ = as;
+        isCommutative_ = com;
     }
 
     public String name()
@@ -64,11 +69,53 @@ public class Operator
 
     public void parse(SymbolTable st)
     {
-      // TODO
+      st.pushFrame(args_names_);
+      directDefinition_.parse(st);
+      st.popFrame();
+    }
+
+// -----------------------------------------------------------------------------
+//    ARGUMENTS
+// -----------------------------------------------------------------------------
+    public Arguments getArgument(String name)
+    {
+        return args_.get(name);
+    }
+
+    public List<Arguments> argumentsOrdering()
+    {
+        return args_ordering_;
+    }
+
+    public List<String> argumentsNames()
+    {
+        return args_names_;
     }
 
     public void addArgument(Arguments arg)
     {
-      //TODO
+        args_.put(arg.name(), arg);
+        args_ordering_.add(arg);
+        args_names_.add(arg.name());
     }
+
+    public void addArguments(List<Arguments> args)
+    {
+        args.addAll(args);
+    }
+
+// -----------------------------------------------------------------------------
+//    DIRECT DEFINITION
+// -----------------------------------------------------------------------------
+
+    public void setDirectDef(IsAFormula f)
+    {
+      directDefinition_ = f;
+    }
+
+    public IsAFormula getDef()
+    {
+        return directDefinition_;
+    }
+
 }

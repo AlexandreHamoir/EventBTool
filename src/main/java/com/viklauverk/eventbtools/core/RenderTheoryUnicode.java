@@ -116,25 +116,40 @@ public class RenderTheoryUnicode extends RenderTheory
     @Override
     public void visit_OperatorsStart(Theory th)
     {
-        //TODO
+        cnvs().startLine();
+        cnvs().keyword("operators");
+        cnvs().endLine();
+
+        cnvs().startAlignments(Canvas.align_3col);        
     }
 
     @Override
     public void visit_Operator(Theory th, Operator operator)
     {
-        //TODO
+        cnvs().startAlignedLine();
+        cnvs().label(operator.name());
+        cnvs().align();
+        cnvs().startMath();
+        operator.getDef().writeFormulaStringToCanvas(cnvs());
+        cnvs().stopMath();
+        stopAlignedLineAndHandlePotentialComment(operator.comment(), cnvs());
+
     }
 
     @Override
     public void visit_OperatorsEnd(Theory th)
     {
-        //TODO
+        cnvs().stopAlignments();
     }
 
     @Override
     public void visit_AxiomaticDefinitionsStart(Theory th)
     {
-        //TODO
+        cnvs().startLine();
+        cnvs().keyword("axiomatic definitions");
+        cnvs().endLine();
+
+        cnvs().startAlignments(Canvas.align_3col);        
     }
 
     @Override
@@ -146,14 +161,14 @@ public class RenderTheoryUnicode extends RenderTheory
     @Override
     public void visit_AxiomaticDefinitionsEnd(Theory th)
     {
-        //TODO
+        cnvs().stopAlignments();
     }
 
     @Override
     public void visit_TheoremsStart(Theory th)
     {
         cnvs().startLine();
-        cnvs().keyword("theorem");
+        cnvs().keyword("theorems");
         cnvs().endLine();
 
         cnvs().startAlignments(Canvas.align_3col);        
@@ -185,5 +200,4 @@ public class RenderTheoryUnicode extends RenderTheory
         cnvs().endLine();
     }
 
-    //TODO
 }

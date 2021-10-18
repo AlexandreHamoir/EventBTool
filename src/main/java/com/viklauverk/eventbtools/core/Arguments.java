@@ -23,14 +23,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
-public class Arguments
+public class Arguments extends Typed
 {
     private String name_;
     private String comment_;
+    private String definition_;
 
     public Arguments(String n, String c)
     {
         name_ = n;
+        comment_ = c;
+    }
+
+    public Arguments(String n, String e, String c)
+    {
+        name_ = n;
+        definition_ = e;
         comment_ = c;
     }
 
@@ -50,6 +58,11 @@ public class Arguments
     }
 
     public void parse(SymbolTable st)
+    {
+      // TODO
+    }
+
+    public void setDefinition()
     {
       // TODO
     }
