@@ -116,34 +116,34 @@ public class RenderTheoryUnicode extends RenderTheory
     @Override
     public void visit_ArgumentsStart(Theory th)
     {
-        cnvs().startLine();
+/*        cnvs().startLine();
         cnvs().keyword("arguments");
         cnvs().endLine();
 
         cnvs().startAlignments(Canvas.align_3col);
-    }
+*/    }
 
     @Override
     public void visit_Arguments(Theory th, Arguments arg)
     {
-            cnvs().startAlignedLine();
+/*            cnvs().startAlignedLine();
 
             cnvs().align();
             cnvs().label(arg.name());
             cnvs().align();
-/*
+
             cnvs().startMath();
             arg.getType().writeFormulaStringToCanvas(cnvs());
             cnvs().stopMath();
-*/
+
             stopAlignedLineAndHandlePotentialComment(arg.comment(), cnvs());
-    }
+*/    }
 
     @Override
     public void visit_ArgumentsEnd(Theory th)
     {
-        cnvs().stopAlignments();
-    }
+/*        cnvs().stopAlignments();
+*/    }
 
 
     @Override
@@ -162,6 +162,7 @@ public class RenderTheoryUnicode extends RenderTheory
         cnvs().startAlignedLine();
         cnvs().label(operator.name());
         cnvs().align();
+        
         if (operator.hasDirectDef())
         {        
             cnvs().startMath();
@@ -221,12 +222,12 @@ public class RenderTheoryUnicode extends RenderTheory
 
         if (axiomatic_definition.hasOperators())
         {
-            visit_OperatorsStart(th);
+            //visit_OperatorsStart(th);
             for (Operator op : axiomatic_definition.operatorOrdering())
             {
                 visit_Operator(th,op);
             }
-            visit_OperatorsEnd(th);
+            //visit_OperatorsEnd(th);
         }
 
         if (axiomatic_definition.hasAxioms())
