@@ -78,12 +78,6 @@ public class AxiomaticDefinition
         return tyd_ordering_;
     }
 
-    public boolean hasTypeDefs()
-    {
-        return tyd_.size() > 0;
-    }
-
-
 // -----------------------------------------------------------------------------
 //    OPERATOR
 // -----------------------------------------------------------------------------
@@ -98,11 +92,6 @@ public class AxiomaticDefinition
         return opd_ordering_;
     }
 
-    public boolean hasOperators()
-    {
-        return opd_.size() > 0;
-    }
-
 // -----------------------------------------------------------------------------
 //    AXIOM
 // -----------------------------------------------------------------------------
@@ -115,11 +104,6 @@ public class AxiomaticDefinition
     public List<Axiom> axiomOrdering()
     {
         return ax_ordering_;
-    }
-
-    public boolean hasAxioms()
-    {
-        return ax_.size() > 0;
     }
 
 }

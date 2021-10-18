@@ -71,7 +71,7 @@ public class VisitTheory
             if (d) rt.visit_DatatypesEnd(th);
         }
 
-        if (th.hasOperators())
+        if (th.hasOperator())
         {
             boolean o = Util.match(th.name()+"/operators/", pattern);
 

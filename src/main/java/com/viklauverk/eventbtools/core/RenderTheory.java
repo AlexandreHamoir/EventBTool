@@ -45,10 +45,6 @@ public class RenderTheory extends CommonRenderFunctions
     public void visit_Operator(Theory th, Operator operator) { }
     public void visit_OperatorsEnd(Theory th) { }
 
-    public void visit_ArgumentsStart(Theory th) { }
-    public void visit_Arguments(Theory th, Arguments arg) { }
-    public void visit_ArgumentsEnd(Theory th) { }
-
     public void visit_AxiomaticDefinitionsStart(Theory th) { }
     public void visit_AxiomaticDefinition(Theory th, AxiomaticDefinition axiomatic_definition) { }
     public void visit_AxiomaticDefinitionsEnd(Theory th) { }

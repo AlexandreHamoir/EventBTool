@@ -114,39 +114,6 @@ public class RenderTheoryUnicode extends RenderTheory
     }
 
     @Override
-    public void visit_ArgumentsStart(Theory th)
-    {
-/*        cnvs().startLine();
-        cnvs().keyword("arguments");
-        cnvs().endLine();
-
-        cnvs().startAlignments(Canvas.align_3col);
-*/    }
-
-    @Override
-    public void visit_Arguments(Theory th, Arguments arg)
-    {
-/*            cnvs().startAlignedLine();
-
-            cnvs().align();
-            cnvs().label(arg.name());
-            cnvs().align();
-
-            cnvs().startMath();
-            arg.getType().writeFormulaStringToCanvas(cnvs());
-            cnvs().stopMath();
-
-            stopAlignedLineAndHandlePotentialComment(arg.comment(), cnvs());
-*/    }
-
-    @Override
-    public void visit_ArgumentsEnd(Theory th)
-    {
-/*        cnvs().stopAlignments();
-*/    }
-
-
-    @Override
     public void visit_OperatorsStart(Theory th)
     {
         cnvs().startLine();
@@ -162,38 +129,10 @@ public class RenderTheoryUnicode extends RenderTheory
         cnvs().startAlignedLine();
         cnvs().label(operator.name());
         cnvs().align();
-        
-        if (operator.hasDirectDef())
-        {        
-            cnvs().startMath();
-            operator.getDef().writeFormulaStringToCanvas(cnvs());
-            cnvs().stopMath();
-            stopAlignedLineAndHandlePotentialComment(operator.comment(), cnvs());
-        }
-
-        /* Print arguments */
-        if (operator.hasArguments())
-        {
-            visit_ArgumentsStart(th);
-            for (Arguments arg : operator.argumentsOrdering())
-            {
-                visit_Arguments(th,arg);
-            }
-            visit_ArgumentsEnd(th);
-        }
-
-        /* Print WDCs */
-        /*
-        if (operator.hasWDCs())
-        {
-            visit_WDCsStart(th);
-            for (WDConditions wdc : operator.wdcsOrdering)
-            {
-                visit_WDCs(th, wdc);
-            }
-            visit_WDCsEnd(th);
-        }
-        */
+        cnvs().startMath();
+        operator.getDef().writeFormulaStringToCanvas(cnvs());
+        cnvs().stopMath();
+        stopAlignedLineAndHandlePotentialComment(operator.comment(), cnvs());
     }
 
     @Override
@@ -215,25 +154,7 @@ public class RenderTheoryUnicode extends RenderTheory
     @Override
     public void visit_AxiomaticDefinition(Theory th, AxiomaticDefinition axiomatic_definition)
     {
-        if (axiomatic_definition.hasTypeDefs())
-        {
-            // TODO
-        }
-
-        if (axiomatic_definition.hasOperators())
-        {
-            //visit_OperatorsStart(th);
-            for (Operator op : axiomatic_definition.operatorOrdering())
-            {
-                visit_Operator(th,op);
-            }
-            //visit_OperatorsEnd(th);
-        }
-
-        if (axiomatic_definition.hasAxioms())
-        {
-            // TODO
-        }
+        //TODO
     }
 
     @Override
