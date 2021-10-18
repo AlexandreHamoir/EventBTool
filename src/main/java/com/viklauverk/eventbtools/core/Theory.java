@@ -413,17 +413,17 @@ public class Theory
 
                 Operator operator = new Operator(l,associative,commutative,c);
 
-                List<Node> arguments = ax_op.selectNodes("org.eventb.theory.core.operatorArgument");
+                List<Node> arguments = op.selectNodes("org.eventb.theory.core.operatorArgument");
                 for (Node arg : arguments)
                 {
-                    String ii = arg.valueOf("@org.eventb.core.identifier");
-                    String ee = arg.valueOf("@org.eventb.core.expression");
-                    String cc = arg.valueOf("@org.eventb.core.comment");
+                    String i = arg.valueOf("@org.eventb.core.identifier");
+                    String e = arg.valueOf("@org.eventb.core.expression");
+                    String c = arg.valueOf("@org.eventb.core.comment");
 
-                    operator.addArgument(new Arguments(ii, ee, cc)); 
+                    operator.addArgument(new Arguments(i, e, c)); 
                 }
 
-                List<Node> well_def_cond = ax_op.selectNodes("org.eventb.theory.core.operatorWDcondition");
+                List<Node> well_def_cond = op.selectNodes("org.eventb.theory.core.operatorWDcondition");
                 for (Node wdc : well_def_cond)
                 {
                     String well_def = wdc.valueOf("@org.eventb.core.predicate");
