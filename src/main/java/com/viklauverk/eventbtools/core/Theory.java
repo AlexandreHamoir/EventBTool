@@ -412,6 +412,26 @@ public class Theory
                 boolean commutative = ax_op.valueOf("@org.eventb.theory.core.commutative").equals("true");
 
                 Operator operator = new Operator(l,associative,commutative,c);
+
+                List<Node> arguments = op.selectNodes("org.eventb.theory.core.operatorArgument");
+                for (Node arg : arguments)
+                {
+                    String i = arg.valueOf("@org.eventb.core.identifier");
+                    String e = arg.valueOf("@org.eventb.core.expression");
+                    String c = arg.valueOf("@org.eventb.core.comment");
+
+                    operator.addArgument(new Arguments(i, e, c)); 
+                }
+
+                List<Node> well_def_cond = op.selectNodes("org.eventb.theory.core.operatorWDcondition");
+                for (Node wdc : well_def_cond)
+                {
+                    String well_def = wdc.valueOf("@org.eventb.core.predicate");
+                    //TODO
+                    //String c = wdc.valueOf("@org.eventb.core.comment");
+                    //operator.addWDC(well_def);
+                }
+
                 axiomatic_definition.addOperator(operator);
             }
 
@@ -518,7 +538,7 @@ public class Theory
 
         for (AxiomaticDefinition axd : axiomaticDefinitionOrdering())
         {
-
+            axd.parse(symbol_table_);
         }
 
         for (Operator op : operatorOrdering())
