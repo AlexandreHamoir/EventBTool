@@ -441,7 +441,7 @@ public class Theory
                 String l = ax.valueOf("@org.eventb.core.label");
                 String p = ax.valueOf("@org.eventb.core.predicate");
                 String c = ax.valueOf("@org.eventb.core.comment");
-                axiomatic_definition.addAxiom(new Axiom(l,p,c));
+                axiomatic_definition.addAxiom(new Axiom(l,p,c,false));
             }
 
             addAxiomaticDefinition(axiomatic_definition);
@@ -466,7 +466,7 @@ public class Theory
     {
         if (symbol_table_ != null) return;
 
-        symbol_table_ = sys_.newSymbolTable(name_, null);
+        symbol_table_ = sys_.newSymbolTable(name_);
 
         if ( hasImports() )
         {
@@ -525,8 +525,8 @@ public class Theory
 
         for (TypeParameters tp : typeParametersOrdering())
         {
-            Formula f = FormulaFactory.newSetSymbol(tp.name());
-            Type type = sys().typing().lookupType(f);
+            Formula f = FormulaFactory.newSetSymbol(tp.name(),null);
+            ImplType type = sys().typing().lookupImplType(f);
             log.debug("adding Type Parameter set type: "+type.name());
         }
 

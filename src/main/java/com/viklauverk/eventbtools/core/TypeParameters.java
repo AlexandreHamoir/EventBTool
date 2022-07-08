@@ -27,7 +27,7 @@ public class TypeParameters extends CarrierSet
 {
     public TypeParameters(String n, String c)
     {
-        super(n);
+        super(n, null);
         addComment(c);
     }
 }

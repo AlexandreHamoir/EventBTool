@@ -132,7 +132,7 @@ public class RenderTheoryUnicode extends RenderTheory
         cnvs().startMath();
         operator.getDef().writeFormulaStringToCanvas(cnvs());
         cnvs().stopMath();
-        stopAlignedLineAndHandlePotentialComment(operator.comment(), cnvs());
+        stopAlignedLineAndHandlePotentialComment(operator.comment(), cnvs(), null);
     }
 
     @Override
@@ -182,7 +182,7 @@ public class RenderTheoryUnicode extends RenderTheory
         cnvs().startMath();
         theorem.writeFormulaStringToCanvas(cnvs());
         cnvs().stopMath();
-        stopAlignedLineAndHandlePotentialComment(theorem.comment(), cnvs());
+        stopAlignedLineAndHandlePotentialComment(theorem.comment(), cnvs(), null);
     }
 
     @Override
