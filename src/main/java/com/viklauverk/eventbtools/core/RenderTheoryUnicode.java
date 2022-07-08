@@ -123,9 +123,9 @@ public class RenderTheoryUnicode extends RenderTheory
     public void visit_WDCondition(Theory th, WDConditions wdc)
     {
         cnvs().startAlignedLine();
-        cnvs().renderAttributes().setAt(false);
+        cnvs().renderAttributes().setAtLabel(false);
         cnvs().set("    WD");
-        cnvs().renderAttributes().setAt(true);
+        cnvs().renderAttributes().setAtLabel(true);
         cnvs().align();
         cnvs().startMath();
         wdc.writeFormulaStringToCanvas(cnvs());

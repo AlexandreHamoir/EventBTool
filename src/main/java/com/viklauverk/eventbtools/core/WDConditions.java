@@ -22,11 +22,10 @@ package com.viklauverk.eventbtools.core;
 
 public class WDConditions extends IsAFormula
 {
-  public class WDConditions extends IsAFormula
+  
+  public WDConditions(String fs, String c)
   {
-      public WDConditions(String fs, String c)
-      {
-        super("", fs, c);
-      }
+    super("", fs, c);
   }
+
 } 
