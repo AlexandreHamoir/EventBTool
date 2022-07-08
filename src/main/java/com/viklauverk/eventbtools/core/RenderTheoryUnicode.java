@@ -114,6 +114,32 @@ public class RenderTheoryUnicode extends RenderTheory
     }
 
     @Override
+    public void visit_WDConditionsStart(Theory th)
+    {
+        //TODO
+    }
+
+    @Override
+    public void visit_WDCondition(Theory th, WDConditions wdc)
+    {
+        cnvs().startAlignedLine();
+        cnvs().renderAttributes().setAt(false);
+        cnvs().set("    WD");
+        cnvs().renderAttributes().setAt(true);
+        cnvs().align();
+        cnvs().startMath();
+        wdc.writeFormulaStringToCanvas(cnvs());
+        cnvs().stopMath();
+        stopAlignedLineAndHandlePotentialComment(wdc.comment(), cnvs(), null);
+    }
+
+    @Override
+    public void visit_WDConditionsEnd(Theory th)
+    {
+        //TODO
+    }
+
+    @Override
     public void visit_OperatorsStart(Theory th)
     {
         cnvs().startLine();
@@ -133,6 +159,14 @@ public class RenderTheoryUnicode extends RenderTheory
         operator.getDef().writeFormulaStringToCanvas(cnvs());
         cnvs().stopMath();
         stopAlignedLineAndHandlePotentialComment(operator.comment(), cnvs(), null);
+    
+        // WD conditions
+        visit_WDConditionsStart(th);
+        for(WDConditions wdc : operator.wdcsOrdering())
+        {
+            visit_WDCondition(th, wdc);
+        }
+        visit_WDConditionsEnd(th);
     }
 
     @Override

@@ -18,39 +18,15 @@
 
 package com.viklauverk.eventbtools.core;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
+/* We use WD conditions the same way as guards */
 
-public class WDConditions
+public class WDConditions extends IsAFormula
 {
-    private String name_;
-    private String comment_;
-
-    public WDConditions(String n, String c)
-    {
-        name_ = n;
-        comment_ = c;
-    }
-
-    public String name()
-    {
-      return name_;
-    }
-
-    public String comment()
-    {
-      return comment_;
-    }
-
-    public boolean hasComment()
-    {
-        return comment_.length() > 0;
-    }
-
-    public void parse(SymbolTable st)
-    {
-      // TODO
-    }
-}
+  public class WDConditions extends IsAFormula
+  {
+      public WDConditions(String fs, String c)
+      {
+        super("", fs, c);
+      }
+  }
+} 

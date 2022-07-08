@@ -33,8 +33,9 @@ public class Operator
     private List<Arguments> args_ordering_ = new ArrayList<>();
     private List<String> args_names_ = new ArrayList<>();
 
-    // private Map<String,WDConditions> wdconditions = new HashMap<>() ;
-
+    //private Map<String,WDConditions> wdconditions = new HashMap<>() ;
+    private List<WDConditions> wdcs_ordering_ = new ArrayList<>();
+    
     private IsAFormula directDefinition_;
     private String comment_;
 
@@ -71,6 +72,13 @@ public class Operator
     {
       st.pushFrame(args_names_);
       directDefinition_.parse(st);
+
+      // WD conditions
+      for (WDConditions wdc : this.wdcsOrdering())
+      {
+        wdc.parse(st);
+      }
+
       st.popFrame();
     }
 
@@ -102,6 +110,25 @@ public class Operator
     public void addArguments(List<Arguments> args)
     {
         args.addAll(args);
+    }
+
+// -----------------------------------------------------------------------------
+//    WELL DEFINEDNESS CONDITIONS
+// -----------------------------------------------------------------------------
+
+    public List<WDConditions> wdcsOrdering()
+    {
+        return wdcs_ordering_;
+    }
+
+    public void addWDC(WDConditions wdc)
+    {
+        wdcs_ordering_.add(wdc);
+    }
+
+    public void addWDCs(List<WDConditions> wdcs)
+    {
+        wdcs_ordering_.addAll(wdcs);
     }
 
 // -----------------------------------------------------------------------------

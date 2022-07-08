@@ -368,10 +368,11 @@ public class Theory
             List<Node> well_def_cond = op.selectNodes("org.eventb.theory.core.operatorWDcondition");
             for (Node wdc : well_def_cond)
             {
+                /* the predicate that defines the wd condition */
                 String well_def = wdc.valueOf("@org.eventb.core.predicate");
-                //TODO
-                //String c = wdc.valueOf("@org.eventb.core.comment");
-                //operator.addWDC(well_def);
+                String c = wdc.valueOf("@org.eventb.core.comment");
+                
+                operator.addWDC(new WDConditions(well_def, c));
             }
 
             /* TODO Only Direct definition possible for now */

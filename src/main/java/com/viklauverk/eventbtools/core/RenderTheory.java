@@ -45,6 +45,10 @@ public class RenderTheory extends CommonRenderFunctions
     public void visit_Operator(Theory th, Operator operator) { }
     public void visit_OperatorsEnd(Theory th) { }
 
+    public void visit_WDConditionsStart(Theory th) { }
+    public void visit_WDCondition(Theory th, WDConditions wdc) { }
+    public void visit_WDConditionsEnd(Theory th) { }
+
     public void visit_AxiomaticDefinitionsStart(Theory th) { }
     public void visit_AxiomaticDefinition(Theory th, AxiomaticDefinition axiomatic_definition) { }
     public void visit_AxiomaticDefinitionsEnd(Theory th) { }
@@ -108,5 +112,10 @@ public class RenderTheory extends CommonRenderFunctions
     protected String buildTheoryTheoremPartName(Theory th, Theorem thm)
     {
         return th.name()+"/theorems/"+thm.name();
+    }
+
+    protected String buildTheoryWDConditionsPartName(Theory th)
+    {
+        return th.name()+"/wd_conditions";
     }
 }
