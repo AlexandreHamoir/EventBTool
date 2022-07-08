@@ -208,6 +208,11 @@ public class Event
         return parameter_names_;
     }
 
+    public Variable getParameter(String name)
+    {
+        return parameters_.get(name);
+    }
+
     public void addGuard(Guard guard)
     {
         guards_.put(guard.name(), guard);
@@ -336,7 +341,8 @@ public class Event
     {
         if (symbol_table_ != null) return;
 
-        symbol_table_ = machine_.sys().newSymbolTable(name_, machine_.symbolTable());
+        symbol_table_ = machine_.sys().newSymbolTable(name_);
+        symbol_table_.addParent(machine_.symbolTable());
 
         addParentParameters(this, symbol_table_);
     }
@@ -366,6 +372,11 @@ public class Event
         buildSymbolTable();
 
         log.debug("parsing %s", name());
+
+        for (Variable var : parameterOrdering())
+        {
+            var.parseCheckedType(symbol_table_);
+        }
 
         for (String name : guardNames())
         {
@@ -401,64 +412,4 @@ public class Event
                 actionNames().size()==0);
     }
 
-    public void show(ShowSettings ss, Canvas canvas)
-    {
-        StringBuilder o = new StringBuilder();
-        String title = name_;
-        boolean add_refine_at_end = false;
-        /*
-        if (refines_event_names_.size() > 0)
-        {
-            if (refined_event_.equals(name_))
-            {
-                title += " ⊏ ...";
-            }
-            else
-            {
-                add_refine_at_end = true;
-            }
-            }*/
-        if (parameterOrdering().size()>0)
-        {
-            o.append("any\n  ");
-            int c = 0;
-            for (Variable v : parameterOrdering())
-            {
-                if (c > 0) o.append(" ");
-                o.append(v.name());
-                c += v.name().length();
-                if (c > 40) o.append("\n");
-            }
-            if (o.charAt(o.length()-1) != '\n')
-            {
-                o.append("\n");
-            }
-        }
-        if (guardOrdering().size()>0)
-        {
-            o.append("where\n");
-            for (Guard g : guardOrdering())
-            {
-                o.append("  "+g.writeFormulaStringToCanvas(canvas));
-                o.append("\n");
-            }
-        }
-        if (actionOrdering().size()>0)
-        {
-            o.append("then\n");
-            for (Action a : actionOrdering())
-            {
-                o.append("  "+a.writeFormulaStringToCanvas(canvas));
-                o.append("\n");
-            }
-        }
-        o.append("end\n");
-        if (add_refine_at_end)
-        {
-            //o.append("⊏ "+refined_event_+"\n"); // ⊑
-        }
-        String f = canvas.frame(title, o.toString(), Canvas.sline);
-        String comment = Canvas.flow(Canvas.width(f), comment_);
-        canvas.appendBox(comment+f);
-    }
 }

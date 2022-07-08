@@ -28,6 +28,7 @@ import java.io.File;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
+import org.dom4j.dom.DOMDocumentFactory;
 import org.dom4j.Element;
 import org.dom4j.Attribute;
 import org.dom4j.Node;
@@ -37,6 +38,7 @@ public class Machine
 {
     private static LogModule log = LogModule.lookup("machine");
     private static LogModule log_codegen = LogModule.lookup("codegen");
+    private static LogModule log_typing = LogModule.lookup("typing");
 
     private SymbolTable symbol_table_;
 
@@ -67,8 +69,12 @@ public class Machine
     private ArrayList<Event> event_ordering_ = new ArrayList<>();
     private List<String> event_names_ = new ArrayList<>();
 
+    private Map<String,ProofObligation> proof_obligations_ = new HashMap<>();
+    private List<ProofObligation> proof_obligation_ordering_ = new ArrayList<>();
+    private List<String> proof_obligation_names_ = new ArrayList<>();
+
     // These are the calculated types that variables can be of.
-    private Map<String,Type> types_;
+    private Map<String,ImplType> types_;
     private List<String> type_names_;
 
     // The concrete events (merged with extended events) in
@@ -80,7 +86,11 @@ public class Machine
     String comment_; // Usually the copyright notice.
 
     Sys sys_;
-    File source_;
+    File bum_;
+    File bpr_;
+    File bps_;
+    File bpo_;
+    File bcc_;
 
     public Machine(String n, Sys s, File f)
     {
@@ -88,8 +98,14 @@ public class Machine
 
         types_ = new HashMap<>();
         type_names_ = new ArrayList<>();
+        bum_ = f;
         sys_ = s;
-        source_ = f;
+        bum_ = f;
+
+        bpr_ = new File(f.getPath().replace(".bum", ".bpr"));
+        bps_ = new File(f.getPath().replace(".bum", ".bps"));
+        bpo_ = new File(f.getPath().replace(".bum", ".bpo"));
+        bcc_ = new File(f.getPath().replace(".bum", ".bcc"));
     }
 
     public SymbolTable symbolTable()
@@ -268,6 +284,66 @@ public class Machine
         return context_names_;
     }
 
+    public boolean hasProofObligations()
+    {
+        return proof_obligations_.size() > 0;
+    }
+
+    public int numProvedAuto()
+    {
+        int n = 0;
+        for (ProofObligation po : proof_obligation_ordering_)
+        {
+            if (po.isProvedAuto()) n++;
+        }
+        return n;
+    }
+
+    public int numProvedManualNotReviewed()
+    {
+        int n = 0;
+        for (ProofObligation po : proof_obligation_ordering_)
+        {
+            if (po.isProvedManualNotReviewed()) n++;
+        }
+        return n;
+    }
+
+    public int numProvedManualReviewed()
+    {
+        int n = 0;
+        for (ProofObligation po : proof_obligation_ordering_)
+        {
+            if (po.isProvedManualReviewed()) n++;
+        }
+        return n;
+    }
+
+    public int numUnproven()
+    {
+        int n = 0;
+        for (ProofObligation po : proof_obligation_ordering_)
+        {
+            if (!po.hasProof()) n++;
+        }
+        return n;
+    }
+
+    public ProofObligation getProofObligation(String name)
+    {
+        return proof_obligations_.get(name);
+    }
+
+    List<ProofObligation> proofObligationOrdering()
+    {
+        return proof_obligation_ordering_;
+    }
+
+    public List<String> proofObligationNames()
+    {
+        return proof_obligation_names_;
+    }
+
     public void addEvent(Event e)
     {
         events_.put(e.name(), e);
@@ -310,11 +386,27 @@ public class Machine
         variant_names_ = variants_.keySet().stream().sorted().collect(Collectors.toList());
     }
 
-    public void load() throws Exception
+    public void addProofObligation(ProofObligation po)
+    {
+        proof_obligations_.put(po.name(), po);
+        proof_obligation_ordering_.add(po);
+        proof_obligation_names_ = proof_obligations_.keySet().stream().sorted().collect(Collectors.toList());
+    }
+
+    public void loadBUM() throws Exception
     {
         SAXReader reader = new SAXReader();
-        Document document = reader.read(source_);
-        log.debug("loading machine "+source_);
+        Document document = null;
+        try
+        {
+            document = reader.read(bum_);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            log.error("Failed loading machine from "+bum_);
+        }
+        log.debug("loading machine "+bum_);
 
         List<Node> machine_comment = document.selectNodes("//org.eventb.core.machineFile");
 
@@ -347,7 +439,7 @@ public class Machine
         {
             String n = v.valueOf("@org.eventb.core.identifier");
             String c = v.valueOf("@org.eventb.core.comment");
-            Variable var = new Variable(n, c);
+            Variable var = new Variable(n, c, this, null);
             addVariable(var);
         }
 
@@ -398,7 +490,7 @@ public class Machine
             {
                 String i = p.valueOf("@org.eventb.core.identifier");
                 String c = p.valueOf("@org.eventb.core.comment");
-                event.addParameter(new Variable(i, c));
+                event.addParameter(new Variable(i, c, this, event));
             }
 
             List<Node> guards = e.selectNodes("org.eventb.core.guard");
@@ -430,11 +522,132 @@ public class Machine
         }
     }
 
-    private void buildSymbolTable(SymbolTable parent)
+    public void loadProofStatus() throws Exception
+    {
+        SAXReader reader = new SAXReader();
+        if (!bps_.exists())
+        {
+            log.info("No proof status file: "+bps_);
+            return;
+        }
+
+        Document document = reader.read(bps_);
+        log.debug("loading machine proof status file "+bps_);
+
+        // /aa/bb/machine.bps
+        String filename = bps_.toString();
+        String[] tokens = filename.split(".+?/(?=[^/]+$)");
+        filename = tokens[1];
+        filename = filename.replace(".bps", "");
+
+        List<Node> pos = document.selectNodes("//org.eventb.core.psStatus");
+        for (Node r : pos)
+        {
+            String name = r.valueOf("@name").trim();
+            String conf = r.valueOf("@org.eventb.core.confidence").trim();
+            String man  = r.valueOf("@org.eventb.core.psManual").trim();
+            ProofObligation po = new ProofObligation(name, Integer.parseInt(conf), man.equals("true"));
+            log.debug("PO %s %s proved_auto=%s proved_manual_not_reviewed=%s proved_manual_reviewed=%s unproven=%s",
+                      filename, name, po.isProvedAuto(), po.isProvedManualNotReviewed(), po.isProvedManualReviewed(), !po.hasProof());
+
+            addProofObligation(po);
+        }
+    }
+
+    public void loadCheckedTypes() throws Exception
+    {
+        if (!bpo_.exists()) return;
+
+        SAXReader reader = new SAXReader();
+        Document document = reader.read(bpo_);
+
+        log.debug("loading checked types from machine proof obligation file "+bpo_);
+
+        Element pofile = (Element)document.selectSingleNode("/org.eventb.core.poFile");
+        if (pofile == null)
+        {
+            log.warn("broken file %s, no root org.eventb.core.poFile  found.", bpo_);
+            return;
+        }
+        if (pofile.content().size() == 0)
+        {
+            // This might be ok if there are no proof obligations?
+            log.debug("empty file %s, no content inside org.eventb.core.poFile.", bpo_);
+            return;
+        }
+
+        // First take the machine variable types found in the
+        // predicate set ABSHYP that are common for all proof obligations.
+        List<Node> pos = document.selectNodes(
+            "/org.eventb.core.poFile/org.eventb.core.poPredicateSet[@name='ABSHYP']/org.eventb.core.poIdentifier");
+        for (Node r : pos)
+        {
+            String name = r.valueOf("@name").trim();
+            String type = r.valueOf("@org.eventb.core.type").trim();
+            log.debug("found identifier %s with type %s", name, type);
+            Variable var = getVariable(name);
+            if (var != null)
+            {
+                var.setCheckedTypeString(type); //sys_.typing().lookupCheckedType(type));
+            }
+            else
+            {
+                if (name.endsWith("'")) continue;
+                log.info("could not find variable %s from file %s in machine %s", name, bpo_, this);
+            }
+        }
+
+        // Now look for the checked types of the event parameters.
+        for (Event event : eventOrdering())
+        {
+            // Look for the last PO for the event.
+            List<Node> nodes = pofile.content();
+            boolean found_event = false;
+            for (Node i : nodes)
+            {
+                if (i.getNodeType() != Node.ELEMENT_NODE) continue;
+                Element e = (Element)i;
+                // Skip all sequents/predicate sets until the last poSequent for the current event.
+                if (e.getName().equals("org.eventb.core.poSequent") &&
+                    e.valueOf("@name").startsWith(event.name()))
+                {
+                    found_event = true;
+                }
+                else if (found_event)
+                {
+                    // We have passed the last sequent for this event.
+                    // Is it no longer a predicate set? Then we are done!
+                    if (!e.getName().equals("org.eventb.core.poPredicateSet")) break;
+                    // Check all predicate sets following the last sequent. (Whew, weird format this is.)
+                    // and look for identifiers....
+                    List<Node> ids = e.selectNodes("//org.eventb.core.poIdentifier");
+                    for (Node id : ids)
+                    {
+                        String name = id.valueOf("@name").trim();
+                        String type = id.valueOf("@org.eventb.core.type").trim();
+                        Variable p = event.getParameter(name);
+                        if (p != null)
+                        {
+                            p.setCheckedTypeString(type); // sys_.typing().lookupCheckedType(type));
+                        }
+                        else
+                        {
+                            log.debug("no parameter %s in event %s in machine %s", name, event, this);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    void buildSymbolTable(SymbolTable parent)
     {
         if (symbol_table_ != null) return;
 
-        symbol_table_ = sys_.newSymbolTable(name_, parent);
+        log.debug("Building symbol table for machine %s", this);
+
+        symbol_table_ = sys_.newSymbolTable(name_);
+        symbol_table_.addParent(parent);
 
         if (refines_ != null)
         {
@@ -463,8 +676,12 @@ public class Machine
     public void parse(SymbolTable st)
     {
         buildSymbolTable(st);
-
         log.debug("parsing %s", name());
+
+        for (Variable var : variableOrdering())
+        {
+            var.parseCheckedType(symbol_table_);
+        }
 
         for (String name : invariantNames())
         {
@@ -477,87 +694,13 @@ public class Machine
         {
             Variant i = getVariant(name);
             i.parse(symbol_table_);
-            //sys().typing().extractInfoFromInvariant(i.formula(), symbol_table_);
+            sys().typing().extractInfoFromVariant(i.formula(), symbol_table_);
         }
 
         for (String name : eventNames())
         {
             Event e = getEvent(name);
             e.parse();
-        }
-    }
-
-    public void showw(ShowSettings ss, Canvas canvas)
-    {
-        StringBuilder o = new StringBuilder();
-        o.append(name_);
-        if (refines_ != null)
-        {
-            o.append(" ⊏ ");
-            o.append(refines_.name());
-        }
-        o.append("\n");
-        o.append("-\n");
-        for (Context c : contextOrdering())
-        {
-            o.append(c.name());
-            o.append("\n");
-        }
-        o.append("-\n");
-        for (Variable v : variableOrdering())
-        {
-            if (v.comment().length() > 0)
-            {
-                String cc = "";
-                if (ss.showingComments())
-                {
-                    cc = "    "+v.comment();
-                }
-                o.append(v.name()+cc);
-                o.append("\n");
-            }
-        }
-        if (ss.showingInvariants())
-        {
-            o.append("-\n");
-            for (Invariant inv : invariantOrdering())
-            {
-                o.append(inv.writeFormulaStringToCanvas(canvas));
-                o.append("\n");
-            }
-        }
-        o.append("-\n");
-        for (Event e : eventOrdering())
-        {
-            if (!e.isEmpty())
-            {
-                o.append(e.name());
-                o.append("\n");
-            }
-        }
-        String f = canvas.frame("", o.toString(), Canvas.dline);
-        String comment = "";
-        if (ss.showingComments())
-        {
-            comment = Canvas.flow(canvas.layoutWidth(), comment_);
-        }
-        canvas.flush();
-        canvas.appendBox("\n\n"+comment);
-        canvas.flush();
-        canvas.appendBox(f);
-        canvas.flush();
-        canvas.appendBox("\n\n");
-        canvas.flush();
-
-        if (ss.showingEvents())
-        {
-            for (Event e : eventOrdering())
-            {
-                if (!e.isEmpty())
-                {
-                    e.show(ss, canvas);
-                }
-            }
         }
     }
 

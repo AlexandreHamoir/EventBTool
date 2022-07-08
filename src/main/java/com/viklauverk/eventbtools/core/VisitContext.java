@@ -31,7 +31,10 @@ public class VisitContext
         if (m && ctx.hasExtend())
         {
             rc.visit_ExtendsStart(ctx);
-            rc.visit_Extend(ctx, ctx.extendsContext());
+            for (Context c : ctx.extendsContexts())
+            {
+                rc.visit_Extend(ctx, c);
+            }
             rc.visit_ExtendsEnd(ctx);
         }
 
@@ -77,19 +80,6 @@ public class VisitContext
                 if (aa) rc.visit_Axiom(ctx, axi);
             }
             if (a) rc.visit_AxiomsEnd(ctx);
-        }
-
-        if (ctx.hasTheorems())
-        {
-            boolean t = Util.match(ctx.name()+"/theorems/", pattern);
-
-            if (t) rc.visit_TheoremsStart(ctx);
-            for (Theorem the : ctx.theoremOrdering())
-            {
-                boolean tt =  Util.match(ctx.name()+"/theorems/"+the.name()+"/", pattern);
-                if (tt) rc.visit_Theorem(ctx, the);
-            }
-            if (t) rc.visit_TheoremsEnd(ctx);
         }
 
         if (m) rc.visit_ContextEnd(ctx);

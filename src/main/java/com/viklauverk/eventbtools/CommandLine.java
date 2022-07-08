@@ -25,6 +25,7 @@ import com.viklauverk.eventbtools.core.ShowSettings;
 import com.viklauverk.eventbtools.core.CodeGenSettings;
 import com.viklauverk.eventbtools.core.DocGenSettings;
 import com.viklauverk.eventbtools.core.RenderTarget;
+import com.viklauverk.eventbtools.core.Settings;
 import com.viklauverk.eventbtools.core.Util;
 
 import java.io.File;
@@ -128,6 +129,10 @@ public class CommandLine
                 args = Util.shiftLeft(args);
                 continue;
             }
+            if (arg.startsWith("-"))
+            {
+                log.usageError("Unknown option "+arg);
+            }
             break;
         }
         return args;
@@ -196,6 +201,24 @@ public class CommandLine
         return args;
     }
 
+    private static boolean parseDocStyle(Settings s, String arg)
+    {
+        if (arg.startsWith("--docstyle="))
+        {
+            String style = arg.substring(11);
+            log.debug("doc style \"%s\"", style);
+            log.debug("style render attributes before set "+s.docGenSettings().renderAttributes());
+            boolean ok = s.docGenSettings().renderAttributes().setStyle(style);
+            log.debug("style render attributes "+s.docGenSettings().renderAttributes());
+            if (!ok)
+            {
+                log.error("Could not parse document style: "+style);
+            }
+            return true;
+        }
+        return false;
+    }
+
     private static String[] parseDocGen(Settings s, String[] args)
     {
         for (;;)
@@ -207,11 +230,8 @@ public class CommandLine
 
             if (!arg.startsWith("--")) break;
 
-            if (arg.startsWith("--hide="))
+            if (parseDocStyle(s, arg))
             {
-                String parts = arg.substring(7);
-                log.debug("hiding parts \"%s\"", parts);
-                s.docGenSettings().parseHiding(parts);
                 args = Util.shiftLeft(args);
                 continue;
             }
@@ -257,11 +277,8 @@ public class CommandLine
 
             if (!arg.startsWith("--")) break;
 
-            if (arg.startsWith("--hide="))
+            if (parseDocStyle(s, arg))
             {
-                String parts = arg.substring(7);
-                log.debug("hiding parts \"%s\"", parts);
-                s.docGenSettings().parseHiding(parts);
                 args = Util.shiftLeft(args);
                 continue;
             }
@@ -380,6 +397,11 @@ public class CommandLine
             if (args.length == 0) break;
             String arg = args[0];
 
+            if (parseDocStyle(s, arg))
+            {
+                args = Util.shiftLeft(args);
+                continue;
+            }
             if (arg.startsWith("--parts="))
             {
                 String parts = arg.substring(8);

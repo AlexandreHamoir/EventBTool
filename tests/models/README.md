@@ -27,11 +27,26 @@ specified by constants.
 
 [Elevator.pdf](Elevator.pdf)
 
+## ExtendsMultipleContexts
+Test extending from multiple contexts.
+
+[ExtendsMultipleContexts.pdf](ExtendsMultipleContexts.pdf)
+
 ## Library
 This project tests extracting information out
 from a machine through parameters prefixed with out_.
 
 [Library.pdf](Library.pdf)
+
+## Projections
+Test using projections to get the left and right parts of pairs.
+
+[Projections.pdf](Projections.pdf)
+
+## ProofFailures
+A machine with unproven, reviewed and manually proven POs.
+
+[ProofFailures.pdf](ProofFailures.pdf)
 
 ## SetComprehensions
 Set comprehension syntax is the most complex part of the Event-B grammar.
@@ -60,29 +75,17 @@ This project tests code generation for theories from the Theory plugin.
 [TheoryTest.pdf](TheoryTest.pdf)
 
 ## TypingTests
-I assume that typing can be made arbitrarily smart, however
-I do not yet know the limits of how much typing Rodin can do.
+Event-B performs type checking of formulas and variables. Within evbt
+these types are called checked types. Such checked types can be used for
+implementing a variable but they have neither limits on integers nor
+restrictions on the sets. Thus the generated code is not very efficient.
 
-For sure both evbt and Rodin does explicit typing based on
-statements like: `x∈N` `alfa∈N→BOOL` or `p∈STAFF`
+Therefore evbt will try to deduce suitable implementation types to be
+able use an efficient map for a partial function or a vector for a
+full function with a domain 1..100.
 
-But Rodin also does implicit typing based on operations. For example:
-
-```
-@inv1 alfa ∈ ℕ⇸BOOL
-@inv2 beta ∩ ran(alfa) = ∅
-```
-
-The disjunction forces the type of beta to be the same as the type of ran(alfa) ie ℕ.
-
-```
-@inv3 x ∈ ℕ
-@inv4 x+y=7
-```
-
-The addition forces Rodin the type of y to be ℤ (not ℕ!!)
-
-This projects tests the extent of implicit typing implemented so far in evbt.
+If no implementation type can be found, then evbt will fall back
+to using the checked type for implementation.
 
 [TypingTests.pdf](TypingTests.pdf)
 

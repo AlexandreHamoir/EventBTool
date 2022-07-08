@@ -38,7 +38,7 @@ public class Context
 
     private String name_;
     private String comment_;
-    private Context extends_context_;
+    private List<Context> extends_contexts_;
 
     private Map<String,CarrierSet> sets_;
     private List<CarrierSet> set_ordering_;
@@ -52,12 +52,14 @@ public class Context
     private List<Axiom> axiom_ordering_;
     private List<String> axiom_names_;
 
-    private Map<String,Theorem> theorems_;
-    private List<Theorem> theorem_ordering_;
-    private List<String> theorem_names_;
+    private Map<String,ProofObligation> proof_obligations_ = new HashMap<>();
+    private List<ProofObligation> proof_obligation_ordering_ = new ArrayList<>();
+    private List<String> proof_obligation_names_ = new ArrayList<>();
 
     private boolean loaded_;
-    private File source_;
+    private File buc_;
+    private File bps_;
+    private File bpo_;
     private Sys sys_;
 
     private SymbolTable symbol_table_;
@@ -68,7 +70,7 @@ public class Context
     {
         name_ = n;
         comment_ = "";
-        extends_context_ = null;
+        extends_contexts_ = new ArrayList<>();
         sets_ = new HashMap<>();
         set_ordering_ = new ArrayList<>();
         set_names_ = new ArrayList<>();
@@ -81,14 +83,13 @@ public class Context
         axiom_ordering_ = new ArrayList<>();
         axiom_names_ = new ArrayList<>();
 
-        theorems_ = new HashMap<>();
-        theorem_ordering_ = new ArrayList<>();
-        theorem_names_ = new ArrayList<>();
-
         loaded_ = false;
-        source_ = f;
+        buc_ = f;
 
-        assert (source_ != null) : "Source file must not be null!";
+        assert (buc_ != null) : "Source file must not be null!";
+
+        bps_ = new File(f.getPath().replace(".buc", ".bps"));
+        bpo_ = new File(f.getPath().replace(".buc", ".bpo"));
 
         sys_ = s;
 
@@ -117,12 +118,12 @@ public class Context
 
     public boolean hasExtend()
     {
-        return extends_context_ != null;
+        return extends_contexts_.size() > 0;
     }
 
-    Context extendsContext()
+    List<Context> extendsContexts()
     {
-        return extends_context_;
+        return extends_contexts_;
     }
 
     SymbolTable symbolTable()
@@ -145,9 +146,64 @@ public class Context
         return axiom_ordering_.size() > 0;
     }
 
-    public boolean hasTheorems()
+    public boolean hasProofObligations()
     {
-        return theorem_ordering_.size() > 0;
+        return proof_obligations_.size() > 0;
+    }
+
+    public int numProvedAuto()
+    {
+        int n = 0;
+        for (ProofObligation po : proof_obligation_ordering_)
+        {
+            if (po.isProvedAuto()) n++;
+        }
+        return n;
+    }
+
+    public int numProvedManualNotReviewed()
+    {
+        int n = 0;
+        for (ProofObligation po : proof_obligation_ordering_)
+        {
+            if (po.isProvedManualNotReviewed()) n++;
+        }
+        return n;
+    }
+
+    public int numProvedManualReviewed()
+    {
+        int n = 0;
+        for (ProofObligation po : proof_obligation_ordering_)
+        {
+            if (po.isProvedManualReviewed()) n++;
+        }
+        return n;
+    }
+
+    public int numUnproven()
+    {
+        int n = 0;
+        for (ProofObligation po : proof_obligation_ordering_)
+        {
+            if (!po.hasProof()) n++;
+        }
+        return n;
+    }
+
+    public ProofObligation getProofObligation(String name)
+    {
+        return proof_obligations_.get(name);
+    }
+
+    List<ProofObligation> proofObligationOrdering()
+    {
+        return proof_obligation_ordering_;
+    }
+
+    public List<String> proofObligationNames()
+    {
+        return proof_obligation_names_;
     }
 
     public void addSet(CarrierSet cs)
@@ -160,6 +216,18 @@ public class Context
     public CarrierSet getSet(String name)
     {
         return sets_.get(name);
+    }
+
+    public CarrierSet getSetRecursive(String name)
+    {
+        CarrierSet cs = sets_.get(name);
+        if (cs != null) return cs;
+        for (Context c : extends_contexts_)
+        {
+            cs = c.getSetRecursive(name);
+            if (cs != null) return cs;
+        }
+        return null;
     }
 
     public List<CarrierSet> setOrdering()
@@ -182,6 +250,18 @@ public class Context
     public Constant getConstant(String name)
     {
         return constants_.get(name);
+    }
+
+    public Constant getConstantRecursive(String name)
+    {
+        Constant cs = constants_.get(name);
+        if (cs != null) return cs;
+        for (Context c : extends_contexts_)
+        {
+            cs = c.getConstantRecursive(name);
+            if (cs != null) return cs;
+        }
+        return null;
     }
 
     public List<Constant> constantOrdering()
@@ -216,26 +296,11 @@ public class Context
         return axiom_names_;
     }
 
-    public void addTheorem(Theorem t)
+    public void addProofObligation(ProofObligation po)
     {
-        theorems_.put(t.name(), t);
-        theorem_ordering_.add(t);
-        theorem_names_ = theorems_.keySet().stream().sorted().collect(Collectors.toList());
-    }
-
-    public Theorem getTheorem(String name)
-    {
-        return theorems_.get(name);
-    }
-
-    public List<Theorem> theoremOrdering()
-    {
-        return theorem_ordering_;
-    }
-
-    public List<String> theoremNames()
-    {
-        return theorem_names_;
+        proof_obligations_.put(po.name(), po);
+        proof_obligation_ordering_.add(po);
+        proof_obligation_names_ = proof_obligations_.keySet().stream().sorted().collect(Collectors.toList());
     }
 
     public boolean isEDKContext()
@@ -248,17 +313,27 @@ public class Context
         return edk_context_;
     }
 
-    public synchronized void load() throws Exception
+    public synchronized void loadBUC() throws Exception
     {
         if (loaded_) return;
         loaded_ = true;
         SAXReader reader = new SAXReader();
 
-        log.debug("loading context "+source_);
+        log.debug("loading context "+buc_);
 
-        Document document = reader.read(source_);
+        Document document = null;
 
-        edk_context_ = sys().edk().lookup(name(), source_);
+        try
+        {
+            document = reader.read(buc_);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            log.error("Failed loading context "+buc_);
+        }
+
+        edk_context_ = sys().edk().lookup(name(), buc_);
 
         if (edk_context_ != null)
         {
@@ -277,9 +352,9 @@ public class Context
         for (Node n : list)
         {
             String name = n.valueOf("@org.eventb.core.target");
-            extends_context_ = sys_.getContext(name);
-            assert (extends_context_ != null) : "Error in loaded context xml file. Cannot find context "+name;
-            assert (list.size() == 1) : "Error in loaded context xml file, only one extends expected.";
+            Context c = sys_.getContext(name);
+            assert (c != null) : "Error in loaded context xml file. Cannot find context "+name;
+            extends_contexts_.add(c);
         }
 
         // Load the carrier sets.
@@ -288,7 +363,7 @@ public class Context
         {
             String name = n.valueOf("@org.eventb.core.identifier");
             String comment = n.valueOf("@org.eventb.core.comment");
-            CarrierSet cs = new CarrierSet(name);
+            CarrierSet cs = new CarrierSet(name, this);
             cs.addComment(comment);
             addSet(cs);
         }
@@ -299,13 +374,12 @@ public class Context
         {
             String name = n.valueOf("@org.eventb.core.identifier");
             String comment = n.valueOf("@org.eventb.core.comment");
-            Constant c = new Constant(name);
+            Constant c = new Constant(name, this);
             c.addComment(comment);
             addConstant(c);
         }
 
         // Load the axioms and theorems.
-        boolean adding_axioms = true;
         list = document.selectNodes("//org.eventb.core.axiom");
         for (Node n : list)
         {
@@ -314,39 +388,112 @@ public class Context
             String comment = n.valueOf("@org.eventb.core.comment");
             String is_theorem = n.valueOf("@org.eventb.core.theorem");
 
-            if (is_theorem.equals("true"))
-            {
-                // It seems like the start of the theorems is marked
-                // with theorem=true, the the following theorems
-                // are not marked....
-                adding_axioms = false;
-            }
+            boolean it = is_theorem.equals("true");
+            Axiom a = new Axiom(name, pred, comment, it);
+            addAxiom(a);
+        }
+    }
 
-            if (adding_axioms)
+    public void loadProofStatus() throws Exception
+    {
+        SAXReader reader = new SAXReader();
+        if (!bps_.exists())
+        {
+            log.info("No proof status file: "+bps_);
+            return;
+        }
+
+        Document document = reader.read(bps_);
+        log.debug("loading context proof status file "+bps_);
+
+        // /aa/bb/machine.bps
+        String filename = bps_.toString();
+        String[] tokens = filename.split(".+?/(?=[^/]+$)");
+        filename = tokens[1];
+        filename = filename.replace(".bps", "");
+
+        List<Node> pos = document.selectNodes("//org.eventb.core.psStatus");
+        for (Node r : pos)
+        {
+            String name = r.valueOf("@name").trim();
+            String conf = r.valueOf("@org.eventb.core.confidence").trim();
+            String man  = r.valueOf("@org.eventb.core.psManual").trim();
+            ProofObligation po = new ProofObligation(name, Integer.parseInt(conf), man.equals("true"));
+            log.debug("PO %s %s proved_auto=%s proved_manual_not_reviewed=%s proved_manual_reviewed=%s unproven=%s",
+                      filename, name, po.isProvedAuto(), po.isProvedManualNotReviewed(), po.isProvedManualReviewed(), !po.hasProof());
+
+            addProofObligation(po);
+        }
+    }
+
+    public void loadCheckedTypes() throws Exception
+    {
+        if (!bpo_.exists()) return;
+
+        SAXReader reader = new SAXReader();
+        Document document = reader.read(bpo_);
+        log.debug("loading checked types from context proof obligation file "+bpo_);
+
+        Element pofile = (Element)document.selectSingleNode("/org.eventb.core.poFile");
+        if (pofile == null)
+        {
+            log.warn("broken file %s, no root org.eventb.core.poFile  found.", bpo_);
+            return;
+        }
+        if (pofile.content().size() == 0)
+        {
+            // This might be ok if there are no proof obligations?
+            log.debug("empty file %s, no content inside org.eventb.core.poFile.", bpo_);
+            return;
+        }
+
+        // First take the machine variable types found in the
+        // predicate set ABSHYP that are common for all proof obligations.
+        List<Node> pos = document.selectNodes(
+            "/org.eventb.core.poFile/org.eventb.core.poPredicateSet[@name='ABSHYP']/org.eventb.core.poIdentifier");
+        for (Node r : pos)
+        {
+            String name = r.valueOf("@name").trim();
+            String type = r.valueOf("@org.eventb.core.type").trim();
+            Constant cons = getConstantRecursive(name);
+            if (cons != null)
             {
-                Axiom a = new Axiom(name, pred, comment);
-                addAxiom(a);
+                log.debug("found const identifier %s with type %s", name, type);
+                cons.setCheckedTypeString(type); // sys_.typing().lookupCheckedType(type));
             }
             else
             {
-                Theorem t = new Theorem(name, pred, comment);
-                addTheorem(t);
+                CarrierSet cs = getSetRecursive(name);
+                if (cs != null)
+                {
+                    log.debug("found carrier set identifier %s with type %s", name, type);
+                    // We do not need to set the checked type of a carrier set since
+                    // the type is always by definition POW(CarrierSetName)
+                }
+                else
+                {
+                    if (name.endsWith("'")) continue;
+                    log.warn("could not find neither constant nor carrier set %s from file %s in context %s", name, bpo_, this);
+                }
             }
         }
     }
 
-    private void buildSymbolTable()
+    void buildSymbolTable()
     {
         if (symbol_table_ != null) return;
 
-        SymbolTable parent = null;
-        if (extends_context_ != null)
+        log.debug("Building symbol table for context %s", this);
+
+        List<SymbolTable> parents = new ArrayList<>();
+        for (Context p : extends_contexts_)
         {
-            extends_context_.buildSymbolTable();
-            parent = extends_context_.symbolTable();
+            p.buildSymbolTable();
+            parents.add(p.symbolTable());
         }
 
-        symbol_table_ = sys_.newSymbolTable(name_, parent);
+        symbol_table_ = sys_.newSymbolTable(name_);
+        symbol_table_.addParents(parents);
 
         for (CarrierSet cs : setOrdering())
         {
@@ -366,63 +513,19 @@ public class Context
         log.debug("parsing %s", name());
         for (CarrierSet cs : setOrdering())
         {
-            Formula f = FormulaFactory.newSetSymbol(cs.name());
-            Type type = sys().typing().lookupType(f);
+            Formula f = FormulaFactory.newSetSymbol(cs.name(), Formula.NO_META);
+            ImplType type = sys().typing().lookupImplType(f);
             log.debug("adding carrier set type: "+type.name());
+        }
+        for (Constant cons : constantOrdering())
+        {
+            cons.parseCheckedType(symbol_table_);
+            log.debug("parsed checked type %s for constant %s", cons.checkedType(), cons.name());
         }
         for (Axiom a : axiomOrdering())
         {
             a.parse(symbol_table_);
             sys().typing().extractInfoFromAxiom(a.formula(), symbol_table_);
-        }
-        for (Theorem t : theoremOrdering())
-        {
-            t.parse(symbol_table_);
-            sys().typing().extractInfoFromAxiom(t.formula(), symbol_table_);
-        }
-    }
-
-    public void showwww(ShowSettings ss, Canvas canvas)
-    {
-        StringBuilder o = new StringBuilder();
-        o.append(name_);
-        if (extends_context_ != null)
-        {
-            o.append(" ⊏ "+extends_context_.name());
-        }
-        o.append("\n");
-        o.append("-\n");
-        for (String s : setNames())
-        {
-            o.append(s);
-            o.append("\n");
-        }
-        o.append("-\n");
-        for (String c : constantNames())
-        {
-            o.append(c);
-            o.append("\n");
-        }
-        if (ss.showingAxioms())
-        {
-            o.append("-\n");
-            for (Axiom a : axiomOrdering())
-            {
-                o.append(a.writeFormulaStringToCanvas(canvas));
-                o.append("\n");
-            }
-        }
-        String f = canvas.frame("", o.toString(), Canvas.sline);
-        int w = Canvas.width(f);
-        if (w < 40) w = 40;
-        if (ss.showingComments())
-        {
-            String comment = Canvas.flow(w, comment_);
-            canvas.appendBox(comment+f);
-        }
-        else
-        {
-            canvas.appendBox(f);
         }
     }
 }

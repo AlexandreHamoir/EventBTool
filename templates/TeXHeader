@@ -8,11 +8,13 @@
 \graphicspath{ {$PATH_TO_IMAGES$} }
 \usepackage{xltabular}
 \usepackage{xcolor}
+\usepackage{tikz}
 \usepackage{makeidx}
 \usepackage[margin=3cm]{geometry}
 \usepackage[explicit]{titlesec}
 \usepackage{varwidth} % for the varwidth minipage environment
 \usepackage{adjustbox}
+\usepackage{relsize}
 
 %\usepackage{blindtext}
 %\usepackage{showframe}

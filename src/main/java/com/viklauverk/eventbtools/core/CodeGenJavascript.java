@@ -136,7 +136,7 @@ public class CodeGenJavascript extends BaseCodeGen
         {
             Variable var = mch().getVariable(vars);
 
-            String construct = translateTypeForConstruction(var.type());
+            String construct = translateImplTypeForConstruction(var.implType());
             if (construct != null)
             {
                 pl("        this."+var.name()+construct+";");
@@ -236,7 +236,7 @@ public class CodeGenJavascript extends BaseCodeGen
         pl("        return c;");
     }
 
-    String translateTypeForConstruction(Type t)
+    String translateImplTypeForConstruction(ImplType t)
     {
         Formula f = t.formula();
         if (f.is(POWER_SET))
@@ -252,8 +252,10 @@ public class CodeGenJavascript extends BaseCodeGen
 
     void renderFormulaOntoCanvas(Formula f, SymbolTable st)
     {
-        GenerateFormulaJavascript gen = new GenerateFormulaJavascript(this);
+        PlanImplementation plan = new PlanImplementation(this);
+        GenerateFormulaJavascript gen = new GenerateFormulaJavascript(this, plan);
         gen.setSymbolTable(st);
+        VisitFormula.walkk(plan, f);
         VisitFormula.walk(gen, f);
     }
 

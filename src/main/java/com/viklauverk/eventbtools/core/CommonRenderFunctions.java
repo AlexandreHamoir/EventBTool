@@ -55,30 +55,45 @@ public class CommonRenderFunctions
         renders().popStoreCanvasAndAppendd(id);
     }
 
-    protected void stopAlignedLineAndHandlePotentialComment(String comment, Canvas cnvs)
+    protected void stopAlignedLineAndHandlePotentialComment(String comment, Canvas cnvs, IsAFormula f)
     {
-        boolean mlc = Util.hasNewLine(comment);
-        boolean has = comment.length() > 0;
-        if (comment.length() > 100)
+        boolean has_comment = comment.length() > 0;
+        boolean use_next_line = false;
+
+        // If comment contains explicit line breaks, then always place
+        // the comment on its own line below the commented material.
+        // An explicit line break is an empty line, ie two consecutive \n,
+        // like a \par in TeX.
+        if (Util.hasNewLine(comment))
         {
-            // Any comment with a length longer
-            // than 100 characters is put on its own line below.
-            mlc = true;
+            use_next_line = true;
         }
-        if (!mlc && has)
+        int clen = comment.length();
+        int flen = 0;
+        if (f != null && f.formula() != null)
         {
-            // We have a single line comment.
+            flen =  f.formula().toString().length();
+        }
+        // Check if the sum of the formula length and the comment length is greater than 50,
+        // then place the comment on its own line.
+        if (clen + flen > 60)
+        {
+            use_next_line = true;
+        }
+        if (has_comment && !use_next_line)
+        {
+            // Placing the comment on the same line.
             cnvs.align();
             cnvs.comment(comment);
         }
 
         cnvs.stopAlignedLine();
 
-        if (mlc)
+        if (has_comment && use_next_line)
         {
+            // Place the comment on a new line.
             cnvs.startAlignedLine();
-            cnvs.align();
-            cnvs.comment(comment);
+            cnvs.commentWithExtraVSpace(comment);
             cnvs.stopAlignedLine();
         }
     }

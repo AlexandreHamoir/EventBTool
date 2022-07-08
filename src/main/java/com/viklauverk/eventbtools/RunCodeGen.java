@@ -26,6 +26,7 @@ import com.viklauverk.eventbtools.core.Log;
 import com.viklauverk.eventbtools.core.LogModule;
 import com.viklauverk.eventbtools.core.Machine;
 import com.viklauverk.eventbtools.core.ProgrammingLanguage;
+import com.viklauverk.eventbtools.core.Settings;
 import com.viklauverk.eventbtools.core.Sys;
 import com.viklauverk.eventbtools.core.Typing;
 
@@ -36,7 +37,7 @@ public class RunCodeGen
     public static void run(Settings s)
         throws Exception
     {
-        Sys sys = new Sys();
+        Sys sys = new Sys(s);
         sys.loadMachinesAndContexts(s.commonSettings().sourceDir());
 
         for (String m : s.commonSettings().machinesAndContexts())
@@ -53,16 +54,25 @@ public class RunCodeGen
             gen.run();
         }
 
-        if (log.debugEnabled())
+        if (log.verboseEnabled())
         {
-            Set<String> types = sys.typing().typeNames();
+            Set<String> types = sys.typing().checkedTypeNames();
 
-            log.debug("Found distinct types:");
+            log.verbose("Found distinct checked types:");
             for (String t : types)
             {
-                log.debug(t);
+                log.verbose(t);
             }
-            log.debug("");
+            log.verbose("");
+
+            types = sys.typing().implTypeNames();
+
+            log.verbose("Found distinct implementation types:");
+            for (String t : types)
+            {
+                log.verbose(t);
+            }
+            log.verbose("");
         }
     }
 }

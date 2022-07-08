@@ -22,41 +22,110 @@ public class Typed
 {
     private static Log log = LogModule.lookup("typing");
 
-    protected Type type_; // null if not typed yet.
+    // Checked type calculated by Rodin for type checking. E.g. ℤ,ℙ(ℤ×ℤ),S,ℙ(S),ℙ(ℤ×S)
+    protected String checked_type_string_;
+    // The checked type when it is finally parsed, which can only be done
+    // using the same symbol tables as when we are parsing the vars/consts.
+    protected CheckedType checked_type_;
+    // The implementation type hints at the intended usage of variable such as: vector,map,relation,set.
+    // This information is used to pick an efficient implementation for storage.
+    // Set to null if no suitable implementation type has been found yet.
+    protected ImplType impl_type_;
+    // This is the defacto chosen implementation for this variable/constant.
+    // A default implementation for unbounded INTs can be chosen at code generation,
+    // for example int32_t(C++) or int(Java), or unbounded Z class storing any size ints.
+    // Calculations on such unbounded ints will be checked by overflow checks.
+    // If a cardinality is known for the int, the the codegen can pick the smallest
+    // storage container needed to store the int. E.g. x:1..100 means "int8_t x;" can be used.
+    protected Implementation implementation_;
 
-    public Type type()
+    public CheckedType checkedType()
     {
-        return type_;
+        return checked_type_;
     }
 
-    public Type updateType(Type t)
+    public boolean hasCheckedTypeString()
     {
-        if (t == null) return type_;
-        setType(t);
-        return type_;
+        return checked_type_string_ != null;
     }
 
-    public void setType(Type t)
+    public boolean hasCheckedType()
     {
-        assert t != null : "Type must not be null!";
+        return checked_type_ != null;
+    }
 
-        if (type_ == null)
+    public ImplType implType()
+    {
+        return impl_type_;
+    }
+
+    public boolean hasImplType()
+    {
+        return impl_type_ != null;
+    }
+
+    public ImplType updateImplType(ImplType t)
+    {
+        if (t == null) return impl_type_;
+        setImplType(t);
+        return impl_type_;
+    }
+
+    public void setCheckedTypeString(String ct)
+    {
+        assert ct != null : "Checked type must not be null!";
+
+        if (checked_type_string_ == null)
         {
-            log.debug("setting type %s for %s", t, this);
-            type_ = t;
+            log.debug("setting checked type string %s for %s", ct, this);
+            checked_type_string_ = ct;
         }
         else
         {
-            if (type_.equals(t))
+            if (checked_type_string_.equals(ct))
             {
-                log.debug("not setting type %s for %s since it the type was already set", t, this);
+                log.debug("ignoring second set checked type string %s for %s since it the checked type string was already set", ct, this);
             }
             else
             {
-                Type mst = Typing.mostSpecificType(type_, t);
-                log.debug("not setting type %s for %s since it the type was already set", t, this);
-                log.debug("setting most specific type %s for %s (the choice was between %s and %s)", mst, this, type_, t);
-                type_ = mst;
+                log.info("cannot override checked type string %s with a different checked type %s for %s", checked_type_string_, ct, this);
+            }
+        }
+    }
+
+    public void parseCheckedType(SymbolTable st)
+    {
+        assert checked_type_ == null : "Already parsed checked type!";
+        if (checked_type_string_ == null)
+        {
+            log.info("Could not find checked type for %s", this.toString());
+        }
+        else
+        {
+            checked_type_ = new CheckedType(Formula.fromString(checked_type_string_, st));
+        }
+    }
+
+    public void setImplType(ImplType t)
+    {
+        assert t != null : "Impl type must not be null!";
+
+        if (impl_type_ == null)
+        {
+            log.debug("setting impl type %s for %s", t, this);
+            impl_type_ = t;
+        }
+        else
+        {
+            if (impl_type_.equals(t))
+            {
+                log.debug("not setting impl type %s for %s since it the type was already set", t, this);
+            }
+            else
+            {
+                ImplType mst = Typing.mostSpecificImplType(impl_type_, t);
+                log.debug("setting most specific impl type %s for %s (the choice was between %s and %s)", mst, this, impl_type_, t);
+                impl_type_ = mst;
             }
         }
     }

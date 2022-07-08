@@ -30,7 +30,7 @@ public class Canvas
     static Log log = LogModule.lookup("canvas");
 
     private RenderTarget render_target_ = RenderTarget.PLAIN;
-    private RenderAttributes render_attributes_ = new RenderAttributes();
+    private RenderAttributes render_attributes_ = null;
 
     private boolean use_layout_ = true;
     private boolean use_at_signs_ = false;
@@ -54,12 +54,10 @@ public class Canvas
     private boolean math_active_ = false;
     private int num_aligns_ = 0;
 
-    private Set<String> hiding_ = new HashSet<>();
-
     public Canvas() {}
 
-    public static String align_2col = "l,X";
-    public static String align_3col = "l,V{8cm},X";
+    public static String align_2col = "l,R";
+    public static String align_3col = "l,V{8cm},R";
 
     public Canvas(Canvas parent)
     {
@@ -71,7 +69,6 @@ public class Canvas
         use_borders_ = parent.use_borders_;
         render_target_ = parent.render_target_;
         render_attributes_ = parent.render_attributes_;
-        hiding_ = parent.hiding_;
 
         line_active_ = parent.line_active_;
         alignments_active_ = parent.alignments_active_;
@@ -83,26 +80,11 @@ public class Canvas
         return new Canvas(this);
     }
 
-    public void hide(String h)
-    {
-        if (h == null) return;
-        String[] parts = h.split(",", -1);
-        for (String p : parts)
-        {
-            hiding_.add(p);
-        }
-        log.debug("hiding %s", h);
-    }
-
     public void clear()
     {
         lines_ = new ArrayList<>();
     }
 
-    public boolean hiding(String m)
-    {
-        return hiding_.contains(m);
-    }
 
     public RenderTarget renderTarget()
     {
@@ -1165,7 +1147,7 @@ public class Canvas
             append(s);
             return;
         case TERMINAL:
-            append(colorize(Red, s));
+            append(colorize(Black, s));
             return;
         case TEX:
             append("\\PSET{"+Util.texSafe(s)+"}");
@@ -1279,17 +1261,17 @@ public class Canvas
 
     public void comment(String s)
     {
-        if (hiding("comment")) return;
+        if (!renderAttributes().comments()) return;
 
         if (s.equals("")) return;
 
         switch (render_target_)
         {
         case PLAIN:
-            append("// "+s);
+            append(Unicode.commentToCpp(s));
             return;
         case TERMINAL:
-            append(colorize(Green, "// "+s));
+            append(colorize(Green, Unicode.commentToCpp(s)));
             return;
         case TEX:
             append("\\COM{"+Unicode.commentToTeX(s)+"}");
@@ -1301,19 +1283,43 @@ public class Canvas
         assert (false) : "Unknown encoding "+render_target_;
     }
 
-    public void acomment(String s)
+    public void commentWithExtraVSpace(String s)
     {
-        if (hiding("comment")) return;
+        if (!renderAttributes().comments()) return;
 
         if (s.equals("")) return;
 
         switch (render_target_)
         {
         case PLAIN:
-            append("// "+s);
+            append(Unicode.commentToCpp(s));
             return;
         case TERMINAL:
-            append(colorize(Green, s));
+            append(colorize(Green, Unicode.commentToCpp(s)));
+            return;
+        case TEX:
+            append("\\COM{\\rule{0pt}{2.5ex}"+Unicode.commentToTeX(s)+"\\rule[-2.5ex]{0pt}{0pt}}");
+            return;
+        case HTMQ:
+            append(" span(class=COM)="+Util.quoteXMQ(s)+" ");
+            return;
+        }
+        assert (false) : "Unknown encoding "+render_target_;
+    }
+
+    public void acomment(String s)
+    {
+        if (!renderAttributes().comments()) return;
+
+        if (s.equals("")) return;
+
+        switch (render_target_)
+        {
+        case PLAIN:
+            append(Unicode.commentToCpp(s));
+            return;
+        case TERMINAL:
+            append(colorize(Green, Unicode.commentToCpp(s)));
             return;
         case TEX:
             append("\\ACOM{"+Unicode.commentToTeX(s)+"}");
@@ -1331,7 +1337,7 @@ public class Canvas
 
         String pre = "";
         String post = ":";
-        if (renderAttributes().at())
+        if (renderAttributes().atLabel())
         {
             pre = "@";
             post = "";
@@ -1354,6 +1360,28 @@ public class Canvas
         assert (false) : "Unknown encoding "+render_target_;
     }
 
+    public void theorem()
+    {
+        if (!renderAttributes().labels()) return;
+
+        switch (render_target_)
+        {
+        case PLAIN:
+            append("theorem ");
+            return;
+        case TERMINAL:
+            append(colorize(Blue, "theorem "));
+            return;
+        case TEX:
+            append("\\LAB{theorem}");
+            return;
+        case HTMQ:
+            append(" span(class=LAB)="+Util.quoteXMQ("theorem")+" ");
+            return;
+        }
+        assert (false) : "Unknown encoding "+render_target_;
+    }
+
     public void invariant(String s)
     {
         if (s.equals("")) return;
@@ -1371,6 +1399,86 @@ public class Canvas
             return;
         case HTMQ:
             append(" span(class=COM)="+Util.quoteXMQ(s)+" ");
+            return;
+        }
+        assert (false) : "Unknown encoding "+render_target_;
+    }
+
+    public void typeLeft(Formula f)
+    {
+        switch (render_target_)
+        {
+        case PLAIN:
+            append("<"+f.node().name()+" ");
+            return;
+        case TERMINAL:
+            append(colorize(Green, "<"+f.node().name()+" "));
+            return;
+        case TEX:
+            append("\\allowbreak\\texttt{\\small "+Util.texSafe("<"+f.node().name())+" }");
+            return;
+        case HTMQ:
+            append(" span(class=TYPE)="+Util.htmqSafe("<"+f.node().name()+" "));
+            return;
+        }
+        assert (false) : "Unknown encoding "+render_target_;
+    }
+
+    public void typeRight()
+    {
+        switch (render_target_)
+        {
+        case PLAIN:
+            append(">");
+            return;
+        case TERMINAL:
+            append(colorize(Green, ">"));
+            return;
+        case TEX:
+            append("\\texttt{\\small >}\\allowbreak ");
+            return;
+        case HTMQ:
+            append(" span(class=TYPE)=>");
+            return;
+        }
+        assert (false) : "Unknown encoding "+render_target_;
+    }
+
+    public void metaLeft()
+    {
+        switch (render_target_)
+        {
+        case PLAIN:
+            append("«");
+            return;
+        case TERMINAL:
+            append(colorize(Green, "«"));
+            return;
+        case TEX:
+            append("\\EVBTMeta{");
+            return;
+        case HTMQ:
+            append(" span(class=META)=«");
+            return;
+        }
+        assert (false) : "Unknown encoding "+render_target_;
+    }
+
+    public void metaRight()
+    {
+        switch (render_target_)
+        {
+        case PLAIN:
+            append("»");
+            return;
+        case TERMINAL:
+            append(colorize(Green, "»"));
+            return;
+        case TEX:
+            append("}");
+            return;
+        case HTMQ:
+            append(" span(class=META)=»");
             return;
         }
         assert (false) : "Unknown encoding "+render_target_;

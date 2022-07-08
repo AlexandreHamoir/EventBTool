@@ -54,7 +54,10 @@ public class CodeGenCpp extends BaseCodeGen
         }
         if (ctx.hasExtend())
         {
-            writeContext(ctx.extendsContext());
+            for (Context c : ctx.extendsContexts())
+            {
+                writeContext(c);
+            }
         }
         log.debug("Writing context "+ctx);
         for (String csn : ctx.setNames())
@@ -115,16 +118,16 @@ public class CodeGenCpp extends BaseCodeGen
                 continue;
             }
             if (i > 0) sb.append(",");
-            assert (p.type() != null) : "internal error: unknown type for "+p+" within "+e.symbolTable().tree();
+            assert (p.implType() != null) : "internal error: unknown type for "+p+" within "+e.symbolTable().tree();
             if (p.isOutParameter())
             {
-                String translated_type = translateType(p.type(), e.symbolTable());
+                String translated_type = translateImplType(p.implType(), e.symbolTable());
                 log.debug("translated type for *"+p.name()+" is "+translated_type);
                 sb.append(translated_type+" *"+p.name()); // Notice the pointer asterisk!
             }
             else
             {
-                String translated_type = translateType(p.type(), e.symbolTable());
+                String translated_type = translateImplType(p.implType(), e.symbolTable());
                 log.debug("translated type for "+p.name()+" is "+translated_type);
                 sb.append(translated_type+" "+p.name());
             }
@@ -226,7 +229,8 @@ public class CodeGenCpp extends BaseCodeGen
 
     public void writeGuard(Event e, String label)
     {
-        GenerateFormulaCpp gen = new GenerateFormulaCpp(this);
+        PlanImplementation plan = new PlanImplementation(this);
+        GenerateFormulaCpp gen = new GenerateFormulaCpp(this, plan);
         gen.setSymbolTable(e.symbolTable());
         Guard g = e.getGuard(label);
         if (g.hasComment())
@@ -243,10 +247,12 @@ public class CodeGenCpp extends BaseCodeGen
             }
             else
             {
-                p("    "+translateType(v.type(), e.symbolTable())+" ");
+                p("    "+translateImplType(v.implType(), e.symbolTable())+" ");
             }
+            VisitFormula.walkk(plan, g.formula().left());
             VisitFormula.walk(gen, g.formula().left());
             p(" = ");
+            VisitFormula.walkk(plan, g.formula().right());
             VisitFormula.walk(gen, g.formula().right());
             pl("; // "+g.formula());
         }
@@ -256,6 +262,7 @@ public class CodeGenCpp extends BaseCodeGen
             // it does not evaluate to true.
             p("    bool "+label+" = ");
             gen.cnvs().setMark(); // For debugging formaula translation.
+            VisitFormula.walkk(plan, g.formula());
             VisitFormula.walk(gen, g.formula());
             String debug = gen.cnvs().getSinceMark(); // When not debugging returns empty string.
             pl("; "+Unicode.commentToCpp(g.formula().toString()));
@@ -280,13 +287,13 @@ public class CodeGenCpp extends BaseCodeGen
             if (c > 0) p(",");
             if (par.isOutParameter())
             {
-                p(""+translateType(par.type(), e.symbolTable())+" *"+par.name());
+                p(""+translateImplType(par.implType(), e.symbolTable())+" *"+par.name());
             }
             else
             {
                 if (!par.hasDefinition())
                 {
-                    p(""+translateType(par.type(), e.symbolTable())+" "+par.name());
+                    p(""+translateImplType(par.implType(), e.symbolTable())+" "+par.name());
                 }
             }
             c++;
@@ -306,9 +313,11 @@ public class CodeGenCpp extends BaseCodeGen
             {
                 pl("    "+Unicode.commentToCpp(a.comment()));
             }
-            GenerateFormulaCpp gen = new GenerateFormulaCpp(this);
+            PlanImplementation plan = new PlanImplementation(this);
+            GenerateFormulaCpp gen = new GenerateFormulaCpp(this, plan);
             gen.setSymbolTable(e.symbolTable());
             p("    ");
+            VisitFormula.walkk(plan, a.formula());
             VisitFormula.walk(gen, a.formula());
             pl("; // "+a.formula());
         }
@@ -339,11 +348,11 @@ public class CodeGenCpp extends BaseCodeGen
         pl("    std::function<void(const char*)> trace_cb_;");
         for (Variable v : mch().variableOrdering())
         {
-            if (v.type() == null)
+            if (v.implType() == null)
             {
                 log.warn("variable %s has no known type within %s", v.name(), mch().symbolTable().tree());
             }
-            pl("    "+translateType(v.type(), mch().symbolTable())+" "+v.name()+";");
+            pl("    "+translateImplType(v.implType(), mch().symbolTable())+" "+v.name()+";");
         }
         pl("    // Event functions");
         pl("    public:");
@@ -520,7 +529,7 @@ public class CodeGenCpp extends BaseCodeGen
     }
 
     @Override
-    public String handleTranslateInt(Type type, SymbolTable symbols)
+    public String handleTranslateInt(ImplType type, SymbolTable symbols)
     {
         return "uint64_t";
     }
@@ -532,38 +541,38 @@ public class CodeGenCpp extends BaseCodeGen
     }
 
     @Override
-    public String handleTranslateBool(Type type, SymbolTable symbols)
+    public String handleTranslateBool(ImplType type, SymbolTable symbols)
     {
         return "bool";
     }
 
     @Override
-    public String handleTranslateSet(Type inner_type, SymbolTable symbols)
+    public String handleTranslateSet(ImplType inner_type, SymbolTable symbols)
     {
-        String it = translateType(inner_type, symbols);
+        String it = translateImplType(inner_type, symbols);
         return "std::set<"+it+">";
     }
 
     @Override
-    public String handleTranslateVector(Type inner_type, SymbolTable symbols)
+    public String handleTranslateVector(ImplType inner_type, SymbolTable symbols)
     {
-        String it = translateType(inner_type, symbols);
+        String it = translateImplType(inner_type, symbols);
         return "std::vector<"+it+">";
     }
 
     @Override
-    public String handleTranslateFunction(Type from, Type to, SymbolTable symbols)
+    public String handleTranslateFunction(ImplType from, ImplType to, SymbolTable symbols)
     {
-        String inner_type_left = translateType(from, symbols);
-        String inner_type_right = translateType(to, symbols);
+        String inner_type_left = translateImplType(from, symbols);
+        String inner_type_right = translateImplType(to, symbols);
         return "std::map<"+inner_type_left+","+inner_type_right+">";
     }
 
     @Override
-    public String handleTranslateRelation(Type from, Type to, SymbolTable symbols)
+    public String handleTranslateRelation(ImplType from, ImplType to, SymbolTable symbols)
     {
-        String inner_type_left = translateType(from, symbols);
-        String inner_type_right = translateType(to, symbols);
+        String inner_type_left = translateImplType(from, symbols);
+        String inner_type_right = translateImplType(to, symbols);
         return "std::multimap<"+inner_type_left+","+inner_type_right+">";
     }
 

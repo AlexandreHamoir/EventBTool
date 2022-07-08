@@ -24,6 +24,7 @@ import com.viklauverk.eventbtools.core.Log;
 import com.viklauverk.eventbtools.core.LogModule;
 import com.viklauverk.eventbtools.core.Machine;
 import com.viklauverk.eventbtools.core.RenderTarget;
+import com.viklauverk.eventbtools.core.Settings;
 import com.viklauverk.eventbtools.core.Sys;
 
 public class RunDocGen
@@ -33,16 +34,20 @@ public class RunDocGen
     public static void run(Settings s)
         throws Exception
     {
-        Sys sys = new Sys();
+        Sys sys = new Sys(s);
         log.info("Loading machines and contexts from: %s", s.commonSettings().sourceDir());
         sys.loadMachinesAndContexts(s.commonSettings().sourceDir());
 
         BaseDocGen bdg = DocGen.lookup(s.commonSettings(), s.docGenSettings(), sys);
 
         String template = s.commonSettings().outputDir()+"/"+s.commonSettings().nickName()+"_template"+bdg.suffix();
+
+        // Write the template that will invoke show parts on all contexts and machines.
         bdg.genTemplateFile(template);
 
         String out = s.commonSettings().outputDir()+"/"+s.commonSettings().nickName()+bdg.suffix();
+
+        // Run docmod on the template to fill in the actual contexts and machines.
         bdg.modFile(template, out);
 
         if (s.docGenSettings().renderTarget() == RenderTarget.TEX)

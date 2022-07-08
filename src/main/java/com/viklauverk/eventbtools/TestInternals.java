@@ -18,16 +18,20 @@
 
 package com.viklauverk.eventbtools;
 
+import com.viklauverk.eventbtools.core.Bounds;
 import com.viklauverk.eventbtools.core.Canvas;
 import com.viklauverk.eventbtools.core.LogModule;
 import com.viklauverk.eventbtools.core.LogLevel;
 import com.viklauverk.eventbtools.core.FormulaBuilder;
 import com.viklauverk.eventbtools.core.Formula;
+import com.viklauverk.eventbtools.core.ContainingCardinality;
 import com.viklauverk.eventbtools.core.Typing;
 import com.viklauverk.eventbtools.core.Pattern;
 import com.viklauverk.eventbtools.core.SymbolTable;
 import com.viklauverk.eventbtools.core.RenderTarget;
+import com.viklauverk.eventbtools.core.Settings;
 import com.viklauverk.eventbtools.core.Unicode;
+
 
 public class TestInternals
 {
@@ -38,12 +42,11 @@ public class TestInternals
 
         boolean ok = true;
 
-        String[] cols = "fofo§§".split("§", -1);
-
         ok &= testCommandLine();
         ok &= testParserRenderer();
         ok &= testMatching();
         ok &= testCommentWrapping();
+
         /*
         ok &= testCanvas0();
         ok &= testCanvas1();
@@ -73,12 +76,23 @@ public class TestInternals
     public static boolean testMatching()
     {
         boolean ok = true;
-        // Additional variable v w
-        ok &= testMatch("v > 5", "x > E", "E=5 x=v");
-        ok &= testMatch("v ≔ v ∪ {72}", "x ≔ x ∪ {E}", "E=72 x=v");
-        //ok &= testMatch("func(constant) = 0", "c(E) = E", "GURKA");
-//        ok &= testFailedMatch("e(f) = 0", "c(E) = E", "");
-        ok &= testFailedMatch("v ≔ w ∪ {72}", "x ≔ x ∪ {E}", "FAILURE");
+
+        // Additional variables height speeds
+        //            constants addition
+
+        // Basic matching
+        ok &= testMatch("height > 5", "x > E", "E=5 x=height");
+        ok &= testMatch("speeds ≔ speeds ∪ {72}", "x ≔ x ∪ {E}", "E=72 x=speeds");
+        ok &= testMatch("addition(7)", "c(E)", "E=7 c=addition");
+        ok &= testMatch("addition(7)", "c(N)", "c=addition N=7");
+        ok &= testMatch("{1|->2}(1) = 2", "E(F) = N", "E={1↦2} F=1 N=2");
+
+        // Test Meta data matching
+        ok &= testMatch("height«5»", "x«N»", "x=height N=5");
+//        ok &= testMatch("speeds«set|->»", "x«N»", "x=height N=5");
+
+        ok &= testFailedMatch("height ≔ speeds ∪ {72}", "x ≔ x ∪ {E}", "FAILURE"); // Should be same variable in both x positions.
+
         return ok;
     }
 
@@ -96,8 +110,8 @@ public class TestInternals
     public static boolean testMatch(String f, String p, String r, boolean expect_fail)
     {
         SymbolTable symbols = new SymbolTable("root");
-        symbols.addVariableSymbols("v", "w");
-        symbols.addConstantSymbols("func", "constant");
+        symbols.addVariableSymbols("height", "speeds");
+        symbols.addConstantSymbols("addition");
 
         Formula formula = Formula.fromString(f, symbols);
         Pattern pattern = new Pattern();
@@ -112,29 +126,8 @@ public class TestInternals
             return false;
         }
 
-        StringBuilder sb = new StringBuilder();
+        String m = pattern.allMatches();
 
-        for (String pred : pattern.predicateNames())
-        {
-            sb.append(pred+"="+pattern.getPred(pred)+" ");
-        }
-        for (String e : pattern.expressionNames())
-        {
-            sb.append(e+"="+pattern.getExpr(e)+" ");
-        }
-        for (String s : pattern.setNames())
-        {
-            sb.append(s+"="+pattern.getSet(s)+" ");
-        }
-        for (String v : pattern.variableNames())
-        {
-            sb.append(v+"="+pattern.getVar(v)+" ");
-        }
-        for (String c : pattern.constantNames())
-        {
-            sb.append(c+"="+pattern.getConst(c)+" ");
-        }
-        String m = sb.toString().trim();
         if (!r.equals(m))
         {
             System.out.println("ERROR expected \""+r+"\" but got \""+m+"\"");
@@ -234,10 +227,10 @@ public class TestInternals
         ok &= check("x = 1 |-> (2|-> (3|->4))", "x=1↦(2↦(3↦4))", "<EQUALS <VARIABLE_SYMBOL x>=<MAPSTO <NUMBER 1>↦<PARENTHESISED_EXPRESSION (<MAPSTO <NUMBER 2>↦<PARENTHESISED_EXPRESSION (<MAPSTO <NUMBER 3>↦<NUMBER 4>>)>>)>>>");
 
         //     projection1
-        ok &= check("prj1(1|->2)", "prj1(1↦2)", "<PRJ1 prj1(<MAPSTO <NUMBER 1>↦<NUMBER 2>>)>");
+        ok &= check("{1|->2} <| prj1", "{1↦2}◁ prj1 ", "<DOMAIN_RESTRICTION <ENUMERATED_SET {<MAPSTO <NUMBER 1>↦<NUMBER 2>>}>◁<PRJ1  prj1 >>");
 
         //     projection2
-        ok &= check("prj2(1|->2)", "prj2(1↦2)", "<PRJ2 prj2(<MAPSTO <NUMBER 1>↦<NUMBER 2>>)>");
+        ok &= check("{1|->2} <| prj2", "{1↦2}◁ prj2 ", "<DOMAIN_RESTRICTION <ENUMERATED_SET {<MAPSTO <NUMBER 1>↦<NUMBER 2>>}>◁<PRJ2  prj2 >>");
 
         //     cartesian product
         ok &= check("S**T", "S×T", "<CARTESIAN_PRODUCT <SET_SYMBOL S>×<SET_SYMBOL T>>");
@@ -401,12 +394,13 @@ public class TestInternals
         //     parallel product
         ok &= check("S||T", "S∥T", "<PARALLEL_PRODUCT <SET_SYMBOL S>∥<SET_SYMBOL T>>");
 
-/*        //     projection1
+        /*
+        //     projection1
         ok &= check("(S**T)<|prj1", "S×T◁ prj1 ", "<DOMAIN_RESTRICTION <CARTESIAN_PRODUCT <SET_SYMBOL S>×<SET_SYMBOL T>>◁<PRJ1_SET  prj1 >>");
 
         //     projection2
         ok &= check("(S**T)<|prj2", "S×T◁ prj2 ", "<DOMAIN_RESTRICTION <CARTESIAN_PRODUCT <SET_SYMBOL S>×<SET_SYMBOL T>>◁<PRJ2_SET  prj2 >>");
-*/
+        */
         // Functions
 
         //     partial function
@@ -431,7 +425,7 @@ public class TestInternals
         ok &= check("S>->>T", "S⤖ T", "<TOTAL_BIJECTION <SET_SYMBOL S>⤖ <SET_SYMBOL T>>");
 
         //     lambda abstraction
-        ok &= check("(%a.a:NAT|a+4711)", "(λa·a∈ℕ|a+4711)", "<LAMBDA_ABSTRACTION (λ<LIST_OF_NONFREE_VARIABLES <VARIABLE_NONFREE_SYMBOL a>>·<MEMBERSHIP <VARIABLE_NONFREE_SYMBOL a>∈<NAT_SET ℕ>>|<ADDITION <VARIABLE_NONFREE_SYMBOL a>+<NUMBER 4711>>)>");
+        ok &= check("(%a.a:NAT|a+4711)", "(λa·a∈ℕ|a+4711)", "<PARENTHESISED_EXPRESSION (<LAMBDA_ABSTRACTION λ<LIST_OF_NONFREE_VARIABLES <VARIABLE_NONFREE_SYMBOL a>>·<MEMBERSHIP <VARIABLE_NONFREE_SYMBOL a>∈<NAT_SET ℕ>>|<ADDITION <VARIABLE_NONFREE_SYMBOL a>+<NUMBER 4711>>>)>");
 
         //     function application
         ok &= check("x=y(4711)", "x=y(4711)", "<EQUALS <VARIABLE_SYMBOL x>=<FUNC_APP <VARIABLE_SYMBOL y>(<NUMBER 4711>)>>");
@@ -462,13 +456,13 @@ public class TestInternals
         }
         if (!o1)
         {
-            System.out.println("Expected "+out);
-            System.out.println("But got  "+o);
+            System.out.println("Expected \""+out+"\"");
+            System.out.println("But got  \""+o+"\"");
         }
         if (!o2)
         {
-            System.out.println("Expected "+out_with_types);
-            System.out.println("But got  "+ot);
+            System.out.println("Expected \""+out_with_types+"\"");
+            System.out.println("But got  \""+ot+"\"");
         }
         return ok;
     }
@@ -701,4 +695,5 @@ public class TestInternals
         }
         return true;
     }
+
 }

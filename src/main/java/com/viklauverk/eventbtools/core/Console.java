@@ -44,6 +44,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 public class Console
 {
     private static Log log = LogModule.lookup("console");
+    private static Log log_docgen = LogModule.lookup("docgen");
 
     private Sys sys_;
 
@@ -53,11 +54,12 @@ public class Console
     private SymbolTable current_symbol_table_;
     private Deque<SymbolTable> table_stack_ = new ArrayDeque<>();
 
-    private String default_format_ = "terminal";
+    private RenderTarget render_target_ = RenderTarget.TERMINAL;
+    private RenderAttributes render_attributes_;
 
     private boolean running_ = true;
 
-    public Console(Sys s, Canvas canvas)
+    public Console(Sys s, Settings set, Canvas canvas)
     {
         sys_ = s;
 
@@ -67,11 +69,24 @@ public class Console
         current_symbol_table_ = sys_.rootSymbolTable();
 
         table_stack_.addFirst(current_symbol_table_);
+
+        render_target_ = RenderTarget.TERMINAL;
+        render_attributes_ = set.docGenSettings().renderAttributes();
     }
 
     Sys sys()
     {
         return sys_;
+    }
+
+    public RenderTarget renderTarget()
+    {
+        return render_target_;
+    }
+
+    public RenderAttributes renderAttributes()
+    {
+        return render_attributes_;
     }
 
     void quit()
@@ -94,14 +109,9 @@ public class Console
         return current_canvas_;
     }
 
-    public void setDefaultFormat(String f)
+    public void setRenderTarget(RenderTarget t)
     {
-        default_format_ = f;
-    }
-
-    String defaultFormat()
-    {
-        return default_format_;
+        render_target_ = t;
     }
 
     String renderTemplate(String name)
@@ -119,9 +129,7 @@ public class Console
     String renderPart(String name, RenderTarget rt, RenderAttributes ra)
     {
         CommonSettings cs = new CommonSettings();
-        DocGenSettings ds = new DocGenSettings();
-        ds.setRenderTarget(rt);
-        ds.setRenderAttributes(ra);
+        DocGenSettings ds = new DocGenSettings(rt, ra);
 
         BaseDocGen bdg = DocGen.lookup(cs, ds, sys_);
 
@@ -131,6 +139,8 @@ public class Console
         cnvs.setRenderTarget(rt);
         cnvs.setRenderAttributes(ra);
         cnvs.clear();
+
+        log_docgen.debug("console render part attributes "+cnvs.renderAttributes());
         result = bdg.renderParts(cnvs, name);
         if (ra.frame())
         {
@@ -141,7 +151,8 @@ public class Console
 
     void pushSymbolTable(String name)
     {
-        SymbolTable st = sys_.newSymbolTable(name, current_symbol_table_);
+        SymbolTable st = sys_.newSymbolTable(name);
+        st.addParent(current_symbol_table_);
         table_stack_.addFirst(st);
         current_symbol_table_ = st;
     }
@@ -165,10 +176,10 @@ public class Console
     private String deduceType(String line)
     {
         Formula result = Formula.fromString(line, current_symbol_table_);
-        Type type = null;
+        ImplType type = null;
         if (result != null)
         {
-            type = sys_.typing().deducePossibleTypesFromExpression(result, current_symbol_table_);
+            type = sys_.typing().deducePossibleImplTypesFromExpression(result, current_symbol_table_);
         }
 
         if (result != null && type != null)
@@ -223,9 +234,12 @@ public class Console
         "lv ", "list vars", "",
         // Show commmands....
         "sf ", "show formula", ".",
+        "sff ", "show formula framed", ".",
         "sft ", "show formula tree", ".",
         "sftf ", "show formula tree framed", ".",
-        "sff ", "show formula framed", ".",
+        "sfm ", "show formula meta", ".",
+        "sfmf ", "show formula meta framed", ".",
+        "sfmtf ", "show formula meta tree framed", ".",
         "st ", "show table", ".",
         "sp ", "show part", ".",
         "spf ", "show part framed", ".",
@@ -325,7 +339,7 @@ public class Console
         }
     }
 
-    String renderFormula(String line, boolean with_type, boolean with_frame, RenderTarget rt, RenderAttributes ra)
+    String renderFormula(String line, boolean with_meta, boolean with_type, boolean with_frame, RenderTarget rt, RenderAttributes ra)
     {
         Canvas cnvs = new Canvas();
         cnvs.setRenderTarget(rt);
@@ -342,10 +356,36 @@ public class Console
                 return "Failed to parse!";
             }
 
-            if (with_type)
+            if (!with_type && with_meta)
+            {
+                cnvs.startMath();
+                result.toStringWithMetas(cnvs);
+                cnvs.stopMath();
+                String o = cnvs.render();
+                if (with_frame)
+                {
+                    o = cnvs.frame("", o, Canvas.sline);
+                }
+                return o;
+            }
+
+            if (with_type && !with_meta)
             {
                 cnvs.startMath();
                 result.toStringWithTypes(cnvs);
+                cnvs.stopMath();
+                String o = cnvs.render();
+                if (with_frame)
+                {
+                    o = cnvs.frame("", o, Canvas.sline);
+                }
+                return o;
+            }
+
+            if (with_type && with_meta)
+            {
+                cnvs.startMath();
+                result.toStringWithMetasAndTypes(cnvs);
                 cnvs.stopMath();
                 String o = cnvs.render();
                 if (with_frame)

@@ -25,9 +25,9 @@ import java.util.LinkedList;
 
 public class GenerateFormulaJavascript extends GenerateFormulaBaseCodeGen
 {
-    GenerateFormulaJavascript(CodeGenJavascript codegen)
+    GenerateFormulaJavascript(CodeGenJavascript codegen, PlanImplementation plan)
     {
-        super(codegen);
+        super(codegen, plan);
     }
 
     @Override public Formula visit_BECOME_EQ(Formula f)
@@ -51,7 +51,7 @@ public class GenerateFormulaJavascript extends GenerateFormulaBaseCodeGen
             System.out.println("Could not find \""+symbol+"\"");
             symbols().print();
         }
-        Type type = variable.type();
+        ImplType type = variable.implType();
 
         if (variable.isParameter())
         {
@@ -71,7 +71,7 @@ public class GenerateFormulaJavascript extends GenerateFormulaBaseCodeGen
         {
             System.out.println("Could not find \""+symbol+"\"");
         }
-        Type type = constant.type();
+        ImplType type = constant.implType();
         if (type != null && type.isCarrierSet())
         {
             cnvs().append("this."+type+"_"+constant.name()); return i;

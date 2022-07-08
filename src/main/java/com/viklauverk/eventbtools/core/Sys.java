@@ -54,10 +54,11 @@ public class Sys
     private List<Machine> machine_ordering_;
     private List<String> machine_names_;
 
+    private Settings settings_;
     private Console console_;
     private EDK edk_;
 
-    public Sys()
+    public Sys(Settings s)
     {
         project_info_ = "";
 
@@ -77,18 +78,33 @@ public class Sys
 
         typing_ = new Typing();
 
-        CarrierSet BOOL = new CarrierSet("BOOL");
-        Constant TRUE = new Constant("TRUE");
-        Constant FALSE = new Constant("FALSE");
+        CarrierSet BOOL = new CarrierSet("BOOL", null);
+        Constant TRUE = new Constant("TRUE", null);
+        Constant FALSE = new Constant("FALSE", null);
         BOOL.addMember(TRUE);
         BOOL.addMember(FALSE);
-        TRUE.setType(typing_.lookup("BOOL"));
-        FALSE.setType(typing_.lookup("BOOL"));
+        TRUE.setImplType(typing_.lookupImplType("BOOL"));
+        FALSE.setImplType(typing_.lookupImplType("BOOL"));
         root_symbol_table_.addSet(BOOL);
         root_symbol_table_.addConstant(TRUE);
         root_symbol_table_.addConstant(FALSE);
 
-        console_ = new Console(this, new Canvas());
+        CarrierSet evbt_implementations = new CarrierSet("EVBTImplementations", null);
+        root_symbol_table_.addSet(evbt_implementations);
+
+        Constant evbt_u8 = new Constant("u8", null);
+        Constant evbt_i8 = new Constant("i8", null);
+        Constant evbt_arr = new Constant("arr", null);
+        evbt_implementations.addMember(evbt_u8);
+        evbt_implementations.addMember(evbt_i8);
+        evbt_implementations.addMember(evbt_arr);
+
+        root_symbol_table_.addConstant(evbt_u8);
+        root_symbol_table_.addConstant(evbt_i8);
+        root_symbol_table_.addConstant(evbt_arr);
+
+        settings_ = s;
+        console_ = new Console(this, settings_, new Canvas());
         edk_ = new EDK(this);
     }
 
@@ -102,6 +118,11 @@ public class Sys
         return console_;
     }
 
+    public Settings settings()
+    {
+        return settings_;
+    }
+
     public EDK edk()
     {
         return edk_;
@@ -112,11 +133,10 @@ public class Sys
         return root_symbol_table_;
     }
 
-    public SymbolTable newSymbolTable(String name, SymbolTable parent)
+    public SymbolTable newSymbolTable(String name)
     {
-        if (parent == null) parent = root_symbol_table_;
         SymbolTable st = new SymbolTable(name);
-        st.addParent(parent);
+        st.addParent(root_symbol_table_);
         all_symbol_tables_.put(name, st);
         return st;
     }
@@ -223,11 +243,13 @@ public class Sys
         // contexts and machines since we have prepopulated those maps.
         // These will also add the known symbols for sets,constants and variables
         // to the SymbolTables that are needed for parsing the formulas.
+        // These will also load the checked types calculated by Rodin.
         loadTheories();
         loadContexts();
         loadMachines();
 
-        // Now we can actually parse the formulas and figure out the types.
+        // Now we can actually build the symbol tables and parse the formulas and
+        // figure out suitable implementation types and parse the checked types.
         parseTheoryFormulas();
         parseContextFormulas();
         parseMachineFormulas();
@@ -318,7 +340,9 @@ public class Sys
         for (String name : contextNames())
         {
             Context c = getContext(name);
-            c.load();
+            c.loadBUC();
+            c.loadProofStatus();
+            c.loadCheckedTypes();
         }
     }
 
@@ -327,7 +351,9 @@ public class Sys
         for (String name : machineNames())
         {
             Machine m = getMachine(name);
-            m.load();
+            m.loadBUM();
+            m.loadProofStatus();
+            m.loadCheckedTypes();
         }
     }
 

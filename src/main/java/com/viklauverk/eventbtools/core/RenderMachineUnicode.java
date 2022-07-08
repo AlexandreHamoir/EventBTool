@@ -25,6 +25,11 @@ import java.util.LinkedList;
 
 public class RenderMachineUnicode extends RenderMachine
 {
+
+    public void renderProofSummary(Machine mch)
+    {
+    }
+
     @Override
     public void visit_MachineStart(Machine mch)
     {
@@ -32,6 +37,7 @@ public class RenderMachineUnicode extends RenderMachine
         cnvs().keywordLeft(mch.machineOrRefinement());
         cnvs().space();
         cnvs().id(mch.name());
+        renderProofSummary(mch);
         cnvs().endLine();
 
         cnvs().hrule();
@@ -139,7 +145,7 @@ public class RenderMachineUnicode extends RenderMachine
         if (invariant.isTheorem())
         {
             cnvs().startAlignedLine();
-            cnvs().append("theorem");
+            cnvs().theorem();
             cnvs().align();
             cnvs().label(invariant.name());
             cnvs().stopAlignedLine();
@@ -154,7 +160,7 @@ public class RenderMachineUnicode extends RenderMachine
         invariant.writeFormulaStringToCanvas(cnvs());
         cnvs().stopMath();
 
-        stopAlignedLineAndHandlePotentialComment(invariant.comment(), cnvs());
+        stopAlignedLineAndHandlePotentialComment(invariant.comment(), cnvs(), invariant);
     }
 
     @Override
@@ -180,7 +186,7 @@ public class RenderMachineUnicode extends RenderMachine
         variant.writeFormulaStringToCanvas(cnvs());
         cnvs().stopMath();
 
-        stopAlignedLineAndHandlePotentialComment(variant.comment(), cnvs());
+        stopAlignedLineAndHandlePotentialComment(variant.comment(), cnvs(), variant);
     }
 
     @Override
