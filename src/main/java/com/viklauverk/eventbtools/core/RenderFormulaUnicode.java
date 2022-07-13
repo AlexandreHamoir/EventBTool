@@ -620,6 +620,17 @@ public class RenderFormulaUnicode extends RenderFormula
         visitLeft(i); visitMeta(i); cnvs().symbol("~("); visitRight(i); cnvs().symbol(")"); return i;
     }
 
+    @Override public Formula visit_OPERATOR_EXPRESSION(Formula i)
+    {
+        //System.out.println(i.numChildren());
+        visitChildNum(i, 0); 
+        for (int j = 1; j < i.numChildren(); j++) {
+            cnvs().symbol(" ");
+            visitChildNum(i, j);
+        } 
+        return i;
+    }
+
     @Override public Formula visit_META(Formula i)
     {
         if (addingMetas() && i.hasMeta())

@@ -25,6 +25,8 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import com.viklauverk.eventbtools.core.EvBFormulaParser.ExpressionContext;
+
 public class FormulaBuilder extends EvBFormulaBaseVisitor<Formula>
 {
     static Log log = LogModule.lookup("parser");
@@ -199,6 +201,18 @@ public class FormulaBuilder extends EvBFormulaBaseVisitor<Formula>
     public Formula visitGenericFunctionApplication(EvBFormulaParser.GenericFunctionApplicationContext ctx)
     {
         return FormulaFactory.newFunctionApplication(this.visit(ctx.function), this.visit(ctx.inner), visitOptionalMeta(ctx.meta()));
+    }
+
+    @Override
+    public Formula visitOperatorExpression(EvBFormulaParser.OperatorExpressionContext ctx)
+    {
+        Formula operator = FormulaFactory.newAnySymbol(ctx.operator.getText(), null);
+        List<Formula> elements = new LinkedList<>();
+        for (EvBFormulaParser.ExpressionContext sec : ctx.expression())
+        {
+            elements.add(this.visit(sec));
+        }
+        return FormulaFactory.newOperatorExpression(operator, elements); // The first element is the operator
     }
 
     @Override

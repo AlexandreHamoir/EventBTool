@@ -58,6 +58,9 @@ public class SymbolTable
     private Set<String> number_symbols_ = new HashSet<>(); // NM
     private Set<String> any_symbols_ = new HashSet<>(); // ABC
 
+    private Set<String> operator_symbols_ = new HashSet<>();
+    private Map<String,Operator> operators_ = new HashMap<>();
+
     private LinkedList<Frame> frames_ = new LinkedList<>();
 
     public String name()
@@ -389,6 +392,56 @@ public class SymbolTable
     public void addNumberSymbols(List<String> s)
     {
         number_symbols_.addAll(s);
+    }
+
+    public boolean isOperatorSymbol(String c)
+    {
+        boolean is = operator_symbols_.contains(c);
+        if (is) return true;
+        for (SymbolTable parent : parents_)
+        {
+            is = parent.isOperatorSymbol(c);
+            if (is) return true;
+        }
+        return false;
+    }
+
+    public Operator getOperator(Formula name)
+    {
+        return getOperator(name.symbol());
+    }
+
+    public Operator getOperator(String name)
+    {
+        Operator var = operators_.get(name);
+        if (var != null) return var;
+        for (SymbolTable parent : parents_)
+        {
+            var = parent.getOperator(name);
+            if (var != null) return var;
+        }
+        return null;
+    }
+
+    public void addOperatorSymbol(String s)
+    {
+        operator_symbols_.add(s);
+    }
+
+    public void addOperator(Operator op)
+    {
+        operator_symbols_.add(op.name());
+        operators_.put(op.name(), op);
+    }
+
+    public void addOperatorSymbols(String... s)
+    {
+        operator_symbols_.addAll(Arrays.asList(s));
+    }
+
+    public void addOperatorSymbols(List<String> s)
+    {
+        operator_symbols_.addAll(s);
     }
 
     public boolean isAnySymbol(String p)

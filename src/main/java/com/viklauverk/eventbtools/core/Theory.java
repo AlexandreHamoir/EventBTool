@@ -499,7 +499,7 @@ public class Theory
 */
         for (Operator op : operatorOrdering())
         {
-            symbol_table_.addAnySymbols(op.name());
+            symbol_table_.addOperator(op);
         }
 
         for (AxiomaticDefinition axd : axiomaticDefinitionOrdering())
@@ -511,7 +511,7 @@ public class Theory
 
             for (Operator axd_op : axd.operatorOrdering())
             {
-                symbol_table_.addAnySymbols(axd_op.name());
+                symbol_table_.addOperator(axd_op);
             }
         }
 

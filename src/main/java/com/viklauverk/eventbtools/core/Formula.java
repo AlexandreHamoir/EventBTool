@@ -261,6 +261,23 @@ class Formula
         meta_ = meta;
     }
 
+    Formula(Node node, Formula left, List<Formula> inners, Formula meta)
+    {
+        assert (node != null && left != null && inners != null) : "Internal error when creating formula, args must be non-null.";
+
+        node_ = node;
+        children_ = new Formula[inners.size()+1];
+        children_[0] = left;
+        int i = 1;
+        for (Formula f : inners)
+        {
+            children_[i] = f;
+            assert (f != null) : "internal error: child formula must never be null!";
+            i++;
+        }
+        meta_ = meta;
+    }
+
     public static
     Formula fromString (String s, SymbolTable fc)
     {

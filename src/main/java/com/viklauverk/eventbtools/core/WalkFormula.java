@@ -148,6 +148,7 @@ public class WalkFormula implements FormulaVisitor
     public Formula visit_MAPSTO(Formula i) { visitLeft(i); visitRight(i); return i; }
     public Formula visit_FUNC_APP(Formula i) { visitLeft(i); visitRight(i); return i; }
     public Formula visit_FUNC_INV_APP(Formula i) { visitLeft(i); visitRight(i); return i; }
+    public Formula visit_OPERATOR_EXPRESSION(Formula i) { visitChildren(i, ()->{}); return i; }
     public Formula visit_META(Formula i) { return i; }
 
 
@@ -272,6 +273,7 @@ public class WalkFormula implements FormulaVisitor
         case MAPSTO: i = visit_MAPSTO(i); break;
         case FUNC_APP: i = visit_FUNC_APP(i); break;
         case FUNC_INV_APP: i = visit_FUNC_INV_APP(i); break;
+        case OPERATOR_EXPRESSION: i = visit_OPERATOR_EXPRESSION(i); break;
         default: System.err.println("NOT IMPLEMENTED SWITCH FOR "+s); System.exit(1); break;
         }
 

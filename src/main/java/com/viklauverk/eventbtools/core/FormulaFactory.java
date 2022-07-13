@@ -699,4 +699,10 @@ public class FormulaFactory
         return new Formula(Node.FUNC_INV_APP, left, right, meta);
     }
 
+    public static
+    Formula newOperatorExpression (Formula left, List<Formula> inners)
+    {
+        return new Formula(Node.OPERATOR_EXPRESSION, left, inners, null);
+    }
+
 }
