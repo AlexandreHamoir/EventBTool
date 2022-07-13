@@ -24,4 +24,11 @@
         <org.eventb.theory.core.axiomaticDefinitionAxiom name=")" org.eventb.core.comment="Comment" org.eventb.core.label="axm" org.eventb.core.predicate="xOpDef(3) = 0"/>
     </org.eventb.theory.core.axiomaticDefinitionsBlock>
     <org.eventb.theory.core.theorem name="," org.eventb.core.comment="Comment Theorem" org.eventb.core.label="thm" org.eventb.core.predicate="∀ n · n ∈ ℕ ∧ OpDirect(n) = 0 ⇒ n=3"/>
+    <org.eventb.theory.core.newOperatorDefinition name="-" org.eventb.core.comment="Comment Operator Parameters" org.eventb.core.label="OpParameters" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX">
+        <org.eventb.theory.core.operatorArgument name="'" org.eventb.core.comment="Comment Operator Parameters Arg1" org.eventb.core.expression="S" org.eventb.core.identifier="opArg1"/>
+        <org.eventb.theory.core.operatorArgument name="(" org.eventb.core.comment="Comment Operator Parameters Arg2" org.eventb.core.expression="S" org.eventb.core.identifier="opArg2"/>
+        <org.eventb.theory.core.directOperatorDefinition name=")" org.eventb.theory.core.formula="opArg2"/>
+        <org.eventb.theory.core.operatorWDcondition name="*" org.eventb.core.comment="Comment Operator Parameters WDC" org.eventb.core.predicate="opArg1 &gt; opArg2"/>
+    </org.eventb.theory.core.newOperatorDefinition>
+    <org.eventb.theory.core.theorem name="." org.eventb.core.comment="Comment Theorem 1" org.eventb.core.label="thm1" org.eventb.core.predicate="∀ x,y· x∈ℕ ∧ y∈ℕ ⇒ OpDirect(y) = OpParameters(x,y)"/>
 </org.eventb.theory.core.theoryRoot>
