@@ -98,19 +98,43 @@ public class RenderTheoryUnicode extends RenderTheory
     @Override
     public void visit_DatatypesStart(Theory th)
     {
-        //TODO
+        cnvs().startLine();
+        cnvs().keyword("datatypes");
+        cnvs().endLine();
+
+        cnvs().startAlignments(Canvas.align_3col);  
     }
 
     @Override
     public void visit_Datatype(Theory th, Datatype datatype)
     {
-        //TODO
+        cnvs().startAlignedLine();
+        cnvs().append(cnvs().colorize(Canvas.Red, datatype.name()));
+
+        if (datatype.hasArguments())
+        {
+            cnvs().append("(");
+            int i = 0;
+            for (Arguments arg : datatype.argumentsOrdering()) {
+                if (i > 0) cnvs().append(", ");
+                if (i == 0) i++;
+                cnvs().constant(arg.name());
+            }
+            cnvs().append(")");
+        }
+
+        stopAlignedLineAndHandlePotentialComment(datatype.comment(), cnvs(), null);
+
+        for (Operator cst : datatype.constructorsOrdering())
+        {
+            visit_Operator(th, cst);
+        }
     }
 
     @Override
     public void visit_DatatypesEnd(Theory th)
     {
-        //TODO
+        cnvs().stopAlignments();
     }
 
     @Override
@@ -154,6 +178,19 @@ public class RenderTheoryUnicode extends RenderTheory
     {
         cnvs().startAlignedLine();
         cnvs().label(operator.name());
+
+        if (operator.hasArguments())
+        {
+            cnvs().append("(");
+            int i = 0;
+            for (Arguments arg : operator.argumentsOrdering()) {
+                if (i > 0) cnvs().append(", ");
+                if (i == 0) i++;
+                cnvs().constant(arg.name());
+            }
+            cnvs().append(")");
+        }
+
         cnvs().align();
         if (operator.hasDirectDefinition()) {
             cnvs().startMath();
@@ -163,12 +200,15 @@ public class RenderTheoryUnicode extends RenderTheory
         stopAlignedLineAndHandlePotentialComment(operator.comment(), cnvs(), null);
     
         // WD conditions
-        visit_WDConditionsStart(th);
-        for(WDConditions wdc : operator.wdcsOrdering())
+        if (operator.hasWdcs())
         {
-            visit_WDCondition(th, wdc);
+            visit_WDConditionsStart(th);
+            for(WDConditions wdc : operator.wdcsOrdering())
+            {
+                visit_WDCondition(th, wdc);
+            }
+            visit_WDConditionsEnd(th);
         }
-        visit_WDConditionsEnd(th);
     }
 
     @Override

@@ -7,12 +7,13 @@
     <org.eventb.theory.core.datatypeDefinition name=")" org.eventb.core.comment="Comment Datatype" org.eventb.core.identifier="dt">
         <org.eventb.theory.core.typeArgument name="'" org.eventb.theory.core.givenType="S"/>
         <org.eventb.theory.core.datatypeConstructor name="(" org.eventb.core.comment="Comment Constructor Datatype" org.eventb.core.identifier="dtc">
-            <org.eventb.theory.core.constructorArgument name="'" org.eventb.core.comment="Comment Destructor Datatype" org.eventb.core.identifier="dest" org.eventb.theory.core.type="S"/>
+            <org.eventb.theory.core.constructorArgument name="'" org.eventb.core.comment="Comment Destructor Datatype 1" org.eventb.core.identifier="dest1" org.eventb.theory.core.type="S"/>
+            <org.eventb.theory.core.constructorArgument name="(" org.eventb.core.comment="Comment Destructor Datatype 2" org.eventb.core.identifier="dest2" org.eventb.theory.core.type="S"/>
         </org.eventb.theory.core.datatypeConstructor>
     </org.eventb.theory.core.datatypeDefinition>
     <org.eventb.theory.core.newOperatorDefinition name="*" org.eventb.core.comment="Comment Operator Direct" org.eventb.core.label="OpDirect" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX">
         <org.eventb.theory.core.operatorArgument name="'" org.eventb.core.comment="Comment Operator Direct Arg" org.eventb.core.expression="S" org.eventb.core.identifier="opArg"/>
-        <org.eventb.theory.core.directOperatorDefinition name="(" org.eventb.core.comment="Comment Operator Direct Arg" org.eventb.theory.core.formula="opArg"/>
+        <org.eventb.theory.core.directOperatorDefinition name="(" org.eventb.core.comment="Comment Operator Direct Def" org.eventb.theory.core.formula="opArg"/>
         <org.eventb.theory.core.operatorWDcondition name=")" org.eventb.core.comment="Comment Operator Direct WDC" org.eventb.core.predicate="opArg∈S"/>
     </org.eventb.theory.core.newOperatorDefinition>
     <org.eventb.theory.core.axiomaticDefinitionsBlock name="+" org.eventb.core.comment="Comment Axiomatic Definition" org.eventb.core.label="AxiomDef">
@@ -31,4 +32,11 @@
         <org.eventb.theory.core.operatorWDcondition name="*" org.eventb.core.comment="Comment Operator Parameters WDC" org.eventb.core.predicate="opArg1 &gt; opArg2"/>
     </org.eventb.theory.core.newOperatorDefinition>
     <org.eventb.theory.core.theorem name="." org.eventb.core.comment="Comment Theorem 1" org.eventb.core.label="thm1" org.eventb.core.predicate="∀ x,y· x∈ℕ ∧ y∈ℕ ⇒ OpDirect(y) = OpParameters(x,y)"/>
+    <org.eventb.theory.core.theorem name="/" org.eventb.core.label="thm2" org.eventb.core.predicate="∀s· s∈T ⇒ dest1(dtc(s, s)) = s"/>
+    <org.eventb.theory.core.newOperatorDefinition name="0" org.eventb.core.comment="Comment Operator Recursive" org.eventb.core.label="OpRecursive" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX">
+        <org.eventb.theory.core.operatorArgument name="'" org.eventb.core.expression="dtc(ℤ)" org.eventb.core.identifier="opArg1"/>
+        <org.eventb.theory.core.recursiveOperatorDefinition name="(" org.eventb.theory.core.inductiveArgument="opArg1">
+            <org.eventb.theory.core.recursiveDefinitionCase name="'" org.eventb.core.expression="dtc(x,y)" org.eventb.theory.core.formula="x + dest2(opArg1) − 3"/>
+        </org.eventb.theory.core.recursiveOperatorDefinition>
+    </org.eventb.theory.core.newOperatorDefinition>
 </org.eventb.theory.core.theoryRoot>

@@ -112,6 +112,11 @@ public class Operator
         args.addAll(args);
     }
 
+    public boolean hasArguments()
+    {
+        return !args_.isEmpty();
+    }
+
 // -----------------------------------------------------------------------------
 //    WELL DEFINEDNESS CONDITIONS
 // -----------------------------------------------------------------------------
@@ -129,6 +134,11 @@ public class Operator
     public void addWDCs(List<WDConditions> wdcs)
     {
         wdcs_ordering_.addAll(wdcs);
+    }
+
+    public boolean hasWdcs()
+    {
+        return !wdcs_ordering_.isEmpty();
     }
 
 // -----------------------------------------------------------------------------

@@ -335,16 +335,45 @@ public class Theory
             String comment = tp.valueOf("@org.eventb.core.comment");
             addTypeParameters(new TypeParameters(name, comment));
         }
-/*
+
         list = document.selectNodes("//org.eventb.theory.core.datatypeDefinition");
         for (Node dt : list)
         {
             String name = dt.valueOf("@org.eventb.core.identifier");
             String comment = dt.valueOf("@org.eventb.core.comment");
-            //TODO Finish
-            addDatatype(new Datatype(name,comment));
+            Datatype datatype = new Datatype(name, comment);
+
+            List<Node> type_args = dt.selectNodes("org.eventb.theory.core.typeArgument");
+            for (Node type : type_args)
+            {
+                String n = type.valueOf("@org.eventb.theory.core.givenType");
+
+                datatype.addTypeArgument(new CarrierSet(n, null));
+            }
+
+            List<Node> cons_node = dt.selectNodes("org.eventb.theory.core.datatypeConstructor");
+            for (Node cons : cons_node)
+            {
+                String n = cons.valueOf("@org.eventb.core.identifier");
+                String c = cons.valueOf("@org.eventb.core.comment");
+
+                Operator constructor = new Operator(n, c);
+
+                List<Node> dests = cons.selectNodes("org.eventb.theory.core.constructorArgument");
+                for (Node dest : dests)
+                {
+                    String nn = dest.valueOf("@org.eventb.core.identifier");
+                    String cc = dest.valueOf("@org.eventb.core.comment");
+
+                    constructor.addArgument(new Arguments(nn, cc));
+                }
+
+                datatype.addConstructor(constructor);
+            }
+
+            addDatatype(datatype);
         }
-*/
+
         list = document.selectNodes("//org.eventb.theory.core.newOperatorDefinition");
         for (Node op : list)
         {
@@ -484,19 +513,20 @@ public class Theory
             symbol_table_.addSet(tp);
         }
 
-/*        for (Datatype dt : datatypesOrdering())
+        for (Datatype dt : datatypesOrdering())
         {
-            TODO
-            for (Constructor cst : constructorOrdering())
+            symbol_table_.addOperator(dt);
+            for (CarrierSet ta : dt.typeArgumentsOrdering())
             {
-                TODO
-                for (Destructor dst : destructorOrdering())
-                {
-                    TODO
-                }
+                symbol_table_.addSet(ta);
+            }
+            for (Operator cst : dt.constructorsOrdering())
+            {
+                symbol_table_.addOperator(cst);
+                symbol_table_.addOperatorSymbols(cst.argumentsNames()); // destructors
             }
         }
-*/
+
         for (Operator op : operatorOrdering())
         {
             symbol_table_.addOperator(op);

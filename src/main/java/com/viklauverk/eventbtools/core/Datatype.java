@@ -23,34 +23,58 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
-public class Datatype
+public class Datatype extends Operator
 {
-    private String name_;
-    private String comment_;
+    // NB: The current representation is that a datatype is an operator
+    // that takes types as arguments, thus "types" is the same as "arguments"
+    private Map<String,CarrierSet> types_ = new HashMap<>();
+    private List<CarrierSet> types_ordering_ = new ArrayList<>();
+
+    // NB: For now constructors and destructors are parsed as operators inside formulas 
+    // and don't have a class of their own, destructors are the constructor's arguments
+    // One may define new symbols in the symbole table to parse them differently,
+    // then defining a new way to represent them inside formulas
+    // Defining classes may also help for clarity of code
+    private Map<String,Operator> cons_ = new HashMap<>();
+    private List<Operator> cons_ordering_ = new ArrayList<>();
 
     public Datatype(String n, String c)
     {
-        name_ = n;
-        comment_ = c;
+        super(n,c);
     }
 
-    public String name()
+    public void addConstructor(Operator cons)
     {
-      return name_;
+      cons_.put(cons.name(), cons);
+      cons_ordering_.add(cons);
     }
 
-    public String comment()
+    public Operator getConstructor(String name)
     {
-      return comment_;
+      return cons_.get(name);
     }
 
-    public boolean hasComment()
+    public List<Operator> constructorsOrdering()
     {
-        return comment_.length() > 0;
+      return cons_ordering_;
     }
 
-    public void parse(SymbolTable st)
+    public void addTypeArgument(CarrierSet type)
     {
-      // TODO
+      types_.put(type.name(), type);
+      types_ordering_.add(type);
+
+      // TODO remove wether datatypes remain as operators
+      this.addArgument(new Arguments(type.name(), type.comment()));
+    }
+
+    public CarrierSet getTypeArgument(String name)
+    {
+      return types_.get(name);
+    }
+
+    public List<CarrierSet> typeArgumentsOrdering()
+    {
+      return types_ordering_;
     }
 }
