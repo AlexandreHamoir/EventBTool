@@ -71,7 +71,7 @@ public class Operator
     public void parse(SymbolTable st)
     {
       st.pushFrame(args_names_);
-      directDefinition_.parse(st);
+      if (this.hasDirectDefinition()) directDefinition_.parse(st);
 
       // WD conditions
       for (WDConditions wdc : this.wdcsOrdering())
@@ -143,6 +143,11 @@ public class Operator
     public IsAFormula getDef()
     {
         return directDefinition_;
+    }
+
+    public boolean hasDirectDefinition()
+    {
+        return directDefinition_ != null;
     }
 
 }

@@ -155,9 +155,11 @@ public class RenderTheoryUnicode extends RenderTheory
         cnvs().startAlignedLine();
         cnvs().label(operator.name());
         cnvs().align();
-        cnvs().startMath();
-        operator.getDef().writeFormulaStringToCanvas(cnvs());
-        cnvs().stopMath();
+        if (operator.hasDirectDefinition()) {
+            cnvs().startMath();
+            operator.getDef().writeFormulaStringToCanvas(cnvs());
+            cnvs().stopMath();
+        }
         stopAlignedLineAndHandlePotentialComment(operator.comment(), cnvs(), null);
     
         // WD conditions
@@ -188,7 +190,44 @@ public class RenderTheoryUnicode extends RenderTheory
     @Override
     public void visit_AxiomaticDefinition(Theory th, AxiomaticDefinition axiomatic_definition)
     {
-        //TODO
+        if (axiomatic_definition.hasOperators()) {
+            cnvs().startAlignedLine();
+            cnvs().variable("TYPES");
+            stopAlignedLineAndHandlePotentialComment("", cnvs(), null);
+        }
+
+        for (TypeParameters tp : axiomatic_definition.typeDefOrdering()) {
+            cnvs().startAlignedLine();
+            cnvs().set(tp.name());
+            stopAlignedLineAndHandlePotentialComment(tp.comment(), cnvs(), null);
+        }
+
+        if (axiomatic_definition.hasOperators()) {
+            cnvs().startAlignedLine();
+            cnvs().variable("OPERATORS");
+            stopAlignedLineAndHandlePotentialComment("", cnvs(), null);
+        }
+
+        for (Operator op : axiomatic_definition.operatorOrdering())
+        {
+            visit_Operator(th, op);
+        }
+
+        if (axiomatic_definition.hasAxioms()) {
+            cnvs().startAlignedLine();
+            cnvs().variable("AXIOMS");
+            stopAlignedLineAndHandlePotentialComment("", cnvs(), null);
+        }
+
+        for (Axiom axm : axiomatic_definition.axiomOrdering()) {
+            cnvs().startAlignedLine();
+            cnvs().label(axm.name());
+            cnvs().align();
+            cnvs().startMath();
+            axm.writeFormulaStringToCanvas(cnvs());
+            cnvs().stopMath();
+            stopAlignedLineAndHandlePotentialComment(axm.comment(), cnvs(), null);
+        }
     }
 
     @Override

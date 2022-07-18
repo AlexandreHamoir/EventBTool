@@ -61,7 +61,14 @@ public class AxiomaticDefinition
 
     public void parse(SymbolTable st)
     {
-        //TODO?
+        for (Operator op : opd_ordering_) 
+        {
+            op.parse(st);
+        }
+        for (Axiom axm : ax_ordering_)
+        {
+            axm.parse(st);
+        }
     }
 
 // -----------------------------------------------------------------------------
@@ -78,6 +85,11 @@ public class AxiomaticDefinition
         return tyd_ordering_;
     }
 
+    public boolean hasTypes()
+    {
+        return !tyd_.isEmpty();
+    }
+
 // -----------------------------------------------------------------------------
 //    OPERATOR
 // -----------------------------------------------------------------------------
@@ -92,6 +104,11 @@ public class AxiomaticDefinition
         return opd_ordering_;
     }
 
+    public boolean hasOperators()
+    {
+        return !opd_.isEmpty();
+    }
+
 // -----------------------------------------------------------------------------
 //    AXIOM
 // -----------------------------------------------------------------------------
@@ -104,6 +121,11 @@ public class AxiomaticDefinition
     public List<Axiom> axiomOrdering()
     {
         return ax_ordering_;
+    }
+
+    public boolean hasAxioms()
+    {
+        return !ax_.isEmpty();
     }
 
 }
