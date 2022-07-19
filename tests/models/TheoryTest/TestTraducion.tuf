@@ -44,5 +44,5 @@
         <org.eventb.theory.core.operatorArgument name="(" org.eventb.core.comment="Comment Infix Arg2" org.eventb.core.expression="ℤ" org.eventb.core.identifier="opArg2"/>
         <org.eventb.theory.core.directOperatorDefinition name=")" org.eventb.core.comment="Comment Infix Definition" org.eventb.theory.core.formula="opArg1 + opArg2 ∗ 4"/>
     </org.eventb.theory.core.newOperatorDefinition>
-    <org.eventb.theory.core.theorem name="2" org.eventb.core.comment="Comment Theorem 3" org.eventb.core.label="thm3" org.eventb.core.predicate="∀n,m· n∈ℤ ∧ m∈ℤ ⇒ n  OpInfix m = n + m ∗ 4"/>
+    <org.eventb.theory.core.theorem name="2" org.eventb.core.comment="Comment Theorem 3" org.eventb.core.label="thm3" org.eventb.core.predicate="∀n,m· n∈ℤ ∧ m∈ℤ ⇒ n OpInfix m = n + m ∗ 4"/>
 </org.eventb.theory.core.theoryRoot>

@@ -30,6 +30,7 @@ public class Operator
     private String name_;
     private boolean isAssociative_ = false;
     private boolean isCommutative_ = false;
+    private boolean isInfix_ = false; // For now infix operators are seen as prefix operators
 
     private Map<String,Arguments> args_ = new HashMap<>();
     private List<Arguments> args_ordering_ = new ArrayList<>();

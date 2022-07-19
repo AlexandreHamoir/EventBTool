@@ -203,6 +203,7 @@ public class FormulaBuilder extends EvBFormulaBaseVisitor<Formula>
         return FormulaFactory.newFunctionApplication(this.visit(ctx.function), this.visit(ctx.inner), visitOptionalMeta(ctx.meta()));
     }
 
+    // AH
     @Override
     public Formula visitOperatorExpression(EvBFormulaParser.OperatorExpressionContext ctx)
     {
@@ -213,6 +214,17 @@ public class FormulaBuilder extends EvBFormulaBaseVisitor<Formula>
             elements.add(this.visit(sec));
         }
         return FormulaFactory.newOperatorExpression(operator, elements); // The first element is the operator
+    }
+
+    // AH
+    @Override
+    public Formula visitInfixOperatorExpression(EvBFormulaParser.InfixOperatorExpressionContext ctx)
+    {
+        Formula operator = FormulaFactory.newAnySymbol(ctx.operator.getText(), null);
+        List<Formula> args = new LinkedList<>();
+        args.add(FormulaFactory.newAnySymbol(ctx.left.getText(), null));
+        args.add(FormulaFactory.newAnySymbol(ctx.right.getText(), null));
+        return FormulaFactory.newOperatorExpression(operator, args);
     }
 
     @Override
