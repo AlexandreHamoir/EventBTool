@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
-import java.util.HashSet;
 
 public class Operator
 {
@@ -59,6 +58,13 @@ public class Operator
         isCommutative_ = com;
     }
 
+    // AH
+    public Operator(String n, boolean as, boolean com, String c, boolean inf)
+    {
+        this(n, as, com, c);
+        isInfix_ = inf;
+    }
+
     public String name()
     {
       return name_;
@@ -72,6 +78,22 @@ public class Operator
     public boolean hasComment()
     {
         return comment_.length() > 0;
+    }
+
+    // AH
+    public boolean isAssociative()
+    {
+        return isAssociative_;
+    }
+
+    public boolean isCommutative()
+    {
+        return isCommutative_;
+    }
+
+    public boolean isInfix()
+    {
+        return isInfix_;
     }
 
     public void parse(SymbolTable st)

@@ -381,8 +381,9 @@ public class Theory
             String comment = op.valueOf("@org.eventb.core.comment");
             boolean associative = op.valueOf("@org.eventb.theory.core.associative").equals("true");
             boolean commutative = op.valueOf("@org.eventb.theory.core.commutative").equals("true");
+            boolean infix = op.valueOf("@org.eventb.theory.core.notationType").equals("INFIX");
 
-            Operator operator = new Operator(name,associative,commutative,comment);
+            Operator operator = new Operator(name,associative,commutative,comment, infix);
 
             List<Node> arguments = op.selectNodes("org.eventb.theory.core.operatorArgument");
             for (Node arg : arguments)
