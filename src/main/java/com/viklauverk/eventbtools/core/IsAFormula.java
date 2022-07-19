@@ -81,4 +81,18 @@ public class IsAFormula
         formula_s_ = formula_.toString();
     }
 
+    // TODO: The 2 methods below introduce code duplication
+    // Be mindful of it when modifying parse or fromString methods
+    public void parseWithNonFreeVariables(SymbolTable st)
+    {
+        formula_ = Formula.fromStringWithNonFreeVariables(formula_s_, st);
+        formula_s_ = formula_.toString();
+    }
+
+    public void parseAndPushNonFreeVariables(SymbolTable st)
+    {
+        formula_ = Formula.fromStringAndPushNonFreeVariables(formula_s_, st);
+        formula_s_ = formula_.toString();
+    }
+
 }

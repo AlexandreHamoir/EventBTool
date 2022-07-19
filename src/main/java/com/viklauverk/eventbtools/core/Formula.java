@@ -309,6 +309,36 @@ class Formula
         return f;
     }
 
+    public static
+    Formula fromStringWithNonFreeVariables(String s, SymbolTable fc)
+    {
+        log.debug("parsing %s", s);
+        Formula f = parseWithNonFreeVariables(s, fc);
+        if (f == null)
+        {
+            System.out.print("Could not parse formula :\n    ");
+            System.out.println(s);
+            System.out.println("\nWhile using symbol table:");
+            fc.print();
+        }
+        return f;
+    }
+
+    public static
+    Formula fromStringAndPushNonFreeVariables(String s, SymbolTable fc)
+    {
+        log.debug("parsing %s", s);
+        Formula f = parseAndPushNonFreeVariables(s, fc);
+        if (f == null)
+        {
+            System.out.print("Could not parse formula :\n    ");
+            System.out.println(s);
+            System.out.println("\nWhile using symbol table:");
+            fc.print();
+        }
+        return f;
+    }
+
     public String toStringWithTypes()
     {
         RenderFormulaUnicode gen = new RenderFormulaUnicode(raw_unicode_canvas_.copy());
@@ -426,6 +456,77 @@ class Formula
         try
         {
             tree = parser.start();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            System.exit(1);
+        }
+        if (parser.getNumberOfSyntaxErrors() > 0)
+        {
+            return null;
+        }
+
+        FormulaBuilder fbv = new FormulaBuilder(tokens);
+        Formula result = fbv.visit(tree);
+
+        return result;
+    }
+
+    private static Formula parseWithNonFreeVariables(String line, SymbolTable fc)
+    {
+        log.trace("parsing "+line);
+        CharStream lineStream = CharStreams.fromString(line);
+
+        EvBFormulaLexer lexer = new EvBFormulaLexer(lineStream);
+        lexer.symbol_table = fc;
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        EvBFormulaParser parser = new EvBFormulaParser(tokens);
+        parser.symbol_table = fc;
+        //parser.setTrace(true);
+        ParseTree tree = null;
+        try
+        {
+            // Here we add the non free variables options
+            parser.enableAllSymbolsAreNonFreeVars();
+            tree = parser.start();
+            parser.disableAllSymbolsAreNonFreeVars();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            System.exit(1);
+        }
+        if (parser.getNumberOfSyntaxErrors() > 0)
+        {
+            return null;
+        }
+
+        FormulaBuilder fbv = new FormulaBuilder(tokens);
+        Formula result = fbv.visit(tree);
+
+        return result;
+    }
+
+    private static Formula parseAndPushNonFreeVariables(String line, SymbolTable fc)
+    {
+        log.trace("parsing "+line);
+        CharStream lineStream = CharStreams.fromString(line);
+
+        EvBFormulaLexer lexer = new EvBFormulaLexer(lineStream);
+        lexer.symbol_table = fc;
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        EvBFormulaParser parser = new EvBFormulaParser(tokens);
+        parser.symbol_table = fc;
+        //parser.setTrace(true);
+        ParseTree tree = null;
+        try
+        {
+            // Here we add the non free variables options
+            parser.enableAllSymbolsAreNonFreeVars();
+            tree = parser.start();
+            parser.pushFrameNonFreeVars();
+            parser.disableAllSymbolsAreNonFreeVars();
         }
         catch (Exception e)
         {

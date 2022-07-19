@@ -25,12 +25,12 @@ import java.util.HashMap;
 
 public class Datatype extends Operator
 {
-    // NB: The current representation is that a datatype is an operator
+    // TODO: The current representation is that a datatype is an operator
     // that takes types as arguments, thus "types" is the same as "arguments"
     private Map<String,CarrierSet> types_ = new HashMap<>();
     private List<CarrierSet> types_ordering_ = new ArrayList<>();
 
-    // NB: For now constructors and destructors are parsed as operators inside formulas 
+    // TODO: For now constructors and destructors are parsed as operators inside formulas 
     // and don't have a class of their own, destructors are the constructor's arguments
     // One may define new symbols in the symbole table to parse them differently,
     // then defining a new way to represent them inside formulas
@@ -64,7 +64,7 @@ public class Datatype extends Operator
       types_.put(type.name(), type);
       types_ordering_.add(type);
 
-      // TODO remove wether datatypes remain as operators
+      // TODO modify depending on wether datatypes remain as operators
       this.addArgument(new Arguments(type.name(), type.comment()));
     }
 

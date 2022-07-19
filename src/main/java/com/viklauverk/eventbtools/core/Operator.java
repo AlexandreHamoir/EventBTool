@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
 
 public class Operator
 {
@@ -37,6 +39,9 @@ public class Operator
     private List<WDConditions> wdcs_ordering_ = new ArrayList<>();
     
     private IsAFormula directDefinition_;
+    private Map<String, List<IsAFormula[]>> recursiveDefinition_ = new HashMap<>();
+    private Map<String, String> rec_case_comments_ = new HashMap<>();
+
     private String comment_;
 
     public Operator(String n, String c)
@@ -72,6 +77,16 @@ public class Operator
     {
       st.pushFrame(args_names_);
       if (this.hasDirectDefinition()) directDefinition_.parse(st);
+
+      for (String argName : getRecursiveArgs())
+      {
+        for (IsAFormula[] rec_def : recursiveDefinition_.get(argName))
+        {
+            rec_def[0].parseAndPushNonFreeVariables(st);
+            rec_def[1].parse(st);
+            st.popFrame();
+        }
+      }
 
       // WD conditions
       for (WDConditions wdc : this.wdcsOrdering())
@@ -160,4 +175,39 @@ public class Operator
         return directDefinition_ != null;
     }
 
+// -----------------------------------------------------------------------------
+//    RECURSIVE DEFINITION
+// -----------------------------------------------------------------------------
+
+    public void setRecursiveDef(String arg, IsAFormula format, IsAFormula definition) // the comment is on the definition
+    {
+        IsAFormula[] def = {format, definition};
+        if (!recursiveDefinition_.containsKey(arg)) 
+        {
+            List<IsAFormula[]> l = new ArrayList<>();
+            l.add(def);
+            recursiveDefinition_.put(arg, l);
+        }
+        else recursiveDefinition_.get(arg).add(def);
+    }
+
+    public List<IsAFormula[]> getRecursiveDefs(String arg)
+    {
+        return recursiveDefinition_.get(arg);
+    }
+
+    public Set<String> getRecursiveArgs()
+    {
+        return recursiveDefinition_.keySet();
+    }
+
+    public void setRecursiveCaseComment(String arg, String comment)
+    {
+        rec_case_comments_.put(arg, comment);
+    }
+
+    public String getRecursiveCaseComment(String arg)
+    {
+        return rec_case_comments_.get(arg);
+    }
 }

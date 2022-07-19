@@ -32,11 +32,17 @@
         <org.eventb.theory.core.operatorWDcondition name="*" org.eventb.core.comment="Comment Operator Parameters WDC" org.eventb.core.predicate="opArg1 &gt; opArg2"/>
     </org.eventb.theory.core.newOperatorDefinition>
     <org.eventb.theory.core.theorem name="." org.eventb.core.comment="Comment Theorem 1" org.eventb.core.label="thm1" org.eventb.core.predicate="∀ x,y· x∈ℕ ∧ y∈ℕ ⇒ OpDirect(y) = OpParameters(x,y)"/>
-    <org.eventb.theory.core.theorem name="/" org.eventb.core.label="thm2" org.eventb.core.predicate="∀s· s∈T ⇒ dest1(dtc(s, s)) = s"/>
+    <org.eventb.theory.core.theorem name="/" org.eventb.core.comment="Comment Theorem 2" org.eventb.core.label="thm2" org.eventb.core.predicate="∀s· s∈T ⇒ dest1(dtc(s, s)) = s"/>
     <org.eventb.theory.core.newOperatorDefinition name="0" org.eventb.core.comment="Comment Operator Recursive" org.eventb.core.label="OpRecursive" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX">
         <org.eventb.theory.core.operatorArgument name="'" org.eventb.core.expression="dtc(ℤ)" org.eventb.core.identifier="opArg1"/>
-        <org.eventb.theory.core.recursiveOperatorDefinition name="(" org.eventb.theory.core.inductiveArgument="opArg1">
-            <org.eventb.theory.core.recursiveDefinitionCase name="'" org.eventb.core.expression="dtc(x,y)" org.eventb.theory.core.formula="x + dest2(opArg1) − 3"/>
+        <org.eventb.theory.core.recursiveOperatorDefinition name="(" org.eventb.core.comment="Comment recursive arg" org.eventb.theory.core.inductiveArgument="opArg1">
+            <org.eventb.theory.core.recursiveDefinitionCase name="'" org.eventb.core.comment="Comment recursive def" org.eventb.core.expression="dtc(x,y)" org.eventb.theory.core.formula="x + dest2(opArg1) − 3"/>
         </org.eventb.theory.core.recursiveOperatorDefinition>
     </org.eventb.theory.core.newOperatorDefinition>
+    <org.eventb.theory.core.newOperatorDefinition name="1" org.eventb.core.comment="Comment Operator Infix" org.eventb.core.label="OpInfix" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="INFIX">
+        <org.eventb.theory.core.operatorArgument name="'" org.eventb.core.comment="Comment Infix Arg1&#9;" org.eventb.core.expression="ℤ" org.eventb.core.identifier="opArg1"/>
+        <org.eventb.theory.core.operatorArgument name="(" org.eventb.core.comment="Comment Infix Arg2" org.eventb.core.expression="ℤ" org.eventb.core.identifier="opArg2"/>
+        <org.eventb.theory.core.directOperatorDefinition name=")" org.eventb.core.comment="Comment Infix Definition" org.eventb.theory.core.formula="opArg1 + opArg2 ∗ 4"/>
+    </org.eventb.theory.core.newOperatorDefinition>
+    <org.eventb.theory.core.theorem name="2" org.eventb.core.comment="Comment Theorem 3" org.eventb.core.label="thm3" org.eventb.core.predicate="∀n,m· n∈ℤ ∧ m∈ℤ ⇒ n  OpInfix m = n + m ∗ 4"/>
 </org.eventb.theory.core.theoryRoot>

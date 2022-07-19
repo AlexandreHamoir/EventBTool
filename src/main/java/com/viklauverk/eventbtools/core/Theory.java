@@ -404,7 +404,7 @@ public class Theory
                 operator.addWDC(new WDConditions(well_def, c));
             }
 
-            /* TODO Only Direct definition possible for now */
+            /* Direct definitions */
             List<Node> direct_def = op.selectNodes("org.eventb.theory.core.directOperatorDefinition");
             for (Node dd : direct_def)
             {
@@ -413,6 +413,27 @@ public class Theory
                 String c = dd.valueOf("@org.eventb.core.comment");
 
                 operator.setDirectDef(new IsAFormula(i,d,c));
+            }
+
+            /* Recursive definitions */
+            List<Node> recursive_args = op.selectNodes("org.eventb.theory.core.recursiveOperatorDefinition");
+            for (Node ra : recursive_args)
+            {
+                String arg = ra.valueOf("@org.eventb.theory.core.inductiveArgument");
+                String c = ra.valueOf("@org.eventb.core.comment");
+                operator.setRecursiveCaseComment(arg, c);
+
+                List<Node> recursive_defs = ra.selectNodes("org.eventb.theory.core.recursiveDefinitionCase");
+                for (Node rd : recursive_defs)
+                {
+                    String n = operator.name()+"_recursive_case";
+                    String nn = operator.name()+"_recursive_def";
+                    String cc = rd.valueOf("@org.eventb.core.comment");
+                    String e = rd.valueOf("@org.eventb.core.expression");
+                    String def = rd.valueOf("@org.eventb.theory.core.formula");
+
+                    operator.setRecursiveDef(arg, new IsAFormula(n, e, ""), new IsAFormula(nn, def, cc));
+                }
             }
 
             addOperator(operator);

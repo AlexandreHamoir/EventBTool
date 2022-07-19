@@ -111,6 +111,7 @@ public class RenderTheoryUnicode extends RenderTheory
         cnvs().startAlignedLine();
         cnvs().append(cnvs().colorize(Canvas.Red, datatype.name()));
 
+        // TODO: This is code ducplication from visit_Operator
         if (datatype.hasArguments())
         {
             cnvs().append("(");
@@ -198,7 +199,24 @@ public class RenderTheoryUnicode extends RenderTheory
             cnvs().stopMath();
         }
         stopAlignedLineAndHandlePotentialComment(operator.comment(), cnvs(), null);
-    
+        
+        for (String argName : operator.getRecursiveArgs())
+        {
+            cnvs().startAlignedLine();
+            cnvs().variable("CASE "+argName);
+            stopAlignedLineAndHandlePotentialComment(operator.getRecursiveCaseComment(argName), cnvs(), null);
+            for (IsAFormula[] rec_def : operator.getRecursiveDefs(argName))
+            {
+                cnvs().startAlignedLine();
+                cnvs().startMath();
+                rec_def[0].writeFormulaStringToCanvas(cnvs());
+                cnvs().append(cnvs().colorize(Canvas.Red, " --> "));
+                rec_def[1].writeFormulaStringToCanvas(cnvs());
+                cnvs().stopMath();
+                stopAlignedLineAndHandlePotentialComment(rec_def[1].comment(), cnvs(), null);
+            }
+        }
+        
         // WD conditions
         if (operator.hasWdcs())
         {
