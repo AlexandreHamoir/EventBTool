@@ -111,15 +111,15 @@ public class RenderTheoryUnicode extends RenderTheory
         cnvs().startAlignedLine();
         cnvs().append(cnvs().colorize(Canvas.Red, datatype.name()));
 
-        // TODO: This is code ducplication from visit_Operator
-        if (datatype.hasArguments())
+        // TODO: This is code duplication from visit_Operator
+        if (datatype.hasTypeArguments())
         {
             cnvs().append("(");
             int i = 0;
-            for (Arguments arg : datatype.argumentsOrdering()) {
+            for (CarrierSet ta : datatype.typeArgumentsOrdering()) {
                 if (i > 0) cnvs().append(", ");
                 if (i == 0) i++;
-                cnvs().constant(arg.name());
+                cnvs().set(ta.name());
             }
             cnvs().append(")");
         }
@@ -187,7 +187,10 @@ public class RenderTheoryUnicode extends RenderTheory
             for (Arguments arg : operator.argumentsOrdering()) {
                 if (i > 0) cnvs().append(", ");
                 if (i == 0) i++;
-                cnvs().constant(arg.name());
+                cnvs().append(arg.name() + ":");
+                cnvs().startMath();
+                arg.getType().writeFormulaStringToCanvas(cnvs());
+                cnvs().stopMath();
             }
             cnvs().append(")");
         }

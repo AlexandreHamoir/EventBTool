@@ -23,12 +23,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
-public class Datatype extends Operator
+public class Datatype
 {
-    // TODO: The current representation is that a datatype is an operator
-    // that takes types as arguments, thus "types" is the same as "arguments"
-    private Map<String,CarrierSet> types_ = new HashMap<>();
-    private List<CarrierSet> types_ordering_ = new ArrayList<>();
+    private String name_;
+    private String comment_;
+
+    // NB: the type expression is the name of the CarrierSet
+    // For type arguments it is just a symbol
+    private Map<String,CarrierSet> type_arguments_ = new HashMap<>();
+    private List<CarrierSet> type_arguments_ordering_ = new ArrayList<>();
 
     // TODO: For now constructors and destructors are parsed as operators inside formulas 
     // and don't have a class of their own, destructors are the constructor's arguments
@@ -40,7 +43,18 @@ public class Datatype extends Operator
 
     public Datatype(String n, String c)
     {
-        super(n,c);
+      name_ = n;
+      comment_ = c;
+    }
+
+    public String name()
+    {
+      return name_;
+    }
+
+    public String comment()
+    {
+      return comment_;
     }
 
     public void addConstructor(Operator cons)
@@ -61,20 +75,30 @@ public class Datatype extends Operator
 
     public void addTypeArgument(CarrierSet type)
     {
-      types_.put(type.name(), type);
-      types_ordering_.add(type);
-
-      // TODO modify depending on wether datatypes remain as operators
-      this.addArgument(new Arguments(type.name(), type.comment()));
+      type_arguments_.put(type.name(), type);
+      type_arguments_ordering_.add(type);
     }
 
     public CarrierSet getTypeArgument(String name)
     {
-      return types_.get(name);
+      return type_arguments_.get(name);
     }
 
     public List<CarrierSet> typeArgumentsOrdering()
     {
-      return types_ordering_;
+      return type_arguments_ordering_;
+    }
+
+    public boolean hasTypeArguments()
+    {
+      return !type_arguments_.isEmpty();
+    }
+
+    public void parse(SymbolTable st)
+    {
+      for (Operator cons : cons_ordering_)
+      {
+        cons.parse(st);
+      }
     }
 }

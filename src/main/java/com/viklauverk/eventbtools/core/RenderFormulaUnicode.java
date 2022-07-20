@@ -476,7 +476,13 @@ public class RenderFormulaUnicode extends RenderFormula
 
     @Override public Formula visit_SET_SYMBOL(Formula i)
     {
-        cnvs().set(Symbols.name(i.intData())); visitMeta(i); return i;
+        cnvs().set("set_"+Symbols.name(i.intData())); visitMeta(i); return i;
+    }
+
+    // AH
+    @Override public Formula visit_TYPE_PARAMETER_SYMBOL(Formula i)
+    {
+        cnvs().set("tp_"+Symbols.name(i.intData())); return i;
     }
 
     @Override public Formula visit_CONSTANT_SYMBOL(Formula i)

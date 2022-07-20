@@ -264,6 +264,13 @@ public class FormulaBuilder extends EvBFormulaBaseVisitor<Formula>
         return FormulaFactory.newConstantSymbol(ctx.constant.getText(), visitOptionalMeta(ctx.meta()));
     }
 
+    // AH
+    @Override
+    public Formula visitTypeParameterSymbol(EvBFormulaParser.TypeParameterSymbolContext ctx)
+    {
+        return FormulaFactory.newTypeParameterSymbol(ctx.sym.getText(), null);
+    }
+
     @Override
     public Formula visitListOfVariables(EvBFormulaParser.ListOfVariablesContext ctx)
     {

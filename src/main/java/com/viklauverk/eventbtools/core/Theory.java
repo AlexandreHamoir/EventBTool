@@ -364,8 +364,9 @@ public class Theory
                 {
                     String nn = dest.valueOf("@org.eventb.core.identifier");
                     String cc = dest.valueOf("@org.eventb.core.comment");
+                    String tt = dest.valueOf("@org.eventb.theory.core.type");
 
-                    constructor.addArgument(new Arguments(nn, cc));
+                    constructor.addArgument(new Arguments(nn, tt, cc));
                 }
 
                 datatype.addConstructor(constructor);
@@ -462,8 +463,9 @@ public class Theory
                 String c = ax_op.valueOf("@org.eventb.core.comment");
                 boolean associative = ax_op.valueOf("@org.eventb.theory.core.associative").equals("true");
                 boolean commutative = ax_op.valueOf("@org.eventb.theory.core.commutative").equals("true");
+                boolean infix = ax_op.valueOf("@org.eventb.theory.core.notationType").equals("INFIX");
 
-                Operator operator = new Operator(l,associative,commutative,c);
+                Operator operator = new Operator(l, associative, commutative, c, infix);
 
                 List<Node> arguments = ax_op.selectNodes("org.eventb.theory.core.operatorArgument");
                 for (Node arg : arguments)
@@ -532,16 +534,15 @@ public class Theory
         for (TypeParameters tp : typeParametersOrdering())
         {
             log.debug("added type parameter set %s to symbol table %s", tp.name(), symbol_table_.name());
-            symbol_table_.addSet(tp);
+            symbol_table_.addTypeParameter(tp);
         }
 
         for (Datatype dt : datatypesOrdering())
         {
-            symbol_table_.addOperator(dt);
-            for (CarrierSet ta : dt.typeArgumentsOrdering())
-            {
-                symbol_table_.addSet(ta);
-            }
+            symbol_table_.addOperatorSymbol(dt.name());
+            
+            // There is no need to add type arguments since they have to be already defined type parameters
+
             for (Operator cst : dt.constructorsOrdering())
             {
                 symbol_table_.addOperator(cst);
@@ -584,11 +585,10 @@ public class Theory
             log.debug("adding Type Parameter set type: "+type.name());
         }
 
-/*        for (Datatype dt : datatypesOrdering())
-            for (Constructor cst : constructorOrdering())
-                for (Datatype dst : destructorOrdering())
-                    dst.parse();
-*/
+        for (Datatype dt : datatypesOrdering())
+        {
+            dt.parse(symbol_table_);
+        }
 
         for (AxiomaticDefinition axd : axiomaticDefinitionOrdering())
         {

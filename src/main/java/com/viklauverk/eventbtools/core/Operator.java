@@ -101,6 +101,11 @@ public class Operator
       st.pushFrame(args_names_);
       if (this.hasDirectDefinition()) directDefinition_.parse(st);
 
+      for (Arguments arg : args_ordering_)
+      {
+        arg.parse(st);
+      }
+
       for (String argName : getRecursiveArgs())
       {
         for (IsAFormula[] rec_def : recursiveDefinition_.get(argName))

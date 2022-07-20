@@ -275,6 +275,7 @@ expression
    | { symbol_table.isVariableSymbol(_input.LT(1).getText()) }?   variable=SYMBOL  PRIM? meta? # ExpressionVariable
    | { symbol_table.isConstantSymbol(_input.LT(1).getText()) }?   constant=SYMBOL meta?        # ExpressionConstant
    // Should we be able to talk about all functions such that their applications give such and such result? For the moment, we can't.
+   // AH
    | { symbol_table.isOperatorSymbol(_input.LT(1).getText()) }?   operator=SYMBOL meta? '(' expression (',' expression)* ')' # OperatorExpression
    // For now only infix for symbols, not expressions. If solved change the method in FormulaBuilder, left and right become expressions instead of contexts.
    | { symbol_table.isOperatorSymbol(_input.LT(2).getText()) && symbol_table.getOperator(_input.LT(2).getText()).isInfix() }?   left=SYMBOL operator=SYMBOL right=SYMBOL # InfixOperatorExpression
@@ -305,6 +306,8 @@ expression
     | { symbol_table.isNonFreeVariableSymbol(_input.LT(1).getText()) }?   variable=SYMBOL meta? # NonFreeSetVariable
     | { symbol_table.isVariableSymbol(_input.LT(1).getText()) }? variable=SYMBOL PRIM? meta? # SetVariable
     | { symbol_table.isConstantSymbol(_input.LT(1).getText()) }? constant=SYMBOL meta? # SetConstant
+    // AH
+    | { symbol_table.isTypeParameterSymbol(_input.LT(1).getText()) }? sym=SYMBOL # TypeParameterSymbol
     | NAT meta?               # NATSet
     | NAT1 meta?              # NAT1Set
     | INT meta?               # INTSet

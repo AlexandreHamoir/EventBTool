@@ -27,7 +27,7 @@ public class Arguments extends Typed
 {
     private String name_;
     private String comment_;
-    private String definition_;
+    private IsAFormula type_;
 
     public Arguments(String n, String c)
     {
@@ -38,7 +38,7 @@ public class Arguments extends Typed
     public Arguments(String n, String e, String c)
     {
         name_ = n;
-        definition_ = e;
+        type_ = new IsAFormula(n+"_def", e, "");
         comment_ = c;
     }
 
@@ -57,13 +57,13 @@ public class Arguments extends Typed
         return comment_.length() > 0;
     }
 
-    public void parse(SymbolTable st)
+    public IsAFormula getType()
     {
-      // TODO
+      return type_;
     }
 
-    public void setDefinition()
+    public void parse(SymbolTable st)
     {
-      // TODO
+      type_.parse(st);
     }
 }

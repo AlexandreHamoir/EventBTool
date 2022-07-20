@@ -57,9 +57,12 @@ public class SymbolTable
     private Map<String,Constant> constants_ = new HashMap<>();
     private Set<String> number_symbols_ = new HashSet<>(); // NM
     private Set<String> any_symbols_ = new HashSet<>(); // ABC
-
+    // AH
     private Set<String> operator_symbols_ = new HashSet<>();
     private Map<String,Operator> operators_ = new HashMap<>();
+    // AH
+    private Set<String> type_parameter_symbols_ = new HashSet<>();
+    private Map<String,TypeParameters> type_parameters_ = new HashMap<>();
 
     private LinkedList<Frame> frames_ = new LinkedList<>();
 
@@ -394,6 +397,7 @@ public class SymbolTable
         number_symbols_.addAll(s);
     }
 
+    // AH
     public boolean isOperatorSymbol(String c)
     {
         boolean is = operator_symbols_.contains(c);
@@ -442,6 +446,57 @@ public class SymbolTable
     public void addOperatorSymbols(List<String> s)
     {
         operator_symbols_.addAll(s);
+    }
+
+    // AH
+    public boolean isTypeParameterSymbol(String s)
+    {
+        boolean is = type_parameter_symbols_.contains(s);
+        if (is) return true;
+        for (SymbolTable parent : parents_)
+        {
+            is = parent.isTypeParameterSymbol(s);
+            if (is) return true;
+        }
+        return false;
+    }
+
+    public TypeParameters getTypeParameterSymbol(Formula name)
+    {
+        return getTypeParameter(name.symbol());
+    }
+
+    public TypeParameters getTypeParameter(String name)
+    {
+        TypeParameters typeParameter = type_parameters_.get(name);
+        if (typeParameter != null) return typeParameter;
+        for (SymbolTable parent : parents_)
+        {
+            typeParameter = parent.getTypeParameter(name);
+            if (typeParameter != null) return typeParameter;
+        }
+        return null;
+    }
+
+    public void addTypeParameterSymbol(String s)
+    {
+        type_parameter_symbols_.add(s);
+    }
+
+    public void addTypeParameter(TypeParameters ta)
+    {
+        type_parameter_symbols_.add(ta.name());
+        type_parameters_.put(ta.name(), ta);
+    }
+
+    public void addTypeParameterSymbols(String... s)
+    {
+        type_parameter_symbols_.addAll(Arrays.asList(s));
+    }
+
+    public void addTypeParameterSymbols(List<String> s)
+    {
+        type_parameter_symbols_.addAll(s);
     }
 
     public boolean isAnySymbol(String p)
