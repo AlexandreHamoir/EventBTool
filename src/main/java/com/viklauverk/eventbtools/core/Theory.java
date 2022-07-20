@@ -467,6 +467,9 @@ public class Theory
 
                 Operator operator = new Operator(l, associative, commutative, c, infix);
 
+                String t = ax_op.valueOf("@org.eventb.theory.core.type");
+                operator.setReturnType(t);
+
                 List<Node> arguments = ax_op.selectNodes("org.eventb.theory.core.operatorArgument");
                 for (Node arg : arguments)
                 {

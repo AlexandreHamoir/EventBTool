@@ -195,6 +195,12 @@ public class RenderTheoryUnicode extends RenderTheory
             cnvs().append(")");
         }
 
+        if (operator.hasReturnType()) 
+        {
+            cnvs().append(" : ");
+            operator.getReturnType().writeFormulaStringToCanvas(cnvs());
+        }
+
         cnvs().align();
         if (operator.hasDirectDefinition()) {
             cnvs().startMath();

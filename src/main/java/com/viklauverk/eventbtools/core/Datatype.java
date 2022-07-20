@@ -28,8 +28,8 @@ public class Datatype
     private String name_;
     private String comment_;
 
-    // NB: the type expression is the name of the CarrierSet
-    // For type arguments it is just a symbol
+    // NB: The type expression or a type argument is a single symbole
+    // thus we can use CarrierSet and have the type expression be its name
     private Map<String,CarrierSet> type_arguments_ = new HashMap<>();
     private List<CarrierSet> type_arguments_ordering_ = new ArrayList<>();
 
@@ -37,7 +37,6 @@ public class Datatype
     // and don't have a class of their own, destructors are the constructor's arguments
     // One may define new symbols in the symbole table to parse them differently,
     // then defining a new way to represent them inside formulas
-    // Defining classes may also help for clarity of code
     private Map<String,Operator> cons_ = new HashMap<>();
     private List<Operator> cons_ordering_ = new ArrayList<>();
 

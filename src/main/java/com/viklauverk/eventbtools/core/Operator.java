@@ -42,6 +42,8 @@ public class Operator
     private Map<String, List<IsAFormula[]>> recursiveDefinition_ = new HashMap<>();
     private Map<String, String> rec_case_comments_ = new HashMap<>();
 
+    private IsAFormula return_type_;
+
     private String comment_;
 
     public Operator(String n, String c)
@@ -99,13 +101,19 @@ public class Operator
     public void parse(SymbolTable st)
     {
       st.pushFrame(args_names_);
+      // Direct definition
       if (this.hasDirectDefinition()) directDefinition_.parse(st);
 
+      // Return type
+      if (this.hasReturnType()) return_type_.parse(st);
+
+      // Arguments
       for (Arguments arg : args_ordering_)
       {
         arg.parse(st);
       }
 
+      // Recursive definitions
       for (String argName : getRecursiveArgs())
       {
         for (IsAFormula[] rec_def : recursiveDefinition_.get(argName))
@@ -201,6 +209,21 @@ public class Operator
     public boolean hasDirectDefinition()
     {
         return directDefinition_ != null;
+    }
+
+    public void setReturnType(String fs)
+    {
+        return_type_ = new IsAFormula(this.name()+"_return_type", fs, "");
+    }
+
+    public IsAFormula getReturnType()
+    {
+        return return_type_;
+    }
+
+    public boolean hasReturnType()
+    {
+        return return_type_ != null;
     }
 
 // -----------------------------------------------------------------------------
