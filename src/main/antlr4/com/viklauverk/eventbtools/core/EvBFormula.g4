@@ -263,6 +263,10 @@ predicate
    | PARTITION '(' left=expression ',' right=listOfExpressions ')' # PartitionSet
 ;
 
+infixOp
+   : { symbol_table.isOperatorSymbol(_input.LT(1).getText()) && symbol_table.getOperator(_input.LT(1).getText()).isInfix() }? SYMBOL # InfixOperatorSymbol
+   ;
+
 expression
    : ETRUE meta?                                    # ExpressionTRUE
    | EFALSE meta?                                   # ExpressionFALSE
@@ -276,10 +280,8 @@ expression
    | { symbol_table.isConstantSymbol(_input.LT(1).getText()) }?   constant=SYMBOL meta?        # ExpressionConstant
    // Should we be able to talk about all functions such that their applications give such and such result? For the moment, we can't.
    // AH
-   | { symbol_table.isOperatorSymbol(_input.LT(1).getText()) }?   operator=SYMBOL meta? '(' expression (',' expression)* ')' # OperatorExpression
-   // For now only infix for symbols, not expressions. If solved change the method in FormulaBuilder, left and right become expressions instead of contexts.
-   | { symbol_table.isOperatorSymbol(_input.LT(2).getText()) && symbol_table.getOperator(_input.LT(2).getText()).isInfix() }?   left=SYMBOL operator=SYMBOL right=SYMBOL # InfixOperatorExpression
-   // | { symbol_table.isOperatorSymbol(_input.LT(2).getText()) }?   left=expression operator=SYMBOL  right=expression # InfixOperatorExpression
+   | left=expression operator=infixOp right=expression # InfixOperatorExpression // I had to define infixOp outside of expression or else there is a left recursive error
+   | { symbol_table.isOperatorSymbol(_input.LT(1).getText()) }?   operator=SYMBOL meta? ('(' expression (',' expression)* ')')? # OperatorExpression
    | { symbol_table.isVariableSymbol(_input.LT(1).getText()) }?   variable=SYMBOL PRIM? INV? meta? '(' inner=expression ')' # VariableFunctionApplication
    | { symbol_table.isConstantSymbol(_input.LT(1).getText()) }?   constant=SYMBOL meta? '(' inner=expression ')' # ConstantFunctionApplication
    | function=expression meta? '(' inner=expression ')'  # GenericFunctionApplication
