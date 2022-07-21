@@ -384,7 +384,24 @@ public class Theory
             boolean commutative = op.valueOf("@org.eventb.theory.core.commutative").equals("true");
             boolean infix = op.valueOf("@org.eventb.theory.core.notationType").equals("INFIX");
 
+            // Looking for a return type clause in the comment
+            int startPos, stopPos;
+            String returnType=null;
+            String startString="//Return:";
+            String stopString="//";
+            if ((startPos=comment.indexOf(startString)) >= 0)
+            {
+                if ((stopPos=comment.indexOf(stopString, startPos+startString.length())) >= 0)
+                {
+                    returnType = comment.substring(startPos+startString.length(), stopPos);
+                    String subComment1 = comment.substring(0, startPos);
+                    String subComment2 = ((stopPos+startString.length())<comment.length())? comment.substring(stopPos+startString.length(), comment.length()) : "";
+                    comment =  subComment1 + subComment2;
+                }
+            }
+
             Operator operator = new Operator(name,associative,commutative,comment, infix);
+            operator.setReturnType(returnType);
 
             List<Node> arguments = op.selectNodes("org.eventb.theory.core.operatorArgument");
             for (Node arg : arguments)

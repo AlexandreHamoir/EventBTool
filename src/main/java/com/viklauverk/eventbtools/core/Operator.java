@@ -213,7 +213,7 @@ public class Operator
 
     public void setReturnType(String fs)
     {
-        return_type_ = new IsAFormula(this.name()+"_return_type", fs, "");
+        if (fs != null) return_type_ = new IsAFormula(this.name()+"_return_type", fs, "");
     }
 
     public IsAFormula getReturnType()
