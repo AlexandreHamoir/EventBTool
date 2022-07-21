@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<org.eventb.theory.core.deployedTheoryRoot org.eventb.core.accurate="true" org.eventb.core.comment="GENERATED THEORY FILE: !DO NOT CHANGE!" org.eventb.theory.core.modificationHashValue="603498a8e7b35ec51629e85c85ea5676" org.eventb.theory.core.outdated="false">
-    <org.eventb.theory.core.useTheory name="TestImport" org.eventb.core.scTarget="/TheoryTest2/TestImport.dtf|org.eventb.theory.core.deployedTheoryRoot#TestImport"/>
-    <org.eventb.theory.core.scTheorem name="(" org.eventb.core.label="thm1" org.eventb.core.predicate="OpImport(2)=2" org.eventb.core.source="/TheoryTest2/TestImportDistant.tuf|org.eventb.theory.core.theoryRoot#TestImportDistant|org.eventb.theory.core.theorem#(" org.eventb.theory.core.order="0"/>
-</org.eventb.theory.core.deployedTheoryRoot>
