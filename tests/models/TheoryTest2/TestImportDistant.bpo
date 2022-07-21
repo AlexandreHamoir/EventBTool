@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.poFile org.eventb.core.poStamp="1">
+    <org.eventb.core.poPredicateSet name="ABSHYP" org.eventb.core.poStamp="0"/>
+    <org.eventb.core.poSequent name="thm1/S-THM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Therorem Soundness" org.eventb.core.poStamp="1">
+        <org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/TheoryTest2/TestImportDistant.bpo|org.eventb.core.poFile#TestImportDistant|org.eventb.core.poPredicateSet#ABSHYP"/>
+        <org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="OpImport(2)=2" org.eventb.core.source="/TheoryTest2/TestImportDistant.tuf|org.eventb.theory.core.theoryRoot#TestImportDistant|org.eventb.theory.core.theorem#("/>
+        <org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/TheoryTest2/TestImportDistant.tcf|org.eventb.theory.core.scTheoryRoot#TestImportDistant|org.eventb.theory.core.scTheorem#("/>
+        <org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/TheoryTest2/TestImportDistant.tuf|org.eventb.theory.core.theoryRoot#TestImportDistant|org.eventb.theory.core.theorem#("/>
+        <org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/TheoryTest2/TestImportDistant.bpo|org.eventb.core.poFile#TestImportDistant|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/TheoryTest2/TestImportDistant.bpo|org.eventb.core.poFile#TestImportDistant|org.eventb.core.poSequent#thm1\/S-THM|org.eventb.core.poPredicateSet#SEQHYP"/>
+    </org.eventb.core.poSequent>
+</org.eventb.core.poFile>
