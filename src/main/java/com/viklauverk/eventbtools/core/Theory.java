@@ -323,9 +323,15 @@ public class Theory
         for (Node i : list)
         {
             String t = i.valueOf("@org.eventb.theory.core.importTheory");
-            /*Theory import = sys_.getTheory(t); // TODO add getTheory in the system
-            if (import == null) log.error("Error while loading theory %s, could not find imported theory %s", name(), m);
-            addImport(import);*/
+            
+            // Get the name of the theory
+            int endPos = t.indexOf(".dtf|");
+            int beginPos = t.substring(0, endPos).lastIndexOf('/')+1;
+            String theoryName = t.substring(beginPos, endPos);
+
+            Theory importTh = sys_.getTheory(theoryName); // TODO add getTheory in the system
+            if (importTh == null) log.error("Error while loading theory %s, could not find imported theory %s", name(), theoryName);
+            addImport(importTh);
         }
 
         list = document.selectNodes("//org.eventb.theory.core.typeParameter");

@@ -165,6 +165,7 @@ public class Sys
 
     public Theory getTheory(String name)
     {
+        System.out.println("Trying to get "+name);
         return theories_.get(name);
     }
 
