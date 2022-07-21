@@ -630,10 +630,16 @@ public class RenderFormulaUnicode extends RenderFormula
     {
         //System.out.println(i.numChildren());
         visitChildNum(i, 0); 
-        for (int j = 1; j < i.numChildren(); j++) {
-            cnvs().symbol(" ");
-            visitChildNum(i, j);
-        } 
+        if (i.numChildren() > 1)
+        {
+            cnvs().symbol("(");
+            visitChildNum(i, 1);
+            for (int j = 2; j < i.numChildren(); j++) {
+                cnvs().symbol(",");
+                visitChildNum(i, j);
+            } 
+            cnvs().symbol(")");
+        }
         return i;
     }
 

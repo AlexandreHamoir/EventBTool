@@ -30,6 +30,7 @@ public class Operator
     private boolean isAssociative_ = false;
     private boolean isCommutative_ = false;
     private boolean isInfix_ = false; // For now infix operators are seen as prefix operators
+    private boolean isPredicate_ = false;
 
     private Map<String,Arguments> args_ = new HashMap<>();
     private List<Arguments> args_ordering_ = new ArrayList<>();
@@ -61,10 +62,11 @@ public class Operator
     }
 
     // AH
-    public Operator(String n, boolean as, boolean com, String c, boolean inf)
+    public Operator(String n, boolean as, boolean com, String c, boolean inf, boolean pred)
     {
         this(n, as, com, c);
         isInfix_ = inf;
+        isPredicate_ = pred;
     }
 
     public String name()
@@ -96,6 +98,11 @@ public class Operator
     public boolean isInfix()
     {
         return isInfix_;
+    }
+
+    public boolean isPredicate()
+    {
+        return isPredicate_;
     }
 
     public void parse(SymbolTable st)

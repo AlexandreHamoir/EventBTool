@@ -52,4 +52,7 @@
         <org.eventb.theory.core.operatorArgument name=")" org.eventb.core.comment="Comment Arg3" org.eventb.core.expression="S → ℕ" org.eventb.core.identifier="opArg3"/>
         <org.eventb.theory.core.directOperatorDefinition name="*" org.eventb.core.comment="Comment Direct Def" org.eventb.theory.core.formula="opArg1"/>
     </org.eventb.theory.core.newOperatorDefinition>
+    <org.eventb.theory.core.importTheoryProject name="4" org.eventb.theory.core.importTheoryProject="/TheoryTest2">
+        <org.eventb.theory.core.importTheory name="'" org.eventb.theory.core.importTheory="/TheoryTest2/TestImportDistant.dtf|org.eventb.theory.core.deployedTheoryRoot#TestImportDistant"/>
+    </org.eventb.theory.core.importTheoryProject>
 </org.eventb.theory.core.theoryRoot>

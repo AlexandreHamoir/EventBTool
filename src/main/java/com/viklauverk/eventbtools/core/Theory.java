@@ -50,15 +50,15 @@ public class Theory
     private List<TypeParameters> type_parameters_ordering_ = new ArrayList<>();
     private List<String> type_parameters_names_ = new ArrayList<>();
 
-    private Map<String,Datatype> datatype_ = new HashMap<>(); // TODO Finish Datatype class
+    private Map<String,Datatype> datatype_ = new HashMap<>();
     private List<Datatype> datatype_ordering_ = new ArrayList<>();
     private List<String> datatype_names_ = new ArrayList<>();
 
-    private Map<String,Operator> operator_ = new HashMap<>(); // TODO Create Operator class
+    private Map<String,Operator> operator_ = new HashMap<>();
     private List<Operator> operator_ordering_ = new ArrayList<>();
     private List<String> operator_names_ = new ArrayList<>();
 
-    private Map<String,AxiomaticDefinition> axiom_def_ = new HashMap<>(); // TODO Create AxiomaticDefinition class
+    private Map<String,AxiomaticDefinition> axiom_def_ = new HashMap<>();
     private List<AxiomaticDefinition> axiom_def_ordering_ = new ArrayList<>();
     private List<String> axiom_def_names_ = new ArrayList<>();
 
@@ -383,6 +383,9 @@ public class Theory
             boolean associative = op.valueOf("@org.eventb.theory.core.associative").equals("true");
             boolean commutative = op.valueOf("@org.eventb.theory.core.commutative").equals("true");
             boolean infix = op.valueOf("@org.eventb.theory.core.notationType").equals("INFIX");
+            boolean predicate = op.valueOf("@org.eventb.theory.core.formulaType").equals("false");
+
+            Operator operator = new Operator(name,associative,commutative,comment, infix, predicate);
 
             // Looking for a return type clause in the comment
             int startPos, stopPos;
@@ -399,8 +402,6 @@ public class Theory
                     comment =  subComment1 + subComment2;
                 }
             }
-
-            Operator operator = new Operator(name,associative,commutative,comment, infix);
             operator.setReturnType(returnType);
 
             List<Node> arguments = op.selectNodes("org.eventb.theory.core.operatorArgument");
@@ -481,8 +482,9 @@ public class Theory
                 boolean associative = ax_op.valueOf("@org.eventb.theory.core.associative").equals("true");
                 boolean commutative = ax_op.valueOf("@org.eventb.theory.core.commutative").equals("true");
                 boolean infix = ax_op.valueOf("@org.eventb.theory.core.notationType").equals("INFIX");
+                boolean predicate = ax_op.valueOf("@org.eventb.theory.core.formulaType").equals("false");
 
-                Operator operator = new Operator(l, associative, commutative, c, infix);
+                Operator operator = new Operator(l, associative, commutative, c, infix, predicate);
 
                 String t = ax_op.valueOf("@org.eventb.theory.core.type");
                 operator.setReturnType(t);
