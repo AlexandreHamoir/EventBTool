@@ -28,6 +28,10 @@ public class RenderTheoryUnicode extends RenderTheory
     @Override
     public void visit_TheoryStart(Theory th)
     {
+        // skip a line to differentiate theories
+        cnvs().startLine();
+        cnvs().append(" ");
+        cnvs().endLine();
         cnvs().startLine();
         cnvs().keywordLeft("theory");
         cnvs().space();

@@ -42,9 +42,9 @@ public class Sys
     private Map<String,SymbolTable> all_symbol_tables_;
     private Typing typing_;
 
-    private Map<String,Theory> theories_;
-    private List<Theory> theorie_ordering_;
-    private List<String> theorie_names_;
+    private Map<String,Map<String,Theory>> theories_; // Directory, theory name, theory
+    private List<Theory> theorie_ordering_; // All theories
+    private Map<String,List<String>> theorie_names_; // Directory, theory names
 
     private Map<String,Context> contexts_;
     private List<Context> context_ordering_;
@@ -64,7 +64,7 @@ public class Sys
 
         theories_ = new HashMap<>();
         theorie_ordering_ = new ArrayList<>();
-        theorie_names_ = new ArrayList<>();
+        theorie_names_ = new HashMap<>();
         contexts_ = new HashMap<>();
         context_ordering_ = new ArrayList<>();
         context_names_ = new ArrayList<>();
@@ -158,15 +158,21 @@ public class Sys
 
     public void addTheory(Theory t)
     {
-        theories_.put(t.name(), t);
-        theorie_ordering_.add(t);
-        theorie_names_ = theories_.keySet().stream().sorted().collect(Collectors.toList());
+        if (!theoryOrdering().contains(t))
+        {
+            if (!theories_.containsKey(t.dir())) theories_.put(t.dir(), new HashMap<>());
+            theories_.get(t.dir()).put(t.name(), t);
+            theorie_ordering_.add(t);
+            if (!theorie_names_.containsKey(t.dir())) theorie_names_.put(t.dir(), new ArrayList<>());
+            theorie_names_.get(t.dir()).add(t.name());
+        }
     }
 
-    public Theory getTheory(String name)
+    public Theory getTheory(String dir, String name)
     {
-        System.out.println("Trying to get "+name);
-        return theories_.get(name);
+        System.out.println("Trying to get "+dir+'/'+name);
+        if (!theories_.containsKey(dir)) return null;
+        return theories_.get(dir).get(name);
     }
 
     public List<Theory> theoryOrdering()
@@ -174,9 +180,19 @@ public class Sys
         return theorie_ordering_;
     }
 
-    public List<String> theoryNames()
+    public Map<String,List<String>> theoryNames()
     {
         return theorie_names_;
+    }
+
+    public List<String> theoryDirNames()
+    {
+        Stream<String> resultStream = Stream.empty();
+        for (String dir : theorie_names_.keySet())
+        {
+            resultStream = Stream.concat(resultStream, theorie_names_.get(dir).stream());
+        }
+        return resultStream.collect(Collectors.toList());
     }
 
     public void addContext(Context c)
@@ -229,6 +245,7 @@ public class Sys
         if (path == null || path.equals("")) return "";
 
         File dir = new File(path);
+        System.out.println(path);
 
         if (!dir.exists() || !dir.isDirectory())
         {
@@ -245,7 +262,7 @@ public class Sys
         // These will also add the known symbols for sets,constants and variables
         // to the SymbolTables that are needed for parsing the formulas.
         // These will also load the checked types calculated by Rodin.
-        loadTheories();
+        loadTheories(); // At this point all imported theories are loaded and will be treated normally
         loadContexts();
         loadMachines();
 
@@ -293,7 +310,8 @@ public class Sys
         {
             String name = p.left;
             File file = p.right;
-            Theory t = new Theory(name, this, file);
+            String dir_th = dir.getName();
+            Theory t = new Theory(dir_th, name, this, file);
             addTheory(t);
             log.debug("found theory "+name);
         }
@@ -329,9 +347,9 @@ public class Sys
 
     private void loadTheories() throws Exception
     {
-        for (String name : theoryNames())
+        for (int i = 0; i < theoryOrdering().size(); i++) // this way we can add element while in the loop to load all imported theories
         {
-            Theory t = getTheory(name);
+            Theory t = theorie_ordering_.get(i);
             t.load();
         }
     }
@@ -376,9 +394,8 @@ public class Sys
 
     private void parseTheoryFormulas()
     {
-        for (String name : theoryNames())
+        for (Theory t : theoryOrdering())
         {
-            Theory t = getTheory(name);
             t.parse();
         }
     }

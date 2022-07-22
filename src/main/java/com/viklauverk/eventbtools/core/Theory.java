@@ -41,6 +41,7 @@ public class Theory
     private SymbolTable symbol_table_;
 
     private String name_;
+    private String directory_;
 
     private Map<String,Theory> imports_ = new HashMap<>();
     private List<Theory> imports_ordering_ = new ArrayList<>();
@@ -75,8 +76,9 @@ public class Theory
     File source_;
     Sys sys_;
 
-    public Theory(String n, Sys s, File f) // TODO Finish
+    public Theory(String d, String n, Sys s, File f) // TODO Finish
     {
+        directory_ = d;
         name_ = n;
 
         // types_ = new HashMap<>();
@@ -104,6 +106,11 @@ public class Theory
     public String name()
     {
         return name_;
+    }
+
+    public String dir()
+    {
+        return directory_;
     }
 
     @Override
@@ -329,8 +336,21 @@ public class Theory
             int beginPos = t.substring(0, endPos).lastIndexOf('/')+1;
             String theoryName = t.substring(beginPos, endPos);
 
-            Theory importTh = sys_.getTheory(theoryName); // TODO add getTheory in the system
-            if (importTh == null) log.error("Error while loading theory %s, could not find imported theory %s", name(), theoryName);
+            String theoryDir = t.substring(0, beginPos-1);
+            int dirPos = theoryDir.lastIndexOf('/')+1;
+            theoryDir = theoryDir.substring(dirPos);
+
+            Theory importTh;
+            if ((importTh = sys_.getTheory(theoryDir, theoryName)) == null)
+            {
+                String workspacePath = this.source_.getParentFile().getParent(); // Path of the workspace directory relative to the current directory
+                File importFile = new File(workspacePath+'/'+theoryDir, theoryName+".tuf"); // The file theoryName.tuf in the directory workspacePath/theoryDir
+                // TODO: make a "suffix" variable to theory, machine, context and use that instead of writing it in sys and here ?
+                System.out.println(importFile.getPath());
+                if (!importFile.exists()) log.error("Error while loading theory %s, could not find imported theory %s", name(), importFile.getName());
+                importTh = new Theory(theoryDir, theoryName, sys_, importFile);
+                sys_.addTheory(importTh);
+            }
             addImport(importTh);
         }
 

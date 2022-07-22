@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <org.eventb.theory.core.theoryRoot org.eventb.core.configuration="org.eventb.theory.core.thy">
-    <org.eventb.theory.core.newOperatorDefinition name="'" org.eventb.core.comment="Comment Operator Import" org.eventb.core.label="OpImport" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX">
+    <org.eventb.theory.core.newOperatorDefinition name="'" org.eventb.core.comment="Comment Operator Import //Return: POW(NAT) //" org.eventb.core.label="OpImport" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX">
         <org.eventb.theory.core.operatorArgument name="'" org.eventb.core.comment="Comment Operator Import Argument" org.eventb.core.expression="A" org.eventb.core.identifier="opArg1"/>
         <org.eventb.theory.core.directOperatorDefinition name="(" org.eventb.core.comment="Comment Operator Import Direct Definition" org.eventb.theory.core.formula="opArg1"/>
     </org.eventb.theory.core.newOperatorDefinition>
