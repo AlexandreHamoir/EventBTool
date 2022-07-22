@@ -411,8 +411,6 @@ public class Theory
             boolean infix = op.valueOf("@org.eventb.theory.core.notationType").equals("INFIX");
             boolean predicate = op.valueOf("@org.eventb.theory.core.formulaType").equals("false");
 
-            Operator operator = new Operator(name,associative,commutative,comment, infix, predicate);
-
             // Looking for a return type clause in the comment
             int startPos, stopPos;
             String returnType=null;
@@ -424,10 +422,12 @@ public class Theory
                 {
                     returnType = comment.substring(startPos+startString.length(), stopPos);
                     String subComment1 = comment.substring(0, startPos);
-                    String subComment2 = ((stopPos+startString.length())<comment.length())? comment.substring(stopPos+startString.length(), comment.length()) : "";
+                    String subComment2 = ((stopPos+stopString.length())<comment.length())? comment.substring(stopPos+stopString.length(), comment.length()) : "";
                     comment =  subComment1 + subComment2;
                 }
             }
+            // The operator is defined now because we cut the return type clause from the comment
+            Operator operator = new Operator(name,associative,commutative,comment, infix, predicate);
             operator.setReturnType(returnType);
 
             List<Node> arguments = op.selectNodes("org.eventb.theory.core.operatorArgument");
