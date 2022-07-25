@@ -345,8 +345,7 @@ public class Theory
             {
                 String workspacePath = this.source_.getParentFile().getParent(); // Path of the workspace directory relative to the current directory
                 File importFile = new File(workspacePath+'/'+theoryDir, theoryName+".tuf"); // The file theoryName.tuf in the directory workspacePath/theoryDir
-                // TODO: make a "suffix" variable to theory, machine, context and use that instead of writing it in sys and here ?
-                System.out.println(importFile.getPath());
+                // TODO: make a "suffix" variable to theory, machine, context and use that instead of writing it in sys and here ? (.tuf above)
                 if (!importFile.exists()) log.error("Error while loading theory %s, could not find imported theory %s", name(), importFile.getName());
                 importTh = new Theory(theoryDir, theoryName, sys_, importFile);
                 sys_.addTheory(importTh);

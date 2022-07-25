@@ -170,7 +170,6 @@ public class Sys
 
     public Theory getTheory(String dir, String name)
     {
-        System.out.println("Trying to get "+dir+'/'+name);
         if (!theories_.containsKey(dir)) return null;
         return theories_.get(dir).get(name);
     }
@@ -245,7 +244,6 @@ public class Sys
         if (path == null || path.equals("")) return "";
 
         File dir = new File(path);
-        System.out.println(path);
 
         if (!dir.exists() || !dir.isDirectory())
         {

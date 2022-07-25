@@ -207,6 +207,7 @@ public class RenderTheoryUnicode extends RenderTheory
 
         cnvs().align();
         if (operator.hasDirectDefinition()) {
+            cnvs().append("= ");
             cnvs().startMath();
             operator.getDef().writeFormulaStringToCanvas(cnvs());
             cnvs().stopMath();
