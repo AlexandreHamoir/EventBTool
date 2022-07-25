@@ -248,7 +248,7 @@ public class CommandLine
         RenderTarget rt = RenderTarget.lookup(args[0]);
         if (rt == null)
         {
-            log.usageError("Not a supported render target \""+args[0]+"\", available targets are: plain, terminal, tex, thy and htmq.");
+            log.usageError("Not a supported render target \""+args[0]+"\", available targets are: plain, terminal, tex, thy, why and htmq.");
         }
 
         s.docGenSettings().setRenderTarget(rt);
@@ -295,7 +295,7 @@ public class CommandLine
         RenderTarget rt = RenderTarget.lookup(args[0]);
         if (rt == null)
         {
-            log.usageError("Not a supported render target \""+args[0]+"\", available targets are: plain, terminal, tex, thy and htmq.");
+            log.usageError("Not a supported render target \""+args[0]+"\", available targets are: plain, terminal, tex, thy, why and htmq.");
         }
 
         s.docGenSettings().setRenderTarget(rt);

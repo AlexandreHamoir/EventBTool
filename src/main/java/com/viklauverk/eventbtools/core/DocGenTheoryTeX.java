@@ -80,7 +80,7 @@ public class DocGenTheoryTeX extends BaseDocGen
 
         cnvs.append("\\tableofcontents\n");
 
-        for (String th : sys().theoryDirNames()) // TODO: I used DirNames here to no change much of the code but it may not be right for this case
+        for (String th : sys().theoryDirNames())
         {
             cnvs.append("\\pagebreak\n\n");
             cnvs.append("\\section{\\KEYWL{THEORY}\\small\\ "+Util.texSafe(th)+"}\n\n");

@@ -517,6 +517,13 @@ public class Sys
                                     new RenderFormulaHtmq(canvas),
                                     new RenderTheoryHtqm(),
                                     canvas);
+        case WHY:
+            return new AllRenders(null,
+                                    null,
+                                    null,
+                                    new RenderFormulaWhy(canvas),
+                                    new RenderTheoryWhy(),
+                                    canvas);
         }
         assert (false) : "No case for format: "+format;
         return null;

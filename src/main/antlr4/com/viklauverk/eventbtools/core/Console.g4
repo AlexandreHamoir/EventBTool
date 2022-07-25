@@ -95,6 +95,7 @@ renderTarget
    | 'terminal'
    | 'tex'
    | 'htmq'
+   | 'why'
    ;
 
 renderAttribute
@@ -191,7 +192,7 @@ push
     ;
 
 format
-    : 'plain' | 'terminal' | 'tex' | 'htmq';
+    : 'plain' | 'terminal' | 'tex' | 'htmq' | 'why';
 
 metaaa
     : 'meta' ;
@@ -209,8 +210,8 @@ hiding
 : 'noc' | 'nol' | 'non';
 
 set
-//G set default format {plain|terminal|tex|htmq} § Set the default format for rendering.
-//G set default hiding {nol|noc}                 § Set what parts to hide by default.
+//G set default format {plain|terminal|tex|htmq|why}    § Set the default format for rendering.
+//G set default hiding {nol|noc}                        § Set what parts to hide by default.
 //show:Usage: set default format <format>
 //show:       set default hiding <hiding>
 //show:

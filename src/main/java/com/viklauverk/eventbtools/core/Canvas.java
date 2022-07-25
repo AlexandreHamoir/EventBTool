@@ -889,6 +889,8 @@ public class Canvas
             return;
         case HTMQ:
             return;
+        case WHY:
+            return;
         }
         assert (false) : "Unknown encoding "+render_target_;
     }
@@ -914,6 +916,9 @@ public class Canvas
             return;
         case HTMQ:
             append(" br \n");
+            return;
+        case WHY:
+            append("\n");
             return;
         }
         assert (false) : "Unknown encoding "+render_target_;
@@ -995,6 +1000,9 @@ public class Canvas
         case HTMQ:
             append(" span(class=KEYW)="+Util.quoteXMQ(s)+" ");
             return;
+        case WHY:
+            append(s);
+            return;
         }
         assert (false) : "Unknown encoding "+render_target_;
     }
@@ -1015,6 +1023,8 @@ public class Canvas
         case HTMQ:
             append(" span(class=KEYWL)="+Util.quoteXMQ(s)+" ");
             return;
+        case WHY:
+            append(s);
         }
         assert (false) : "Unknown encoding "+render_target_;
     }

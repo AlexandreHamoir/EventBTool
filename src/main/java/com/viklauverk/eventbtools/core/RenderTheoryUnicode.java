@@ -25,6 +25,10 @@ import java.util.LinkedList;
 
 public class RenderTheoryUnicode extends RenderTheory
 {
+
+    // TODO: use canvas method to print so that it can be used by Classes that implement this one
+    // In Canvas we can define methods that have different behaviour depending on the kind of doc we write
+
     @Override
     public void visit_TheoryStart(Theory th)
     {

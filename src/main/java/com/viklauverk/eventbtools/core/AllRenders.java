@@ -55,10 +55,10 @@ public class AllRenders
 
         root_canvas_ = c;
         current_ = c;
-        rc_.setRenders(this);
-        rm_.setRenders(this);
-        re_.setRenders(this);
-        rt_.setRenders(this);
+        if (rc_ != null) rc_.setRenders(this); // AH, TODO: these if ( != null) cases may have to be remove, if this is the case change lookupRenders in Sys.java
+        if (rm_ != null) rm_.setRenders(this);
+        if (re_ != null) re_.setRenders(this);
+        if (rt_ != null) rt_.setRenders(this);
     }
 
     public Canvas currentCanvas()

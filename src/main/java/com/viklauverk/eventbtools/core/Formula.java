@@ -90,6 +90,8 @@ class Formula
         case HTMQ:
             gen = new RenderFormulaHtmq(c);
             break;
+        case WHY:
+            gen = new RenderFormulaWhy(c);
         default:
         assert (false) : "Unknown render target \""+c.renderTarget()+"\" when translating a formula into a string.";
         }
