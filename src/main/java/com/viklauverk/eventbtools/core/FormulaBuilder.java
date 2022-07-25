@@ -221,10 +221,22 @@ public class FormulaBuilder extends EvBFormulaBaseVisitor<Formula>
     public Formula visitInfixOperatorExpression(EvBFormulaParser.InfixOperatorExpressionContext ctx)
     {
         Formula operator = FormulaFactory.newAnySymbol(ctx.operator.getText(), null);
-        List<Formula> args = new LinkedList<>();
-        args.add(FormulaFactory.newAnySymbol(ctx.left.getText(), null));
-        args.add(FormulaFactory.newAnySymbol(ctx.right.getText(), null));
-        return FormulaFactory.newOperatorExpression(operator, args);
+        Formula left = FormulaFactory.newAnySymbol(ctx.left.getText(), null);
+        Formula right = FormulaFactory.newAnySymbol(ctx.right.getText(), null);
+        return FormulaFactory.newInfixOperatorExpression(operator, left, right);
+    }
+
+    // AH
+    @Override
+    public Formula visitDatatype(EvBFormulaParser.DatatypeContext ctx)
+    {
+        Formula datatype = FormulaFactory.newAnySymbol(ctx.datatype.getText(), null);
+        List<Formula> elements = new LinkedList<>();
+        for (EvBFormulaParser.ExpressionContext sec : ctx.expression())
+        {
+            elements.add(this.visit(sec));
+        }
+        return FormulaFactory.newDatatype(datatype, elements); // The first element is the operator
     }
 
     @Override

@@ -586,7 +586,7 @@ public class Theory
 
         for (Datatype dt : datatypesOrdering())
         {
-            symbol_table_.addOperatorSymbol(dt.name());
+            symbol_table_.addDatatype(dt);
             
             // There is no need to add type arguments since they have to be already defined type parameters
 

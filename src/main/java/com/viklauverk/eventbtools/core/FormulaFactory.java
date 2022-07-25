@@ -708,9 +708,23 @@ public class FormulaFactory
 
     // AH
     public static
-    Formula newOperatorExpression (Formula left, List<Formula> inners)
+    Formula newOperatorExpression (Formula op, List<Formula> inners)
     {
-        return new Formula(Node.OPERATOR_EXPRESSION, left, inners, null);
+        return new Formula(Node.OPERATOR_EXPRESSION, op, inners, null);
+    }
+
+    // AH
+    public static
+    Formula newInfixOperatorExpression (Formula op, Formula left, Formula right)
+    {
+        return new Formula(Node.INFIX_OPERATOR_EXPRESSION, op, left, right, null);
+    }
+
+    // AH
+    public static
+    Formula newDatatype (Formula dt, List<Formula> inners)
+    {
+        return new Formula(Node.DATATYPE, dt, inners, null);
     }
 
 }

@@ -261,6 +261,7 @@ class Formula
         meta_ = meta;
     }
 
+    // AH
     Formula(Node node, Formula left, List<Formula> inners, Formula meta)
     {
         assert (node != null && left != null && inners != null) : "Internal error when creating formula, args must be non-null.";

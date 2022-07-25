@@ -63,6 +63,9 @@ public class SymbolTable
     // AH
     private Set<String> type_parameter_symbols_ = new HashSet<>();
     private Map<String,TypeParameters> type_parameters_ = new HashMap<>();
+    // AH
+    private Set<String> datatype_symbols_ = new HashSet<>();
+    private Map<String, Datatype> datatypes_ = new HashMap<>();
 
     private LinkedList<Frame> frames_ = new LinkedList<>();
 
@@ -497,6 +500,57 @@ public class SymbolTable
     public void addTypeParameterSymbols(List<String> s)
     {
         type_parameter_symbols_.addAll(s);
+    }
+
+    // AH
+    public boolean isDatatypeSymbol(String s)
+    {
+        boolean is = datatype_symbols_.contains(s);
+        if (is) return true;
+        for (SymbolTable parent : parents_)
+        {
+            is = parent.isDatatypeSymbol(s);
+            if (is) return true;
+        }
+        return false;
+    }
+
+    public Datatype getDatatypeSymbol(Formula name)
+    {
+        return getDatatype(name.symbol());
+    }
+
+    public Datatype getDatatype(String name)
+    {
+        Datatype datatype = datatypes_.get(name);
+        if (datatype != null) return datatype;
+        for (SymbolTable parent : parents_)
+        {
+            datatype = parent.getDatatype(name);
+            if (datatype != null) return datatype;
+        }
+        return null;
+    }
+
+    public void addDatatypeSymbol(String s)
+    {
+        datatype_symbols_.add(s);
+    }
+
+    public void addDatatype(Datatype ta)
+    {
+        datatype_symbols_.add(ta.name());
+        datatypes_.put(ta.name(), ta);
+    }
+
+    public void addDatatypeSymbols(String... s)
+    {
+        datatype_symbols_.addAll(Arrays.asList(s));
+    }
+
+    public void addDatatypeSymbols(List<String> s)
+    {
+        datatype_symbols_.addAll(s);
     }
 
     public boolean isAnySymbol(String p)

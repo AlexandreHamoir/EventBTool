@@ -170,7 +170,9 @@ public enum Node
 
     FUNC_APP(false, true, false, false, false, false, false, false),
     FUNC_INV_APP(false, true, false, false, false, false, false, false),
-    OPERATOR_EXPRESSION(false, true, false, false, false, false, false, false),
+    OPERATOR_EXPRESSION(false, true, false, false, false, false, false, false),         // AH
+    INFIX_OPERATOR_EXPRESSION(false, true, false, false, false, false, false, false),   // AH
+    DATATYPE(false, true, true, false, false, false, false, false),          // AH
 
     // These are pre-defined sets
     EMPTY_SET(false, true, true, false, false, false, false, false),

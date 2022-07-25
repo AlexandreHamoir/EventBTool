@@ -21,6 +21,7 @@ package com.viklauverk.eventbtools.core;
 import com.viklauverk.eventbtools.core.Formula;
 
 import java.util.List;
+import java.text.Normalizer.Form;
 import java.util.LinkedList;
 
 public class RenderFormulaUnicode extends RenderFormula
@@ -626,6 +627,7 @@ public class RenderFormulaUnicode extends RenderFormula
         visitLeft(i); visitMeta(i); cnvs().symbol("~("); visitRight(i); cnvs().symbol(")"); return i;
     }
 
+    // AH
     @Override public Formula visit_OPERATOR_EXPRESSION(Formula i)
     {
         //System.out.println(i.numChildren());
@@ -641,6 +643,23 @@ public class RenderFormulaUnicode extends RenderFormula
             cnvs().symbol(")");
         }
         return i;
+    }
+
+    // AH
+    @Override public Formula visit_INFIX_OPERATOR_EXPRESSION(Formula i)
+    {
+        visitChildNum(i, 1);
+        cnvs().symbol(" ");
+        visitChildNum(i, 0);
+        cnvs().symbol(" ");
+        visitChildNum(i, 2);
+        return i;
+    }
+
+    // AH
+    @Override public Formula visit_DATATYPE(Formula i)
+    {
+        return visit_OPERATOR_EXPRESSION(i);
     }
 
     @Override public Formula visit_META(Formula i)
