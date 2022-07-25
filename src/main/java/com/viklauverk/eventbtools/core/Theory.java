@@ -592,8 +592,8 @@ public class Theory
 
             for (Operator cst : dt.constructorsOrdering())
             {
-                symbol_table_.addOperator(cst);
-                symbol_table_.addOperatorSymbols(cst.argumentsNames()); // destructors
+                symbol_table_.addConstructor(cst);
+                symbol_table_.addDestructorSymbols(cst.argumentsNames()); // destructors
             }
         }
 

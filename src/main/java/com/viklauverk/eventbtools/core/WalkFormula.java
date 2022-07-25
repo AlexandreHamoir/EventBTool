@@ -151,7 +151,9 @@ public class WalkFormula implements FormulaVisitor
     public Formula visit_FUNC_INV_APP(Formula i) { visitLeft(i); visitRight(i); return i; }
     public Formula visit_OPERATOR_EXPRESSION(Formula i) { visitChildren(i, ()->{}); return i; }         // AH
     public Formula visit_INFIX_OPERATOR_EXPRESSION(Formula i) { visitChildren(i, ()->{}); return i; }   // AH
-    public Formula visit_DATATYPE(Formula i) { visitChildren(i, ()->{}); return i; }         // AH
+    public Formula visit_DATATYPE(Formula i) { visitChildren(i, ()->{}); return i; }                    // AH
+    public Formula visit_CONSTRUCTOR(Formula i) { visitChildren(i, ()->{}); return i; }                 // AH
+    public Formula visit_DESTRUCTOR(Formula i) { visitChildren(i, ()->{}); return i; }                 // AH
     public Formula visit_META(Formula i) { return i; }
 
 
@@ -279,7 +281,9 @@ public class WalkFormula implements FormulaVisitor
         case FUNC_INV_APP: i = visit_FUNC_INV_APP(i); break;
         case OPERATOR_EXPRESSION: i = visit_OPERATOR_EXPRESSION(i); break;              // AH
         case INFIX_OPERATOR_EXPRESSION: i = visit_INFIX_OPERATOR_EXPRESSION(i); break;  // AH
-        case DATATYPE: i = visit_DATATYPE(i); break;              // AH
+        case DATATYPE: i = visit_DATATYPE(i); break;                                    // AH
+        case CONSTRUCTOR: i = visit_CONSTRUCTOR(i); break;                              // AH
+        case DESTRUCTOR: i = visit_DESTRUCTOR(i); break;                               // AH
         default: System.err.println("NOT IMPLEMENTED SWITCH FOR "+s); System.exit(1); break;
         }
 

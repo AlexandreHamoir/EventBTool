@@ -727,4 +727,18 @@ public class FormulaFactory
         return new Formula(Node.DATATYPE, dt, inners, null);
     }
 
+    // AH
+    public static
+    Formula newConstructor(Formula cons, List<Formula> inners)
+    {
+        return new Formula(Node.CONSTRUCTOR, cons, inners, null);
+    }
+
+    // AH
+    public static
+    Formula newDestructor(Formula dest, Formula element)
+    {
+        return new Formula(Node.DESTRUCTOR, dest, element, null);
+    }
+
 }

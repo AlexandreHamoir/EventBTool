@@ -19,6 +19,7 @@
 package com.viklauverk.eventbtools.core;
 
 import java.util.List;
+import java.text.Normalizer.Form;
 import java.util.LinkedList;
 
 import org.antlr.v4.runtime.Token;
@@ -213,7 +214,7 @@ public class FormulaBuilder extends EvBFormulaBaseVisitor<Formula>
         {
             elements.add(this.visit(sec));
         }
-        return FormulaFactory.newOperatorExpression(operator, elements); // The first element is the operator
+        return FormulaFactory.newOperatorExpression(operator, elements);
     }
 
     // AH
@@ -236,7 +237,29 @@ public class FormulaBuilder extends EvBFormulaBaseVisitor<Formula>
         {
             elements.add(this.visit(sec));
         }
-        return FormulaFactory.newDatatype(datatype, elements); // The first element is the operator
+        return FormulaFactory.newDatatype(datatype, elements);
+    }
+
+    // AH
+    @Override
+    public Formula visitConstructor(EvBFormulaParser.ConstructorContext ctx)
+    {
+        Formula constructor = FormulaFactory.newAnySymbol(ctx.constructor.getText(), null);
+        List<Formula> elements = new LinkedList<>();
+        for (EvBFormulaParser.ExpressionContext sec : ctx.expression())
+        {
+            elements.add(this.visit(sec));
+        }
+        return FormulaFactory.newConstructor(constructor, elements);
+    }
+
+    // AH
+    @Override
+    public Formula visitDestructor(EvBFormulaParser.DestructorContext ctx)
+    {
+        Formula destructor = FormulaFactory.newAnySymbol(ctx.destructor.getText(), null);
+        List<Formula> elements = new LinkedList<>();
+        return FormulaFactory.newDestructor(destructor, this.visit(ctx.dt));
     }
 
     @Override

@@ -659,6 +659,21 @@ public class RenderFormulaUnicode extends RenderFormula
     // AH
     @Override public Formula visit_DATATYPE(Formula i)
     {
+        cnvs().append("dt_");
+        return visit_OPERATOR_EXPRESSION(i);
+    }
+
+    // AH
+    @Override public Formula visit_CONSTRUCTOR(Formula i)
+    {
+        cnvs().append("cst_");
+        return visit_OPERATOR_EXPRESSION(i);
+    }
+
+    // AH
+    @Override public Formula visit_DESTRUCTOR(Formula i)
+    {
+        cnvs().append("dst_");
         return visit_OPERATOR_EXPRESSION(i);
     }
 

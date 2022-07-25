@@ -66,6 +66,12 @@ public class SymbolTable
     // AH
     private Set<String> datatype_symbols_ = new HashSet<>();
     private Map<String, Datatype> datatypes_ = new HashMap<>();
+    // AH
+    private Set<String> constructor_symbols_ = new HashSet<>();
+    private Map<String, Operator> constructors_ = new HashMap<>();
+
+    // AH
+    private Set<String> destructor_symbols_ = new HashSet<>();
 
     private LinkedList<Frame> frames_ = new LinkedList<>();
 
@@ -537,10 +543,10 @@ public class SymbolTable
         datatype_symbols_.add(s);
     }
 
-    public void addDatatype(Datatype ta)
+    public void addDatatype(Datatype dt)
     {
-        datatype_symbols_.add(ta.name());
-        datatypes_.put(ta.name(), ta);
+        datatype_symbols_.add(dt.name());
+        datatypes_.put(dt.name(), dt);
     }
 
     public void addDatatypeSymbols(String... s)
@@ -551,6 +557,85 @@ public class SymbolTable
     public void addDatatypeSymbols(List<String> s)
     {
         datatype_symbols_.addAll(s);
+    }
+
+    // AH
+    public boolean isConstructorSymbol(String s)
+    {
+        boolean is = constructor_symbols_.contains(s);
+        if (is) return true;
+        for (SymbolTable parent : parents_)
+        {
+            is = parent.isConstructorSymbol(s);
+            if (is) return true;
+        }
+        return false;
+    }
+
+    public Operator getConstructorSymbol(Formula name)
+    {
+        return getConstructor(name.symbol());
+    }
+
+    public Operator getConstructor(String name)
+    {
+        Operator constructor = constructors_.get(name);
+        if (constructor != null) return constructor;
+        for (SymbolTable parent : parents_)
+        {
+            constructor = parent.getConstructor(name);
+            if (constructor != null) return constructor;
+        }
+        return null;
+    }
+
+    public void addConstructorSymbol(String s)
+    {
+        constructor_symbols_.add(s);
+    }
+
+    public void addConstructor(Operator cons)
+    {
+        constructor_symbols_.add(cons.name());
+        constructors_.put(cons.name(), cons);
+    }
+
+    public void addConstructorSymbols(String... s)
+    {
+        constructor_symbols_.addAll(Arrays.asList(s));
+    }
+
+    public void addConstructorSymbols(List<String> s)
+    {
+        constructor_symbols_.addAll(s);
+    }
+
+    // AH
+    public boolean isDestructorSymbol(String s)
+    {
+        boolean is = destructor_symbols_.contains(s);
+        if (is) return true;
+        for (SymbolTable parent : parents_)
+        {
+            is = parent.isDestructorSymbol(s);
+            if (is) return true;
+        }
+        return false;
+    }
+
+    public void addDestructorSymbol(String s)
+    {
+        destructor_symbols_.add(s);
+    }
+
+    public void addDestructorSymbols(String... s)
+    {
+        destructor_symbols_.addAll(Arrays.asList(s));
+    }
+
+    public void addDestructorSymbols(List<String> s)
+    {
+        destructor_symbols_.addAll(s);
     }
 
     public boolean isAnySymbol(String p)
