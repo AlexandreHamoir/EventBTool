@@ -103,9 +103,14 @@ public class Theory
         return s;
     }
 
-    public String name()
+    public String localName()
     {
         return name_;
+    }
+
+    public String name()
+    {
+        return dir()+'/'+name_;
     }
 
     public String dir()
@@ -154,7 +159,7 @@ public class Theory
 
     public void addImport(Theory imp)
     {
-        imports_.put(imp.name(), imp);
+        imports_.put(imp.name(), imp); // This is the full name of the imported theory, including the directory
         imports_ordering_.add(imp);
         imports_names_ = imports_.keySet().stream().sorted().collect(Collectors.toList());
     }

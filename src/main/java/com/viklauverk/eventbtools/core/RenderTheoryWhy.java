@@ -6,7 +6,7 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
     public void visit_TheoryStart(Theory th)
     {
         cnvs().startLine();
-        cnvs().append("theory Th_"+th.name());
+        cnvs().append("theory Th_"+th.localName());
         cnvs().endLine();
         cnvs().startIndent();
         //TODO: import the file with all definitions
@@ -21,7 +21,7 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
     @Override
     public void visit_Import(Theory th, Theory imp)
     {
-        cnvs().importTheory(imp.name());
+        cnvs().importTheory(imp.localName());
     }
 
     @Override
@@ -63,14 +63,14 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
     @Override
     public void visit_Datatype(Theory th, Datatype dt)
     {
-        cnvs().startLine();
+        cnvs().startIndentedLine();
         cnvs().append("type dt_"+dt.name()+" = ");
         int i = 0;
         for (Operator cons : dt.constructorsOrdering())
         {
             if (i > 0) cnvs().append(" | ");
             else i++;
-            cnvs().append("Cst_"+cons.name());
+            cnvs().append("cst_"+cons.name());
             for (Arguments dest : cons.argumentsOrdering())
             {
                 // TODO: Only for type parameters for now

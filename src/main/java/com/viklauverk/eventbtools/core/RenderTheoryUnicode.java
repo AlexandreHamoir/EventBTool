@@ -39,7 +39,7 @@ public class RenderTheoryUnicode extends RenderTheory
         cnvs().startLine();
         cnvs().keywordLeft("theory");
         cnvs().space();
-        cnvs().id(th.name());
+        cnvs().id(th.localName());
         cnvs().endLine();
 
         cnvs().hrule();
@@ -62,7 +62,7 @@ public class RenderTheoryUnicode extends RenderTheory
     @Override
     public void visit_Import(Theory th, Theory imp)
     {
-        cnvs().id(imp.name());
+        cnvs().id(imp.localName());
         cnvs().space();
     }
 

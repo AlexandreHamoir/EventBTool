@@ -17,7 +17,7 @@ public class DocGenTheoryWhy extends BaseDocGen {
         Canvas cnvs = new Canvas();
         cnvs.setRenderTarget(RenderTarget.WHY);
 
-        for (String th : sys().theoryDirNames())
+        for (String th : sys().theoryFullNames())
         {
             cnvs.append("EVBT(show part why \""+th+"\")\n");
         }

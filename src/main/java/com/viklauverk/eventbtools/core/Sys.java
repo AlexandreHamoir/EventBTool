@@ -161,10 +161,10 @@ public class Sys
         if (!theoryOrdering().contains(t))
         {
             if (!theories_.containsKey(t.dir())) theories_.put(t.dir(), new HashMap<>());
-            theories_.get(t.dir()).put(t.name(), t);
+            theories_.get(t.dir()).put(t.localName(), t);
             theorie_ordering_.add(t);
             if (!theorie_names_.containsKey(t.dir())) theorie_names_.put(t.dir(), new ArrayList<>());
-            theorie_names_.get(t.dir()).add(t.name());
+            theorie_names_.get(t.dir()).add(t.localName());
         }
     }
 
@@ -179,12 +179,30 @@ public class Sys
         return theorie_ordering_;
     }
 
-    public Map<String,List<String>> theoryNames()
+    /** Returns the mapping of Directory -> Theories */
+    public Map<String,List<String>> theoryMapping()
     {
         return theorie_names_;
     }
 
-    public List<String> theoryDirNames()
+    /** Returns the name of all theories in the form of Directory/TheoryName */
+    public List<String> theoryFullNames()
+    {
+        Stream<String> resultStream = Stream.empty();
+        for (String dir : theorie_names_.keySet())
+        {
+            List<String> th_full_names = new ArrayList<>();
+            for (String th_name : theorie_names_.get(dir))
+            {
+                th_full_names.add(dir+'/'+th_name);
+            }
+            resultStream = Stream.concat(resultStream, th_full_names.stream());
+        }
+        return resultStream.collect(Collectors.toList());
+    }
+
+    /** This return the local name of all theories */
+    public List<String> theoryNames()
     {
         Stream<String> resultStream = Stream.empty();
         for (String dir : theorie_names_.keySet())
