@@ -630,7 +630,6 @@ public class RenderFormulaUnicode extends RenderFormula
     // AH
     @Override public Formula visit_OPERATOR_EXPRESSION(Formula i)
     {
-        //System.out.println(i.numChildren());
         visitChildNum(i, 0); 
         if (i.numChildren() > 1)
         {

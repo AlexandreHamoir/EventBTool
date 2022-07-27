@@ -728,7 +728,7 @@ public class Canvas
     }
 
     /** Removes one indentation to the lines created afterwards. */
-    public void stopIndent()
+    public void endIndent()
     {
         indentation_ -= indentSize();
     }
@@ -1616,7 +1616,7 @@ public class Canvas
         case HTMQ:
             return;
         case WHY:
-            commentIndentedLine(comment);;
+            commentIndentedLine(comment);
             theoremDef(name);
             return;
         }

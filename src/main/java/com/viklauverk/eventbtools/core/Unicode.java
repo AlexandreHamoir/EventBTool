@@ -281,7 +281,7 @@ public class Unicode
     {
         s = s.trim();
         String[] rows = s.split("\n", -1);
-        if (rows.length == 1) return "// "+rows[0];
+        if (rows.length == 1) return "(* "+rows[0] + " *)";
         StringBuilder o = new StringBuilder();
         o.append("(* ");
         boolean nl = false;

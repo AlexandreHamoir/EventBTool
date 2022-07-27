@@ -10,6 +10,9 @@
             <org.eventb.theory.core.constructorArgument name="'" org.eventb.core.comment="Comment Destructor Datatype 1" org.eventb.core.identifier="dest1" org.eventb.theory.core.type="S"/>
             <org.eventb.theory.core.constructorArgument name="(" org.eventb.core.comment="Comment Destructor Datatype 2" org.eventb.core.identifier="dest2" org.eventb.theory.core.type="S"/>
         </org.eventb.theory.core.datatypeConstructor>
+        <org.eventb.theory.core.datatypeConstructor name=")" org.eventb.core.identifier="dtc1">
+            <org.eventb.theory.core.constructorArgument name="'" org.eventb.core.identifier="dest1" org.eventb.theory.core.type="S"/>
+        </org.eventb.theory.core.datatypeConstructor>
     </org.eventb.theory.core.datatypeDefinition>
     <org.eventb.theory.core.newOperatorDefinition name="*" org.eventb.core.comment="Comment Operator Direct//Return:POW(S)//" org.eventb.core.label="OpDirect" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX">
         <org.eventb.theory.core.operatorArgument name="'" org.eventb.core.comment="Comment Operator Direct Arg" org.eventb.core.expression="S" org.eventb.core.identifier="opArg"/>
@@ -38,6 +41,7 @@
         <org.eventb.theory.core.operatorArgument name="'" org.eventb.core.expression="dt(ℤ)" org.eventb.core.identifier="opArg1"/>
         <org.eventb.theory.core.recursiveOperatorDefinition name="(" org.eventb.core.comment="Comment recursive arg" org.eventb.theory.core.inductiveArgument="opArg1">
             <org.eventb.theory.core.recursiveDefinitionCase name="'" org.eventb.core.comment="Comment recursive def" org.eventb.core.expression="dtc(x,y)" org.eventb.theory.core.formula="x + dest2(opArg1) − 3"/>
+            <org.eventb.theory.core.recursiveDefinitionCase name="(" org.eventb.core.comment="Comment recursive def 2" org.eventb.core.expression="dtc1(z)" org.eventb.theory.core.formula="z∗z"/>
         </org.eventb.theory.core.recursiveOperatorDefinition>
     </org.eventb.theory.core.newOperatorDefinition>
     <org.eventb.theory.core.newOperatorDefinition name="1" org.eventb.core.comment="Comment Operator Infix" org.eventb.core.label="OpInfix" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="INFIX">

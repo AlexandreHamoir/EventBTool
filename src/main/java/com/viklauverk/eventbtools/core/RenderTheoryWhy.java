@@ -39,7 +39,7 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
     public void visit_TypeParametersStart(Theory th)
     {
         cnvs().startIndentedLine();
-        if (th.hasTypeParameters()) cnvs().append("type");
+        if (th.hasTypeParameters()) cnvs().append("(* type"); // type parameters are not declared in why3 or else you have to specifically instantiate them
     }
 
     @Override
@@ -51,6 +51,7 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
     @Override
     public void visit_TypeParametersEnd(Theory th)
     {
+        if (th.hasTypeParameters()) cnvs().append("*)");
         cnvs().endLine();
     }
 
@@ -74,7 +75,8 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
             for (Arguments dest : cons.argumentsOrdering())
             {
                 // TODO: Only for type parameters for now
-                cnvs().append(" 'tp_"+dest.getType().name());
+                cnvs().append(" ");
+                dest.getType().writeFormulaStringToCanvas(cnvs());
             }
         }
         cnvs().endLine();
@@ -117,7 +119,7 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
     public void visit_Operator(Theory th, Operator operator)
     {
         cnvs().startIndentedLine();
-        cnvs().operatorDef(operator.name());
+        cnvs().operatorDef("op_"+operator.name());
         for (Arguments arg : operator.argumentsOrdering())
         {
             cnvs().append(" ("+arg.name()+":");
@@ -158,12 +160,12 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
                 cnvs().endLine();
             }
 
-            cnvs().stopIndent();
+            cnvs().endIndent();
             cnvs().startIndentedLine();
             cnvs().append("end");
             cnvs().endLine();
         }
-        cnvs().stopIndent();
+        cnvs().endIndent();
     }
 
     @Override
@@ -181,7 +183,31 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
     @Override
     public void visit_AxiomaticDefinition(Theory th, AxiomaticDefinition axiomatic_definition)
     {
-        //TODO
+        cnvs().startIndentedLine();
+        cnvs().comment(axiomatic_definition.comment());
+        cnvs().endLine();
+
+        for (TypeDef td : axiomatic_definition.typeDefOrdering())
+        {
+            cnvs().startIndentedLine();
+            cnvs().append("type td_"+td.name());
+            cnvs().endLine();
+        }
+
+        for (Operator op : axiomatic_definition.operatorOrdering())
+        {
+            visit_Operator(th, op);
+        }
+
+        for (Axiom axm : axiomatic_definition.axiomOrdering())
+        {
+            cnvs().axiomDef(axm.name(), axm.comment());
+            cnvs().startIndent();
+            cnvs().startIndentedLine();
+            axm.writeFormulaStringToCanvas(cnvs());
+            cnvs().endLine();
+            cnvs().endIndent();
+        }
     }
 
     @Override
@@ -199,7 +225,12 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
     @Override
     public void visit_Theorem(Theory th, Theorem theorem)
     {
-        //TODO
+        cnvs().theoremDef(theorem.name(), theorem.comment());
+        cnvs().startIndent();
+        cnvs().startIndentedLine();
+        theorem.writeFormulaStringToCanvas(cnvs());
+        cnvs().endLine();
+        cnvs().endIndent();
     }
 
     @Override
@@ -211,7 +242,7 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
     @Override
     public void visit_TheoryEnd(Theory th)
     {
-        cnvs().stopIndent();
+        cnvs().endIndent();
         cnvs().startLine();
         cnvs().keyword("end");
         cnvs().endLine();
