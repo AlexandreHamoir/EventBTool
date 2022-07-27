@@ -23,34 +23,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
-public class TypeDef
+public class TypeDef extends CarrierSet
 {
-    private String name_;
-    private String comment_;
-
-    public TypeDef(String n, String c)
-    {
-        name_ = n;
-        comment_ = c;
-    }
-
-    public String name()
-    {
-      return name_;
-    }
-
-    public String comment()
-    {
-      return comment_;
-    }
-
-    public boolean hasComment()
-    {
-        return comment_.length() > 0;
-    }
-
-    public void parse(SymbolTable st)
-    {
-      // TODO
-    }
+  public TypeDef(String n, String c)
+  {
+    super(n, null);
+    addComment(c);
+  }
 }

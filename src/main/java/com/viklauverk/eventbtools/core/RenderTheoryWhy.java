@@ -8,6 +8,7 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
         cnvs().startLine();
         cnvs().append("theory Th_"+th.name());
         cnvs().endLine();
+        cnvs().startIndent();
         //TODO: import the file with all definitions
     }
 
@@ -20,7 +21,7 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
     @Override
     public void visit_Import(Theory th, Theory imp)
     {
-        //TODO
+        cnvs().importTheory(imp.name());
     }
 
     @Override
@@ -37,14 +38,14 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
     @Override
     public void visit_TypeParametersStart(Theory th)
     {
-        cnvs().startLine();
+        cnvs().startIndentedLine();
         if (th.hasTypeParameters()) cnvs().append("type");
     }
 
     @Override
     public void visit_TypeParameter(Theory th, TypeParameters tp)
     {
-        cnvs().append(" 'tp_"+tp.name());
+        cnvs().append(" 'tp_"+tp.name()); //TODO: use a why3 prefix constant
     }
 
     @Override
@@ -94,7 +95,10 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
     @Override
     public void visit_WDCondition(Theory th, WDConditions wdc)
     {
-        //TODO
+        cnvs().beginWDC();
+        wdc.writeFormulaStringToCanvas(cnvs());
+        cnvs().endWDC();
+
     }
 
     @Override
@@ -112,7 +116,54 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
     @Override
     public void visit_Operator(Theory th, Operator operator)
     {
-        //TODO
+        cnvs().startIndentedLine();
+        cnvs().operatorDef(operator.name());
+        for (Arguments arg : operator.argumentsOrdering())
+        {
+            cnvs().append(" ("+arg.name()+":");
+            arg.getType().writeFormulaStringToCanvas(cnvs());
+            cnvs().append(")");
+        }
+        if (operator.hasReturnType())
+        {
+            cnvs().append(" : ");
+            operator.getReturnType().writeFormulaStringToCanvas(cnvs());
+        }
+        cnvs().endLine();
+        cnvs().startIndent();
+        for (WDConditions wdc : operator.wdcsOrdering())
+        {
+            visit_WDCondition(th, wdc);
+        }
+        if (operator.hasDirectDefinition())
+        {
+            cnvs().beginOpDef();
+            operator.getDef().writeFormulaStringToCanvas(cnvs());
+            cnvs().endOpDef();
+        }
+        for (String argName : operator.getRecursiveArgs())
+        {
+            cnvs().startIndentedLine();
+            cnvs().append("match "+argName+" with");
+            cnvs().endLine();
+            cnvs().startIndent();
+
+            for (IsAFormula[] rec_def : operator.getRecursiveDefs(argName))
+            {
+                cnvs().startIndentedLine();
+                cnvs().append("| ");
+                rec_def[0].writeFormulaStringToCanvas(cnvs());
+                cnvs().append(" -> ");
+                rec_def[1].writeFormulaStringToCanvas(cnvs());
+                cnvs().endLine();
+            }
+
+            cnvs().stopIndent();
+            cnvs().startIndentedLine();
+            cnvs().append("end");
+            cnvs().endLine();
+        }
+        cnvs().stopIndent();
     }
 
     @Override
@@ -160,6 +211,7 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
     @Override
     public void visit_TheoryEnd(Theory th)
     {
+        cnvs().stopIndent();
         cnvs().startLine();
         cnvs().keyword("end");
         cnvs().endLine();

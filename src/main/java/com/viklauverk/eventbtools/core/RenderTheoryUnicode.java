@@ -272,10 +272,10 @@ public class RenderTheoryUnicode extends RenderTheory
             stopAlignedLineAndHandlePotentialComment("", cnvs(), null);
         }
 
-        for (TypeParameters tp : axiomatic_definition.typeDefOrdering()) {
+        for (TypeDef td : axiomatic_definition.typeDefOrdering()) {
             cnvs().startAlignedLine();
-            cnvs().set(tp.name());
-            stopAlignedLineAndHandlePotentialComment(tp.comment(), cnvs(), null);
+            cnvs().set(td.name());
+            stopAlignedLineAndHandlePotentialComment(td.comment(), cnvs(), null);
         }
 
         if (axiomatic_definition.hasOperators()) {

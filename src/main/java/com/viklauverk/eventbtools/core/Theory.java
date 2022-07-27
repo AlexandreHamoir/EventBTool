@@ -496,7 +496,7 @@ public class Theory
             {
                 String l = ax_td.valueOf("@org.eventb.core.identifier");
                 String c = ax_td.valueOf("@org.eventb.core.comment");
-                axiomatic_definition.addTypeDef(new TypeParameters(l, c));
+                axiomatic_definition.addTypeDef(new TypeDef(l, c));
             }
 
             List<Node> axiomatic_op_def = axd.selectNodes("org.eventb.theory.core.axiomaticOperatorDefinition");
@@ -604,7 +604,7 @@ public class Theory
 
         for (AxiomaticDefinition axd : axiomaticDefinitionOrdering())
         {
-            for (TypeParameters axd_td : axd.typeDefOrdering())
+            for (TypeDef axd_td : axd.typeDefOrdering())
             {
                 symbol_table_.addSet(axd_td);
             }

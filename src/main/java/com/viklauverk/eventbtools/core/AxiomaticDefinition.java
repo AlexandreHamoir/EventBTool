@@ -27,8 +27,8 @@ public class AxiomaticDefinition
 {
     private String name_;
 
-    private Map<String,TypeParameters> tyd_ = new HashMap<>();
-    private List<TypeParameters> tyd_ordering_ = new ArrayList<>();
+    private Map<String,TypeDef> tyd_ = new HashMap<>();
+    private List<TypeDef> tyd_ordering_ = new ArrayList<>();
 
     private Map<String,Operator> opd_ = new HashMap<>();
     private List<Operator> opd_ordering_ = new ArrayList<>();
@@ -74,13 +74,13 @@ public class AxiomaticDefinition
 // -----------------------------------------------------------------------------
 //    TYPE DEF
 // -----------------------------------------------------------------------------
-    public void addTypeDef(TypeParameters tyd)
+    public void addTypeDef(TypeDef tyd)
     {
         tyd_.put(tyd.name(),tyd);
         tyd_ordering_.add(tyd);
     }
 
-    public List<TypeParameters> typeDefOrdering()
+    public List<TypeDef> typeDefOrdering()
     {
         return tyd_ordering_;
     }

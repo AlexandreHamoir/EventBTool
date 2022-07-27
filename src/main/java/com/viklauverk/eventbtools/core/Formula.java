@@ -92,6 +92,7 @@ class Formula
             break;
         case WHY:
             gen = new RenderFormulaWhy(c);
+            break;
         default:
         assert (false) : "Unknown render target \""+c.renderTarget()+"\" when translating a formula into a string.";
         }

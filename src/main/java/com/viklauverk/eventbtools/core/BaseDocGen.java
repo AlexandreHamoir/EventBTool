@@ -99,7 +99,7 @@ public abstract class BaseDocGen
         AllRenders ar = sys().lookupRenders(cnvs.renderTarget(),
                                             cnvs);
 
-        for(Theory th : sys().theoryOrdering())
+        for (Theory th : sys().theoryOrdering())
         {
             ar.walkTheory(th, pattern);
         }
