@@ -1,3 +1,21 @@
+/*
+ Copyright (C) 2021 Viklauverk AB
+ Author Alexandre Hamoir
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+
+ You should have received a copy of the GNU Affero General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 package com.viklauverk.eventbtools.core;
 
 public class RenderFormulaWhy extends RenderFormulaUnicode {
@@ -84,9 +102,7 @@ public class RenderFormulaWhy extends RenderFormulaUnicode {
         cnvs().symbol("forall "); visitMeta(i); visitLeft(i); cnvs().symbol("."); cnvs().endLine();
         cnvs().startIndent(); cnvs().startIndentedLine(); visitRight(i);
         cnvs().symbol(")"); //q
-        cnvs().endLine();
         cnvs().endIndent();
-        cnvs().startIndentedLine();
         return i;
     }
 
@@ -322,7 +338,13 @@ public class RenderFormulaWhy extends RenderFormulaUnicode {
         return i;
     }
 
-    //TODO: visit_POWER_SET
+    @Override public Formula visit_POWER_SET(Formula i)
+    {
+        cnvs().symbol("("); //p
+        cnvs().symbol("power "); visitMeta(i); visitChild(i);
+        cnvs().symbol(")"); //q
+        return i;
+    }
 
     //TODO: visit_POWER1_SET
 
@@ -354,19 +376,36 @@ public class RenderFormulaWhy extends RenderFormulaUnicode {
 
     //TODO: visit_UP_TO
 
-    //TODO: visit_EMPTY_SET
+    @Override public Formula visit_EMPTY_SET(Formula i)
+    {
+        cnvs().symbol("empty"); return i; //TODO: in why3 empty may need to be typed "empty : set 'a" for instance
+    }
 
-    //TODO: visit_NAT_SET
+    @Override public Formula visit_NAT_SET(Formula i)
+    {
+        cnvs().symbol("natural"); return i;
+    }
 
-    //TODO: visit_NAT1_SET
+    @Override public Formula visit_NAT1_SET(Formula i)
+    {
+        cnvs().symbol("natural1"); return i;
+    }
 
-    //TODO: visit_INT_SET
+    @Override public Formula visit_INT_SET(Formula i)
+    {
+        cnvs().symbol("integer"); return i;
+    }
     
     //TODO: visit_MAPSTO
 
     @Override public Formula visit_TYPE_PARAMETER_SYMBOL(Formula i)
     {
         cnvs().set("'tp_"+Symbols.name(i.intData())); return i;
+    }
+
+    @Override public Formula visit_TYPEDEF_SYMBOL(Formula i)
+    {
+        cnvs().set("td_"+Symbols.name(i.intData())); return i;
     }
 
     @Override public Formula visit_INVERT(Formula i)
@@ -510,7 +549,7 @@ public class RenderFormulaWhy extends RenderFormulaUnicode {
     @Override public Formula visit_CONSTRUCTOR(Formula i)
     {
         cnvs().symbol("("); //p
-        cnvs().symbol("cst_");
+        cnvs().symbol("Cst_");
         visitChildNum(i, 0);
         for (int j = 1; j < i.numChildren(); j++) {
             cnvs().symbol(" ");

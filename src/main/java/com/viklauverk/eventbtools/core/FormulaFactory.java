@@ -143,6 +143,13 @@ public class FormulaFactory
         return new Formula(Node.TYPE_PARAMETER_SYMBOL, Symbols.intern(s), null);
     }
 
+    // AH
+    public static
+    Formula newTypedefSymbol (String s, Formula meta)
+    {
+        return new Formula(Node.TYPEDEF_SYMBOL, Symbols.intern(s), null);
+    }
+
     public static
     Formula newEmptySet(Formula meta)
     {

@@ -1,3 +1,21 @@
+/*
+ Copyright (C) 2021 Viklauverk AB
+ Author Alexandre Hamoir
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+
+ You should have received a copy of the GNU Affero General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 package com.viklauverk.eventbtools.core;
 
 public class RenderTheoryWhy extends RenderTheoryUnicode {
@@ -6,10 +24,14 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
     public void visit_TheoryStart(Theory th)
     {
         cnvs().startLine();
-        cnvs().append("theory Th_"+th.localName());
+        cnvs().append("theory Th_"+th.dir()+"_"+th.localName());
         cnvs().endLine();
         cnvs().startIndent();
-        //TODO: import the file with all definitions
+        cnvs().skipLine();
+        cnvs().startIndentedLine();
+        cnvs().append("use ImportAll");
+        cnvs().endLine();
+        cnvs().skipLine();
     }
 
     @Override
@@ -21,13 +43,13 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
     @Override
     public void visit_Import(Theory th, Theory imp)
     {
-        cnvs().importTheory(imp.localName());
+        cnvs().importTheory(imp.dir()+"_"+imp.localName());
     }
 
     @Override
     public void visit_ImportsEnd(Theory th)
     {
-        //TODO
+        cnvs().skipLine();
     }
 
     @Override
@@ -51,8 +73,9 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
     @Override
     public void visit_TypeParametersEnd(Theory th)
     {
-        if (th.hasTypeParameters()) cnvs().append("*)");
+        if (th.hasTypeParameters()) cnvs().append(" *)");
         cnvs().endLine();
+        cnvs().skipLine();
     }
 
     @Override
@@ -71,7 +94,7 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
         {
             if (i > 0) cnvs().append(" | ");
             else i++;
-            cnvs().append("cst_"+cons.name());
+            cnvs().append("Cst_"+cons.name());
             for (Arguments dest : cons.argumentsOrdering())
             {
                 // TODO: Only for type parameters for now
@@ -80,6 +103,7 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
             }
         }
         cnvs().endLine();
+        cnvs().skipLine();
     }
 
     @Override
@@ -118,6 +142,9 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
     @Override
     public void visit_Operator(Theory th, Operator operator)
     {
+        cnvs().startIndentedLine();
+        cnvs().comment(operator.comment());
+        cnvs().endLine();
         cnvs().startIndentedLine();
         cnvs().operatorDef("op_"+operator.name());
         for (Arguments arg : operator.argumentsOrdering())
@@ -166,6 +193,7 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
             cnvs().endLine();
         }
         cnvs().endIndent();
+        cnvs().skipLine();
     }
 
     @Override
@@ -186,12 +214,14 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
         cnvs().startIndentedLine();
         cnvs().comment(axiomatic_definition.comment());
         cnvs().endLine();
+        cnvs().skipLine();
 
         for (TypeDef td : axiomatic_definition.typeDefOrdering())
         {
             cnvs().startIndentedLine();
             cnvs().append("type td_"+td.name());
             cnvs().endLine();
+            cnvs().skipLine();
         }
 
         for (Operator op : axiomatic_definition.operatorOrdering())
@@ -207,6 +237,7 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
             axm.writeFormulaStringToCanvas(cnvs());
             cnvs().endLine();
             cnvs().endIndent();
+            cnvs().skipLine();
         }
     }
 
@@ -231,6 +262,7 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
         theorem.writeFormulaStringToCanvas(cnvs());
         cnvs().endLine();
         cnvs().endIndent();
+        cnvs().skipLine();
     }
 
     @Override
@@ -246,5 +278,6 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
         cnvs().startLine();
         cnvs().keyword("end");
         cnvs().endLine();
+        cnvs().skipLine();
     }
 }

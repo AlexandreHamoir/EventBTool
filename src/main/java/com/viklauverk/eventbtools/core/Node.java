@@ -32,6 +32,7 @@ public enum Node
     EXPRESSION_SYMBOL(false, true, false, false, false, true, false, false),// A symbol representing an expression, eg E,F or G
     SET_SYMBOL(false, false, true, false, false, true, false, false),       // A symbol representing any set, eg S,T or U
     TYPE_PARAMETER_SYMBOL(false, false, true, false, false, true, false, false), // A symbol representing a type parameter // AH
+    TYPEDEF_SYMBOL(false, false, true, false, false, true, false, false), // A symbol representing a type defined in theories // AH
     VARIABLE_SYMBOL(false, true, false, true, false, true, false, false),   // A symbol representing a variable, eg x,y,z,w,x1,floor,speed
     VARIABLE_PRIM_SYMBOL(false, true, false, true, false, true, false, false),   // A prim variable symbol, eg x',y',floor'
     VARIABLE_NONFREE_SYMBOL(false, true, false, true, false, true, false, false), // A symbol capture by ! or #, ie declared inside the predicate.

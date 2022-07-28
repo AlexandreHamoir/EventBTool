@@ -982,7 +982,6 @@ public class Canvas
     public void startIndentedLine()
     {
         assert (line_active_ == false) : "Internal error: startLine expected no active line, but it was!";
-        line_active_ = true;
         dbgCnvs("[line]");
         switch (render_target_)
         {
@@ -997,6 +996,33 @@ public class Canvas
             return;
         case WHY:
             indent();
+            startLine();
+            return;
+        }
+        assert (false) : "Unknown encoding "+render_target_;
+    }
+
+    // AH
+    public void skipLine()
+    {
+        assert (line_active_ == false) : "Internal error: startLine expected no active line, but it was!";
+        dbgCnvs("[line]");
+        switch (render_target_)
+        {
+        case PLAIN:
+        case TERMINAL:
+            startLine();
+            append(" ");
+            endLine();
+            return;
+        case TEX:
+            return;
+        case HTMQ:
+            return;
+        case WHY:
+            startLine();
+            append(" ");
+            endLine();            
             return;
         }
         assert (false) : "Unknown encoding "+render_target_;

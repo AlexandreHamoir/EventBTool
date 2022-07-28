@@ -69,9 +69,11 @@ public class SymbolTable
     // AH
     private Set<String> constructor_symbols_ = new HashSet<>();
     private Map<String, Operator> constructors_ = new HashMap<>();
-
     // AH
     private Set<String> destructor_symbols_ = new HashSet<>();
+    // AH
+    private Set<String> typedef_symbols_ = new HashSet<>();
+    private Map<String, TypeDef> typedefs_ = new HashMap<>();
 
     private LinkedList<Frame> frames_ = new LinkedList<>();
 
@@ -637,6 +639,58 @@ public class SymbolTable
     {
         destructor_symbols_.addAll(s);
     }
+
+    // AH
+    public boolean isTypedefSymbol(String s)
+    {
+        boolean is = typedef_symbols_.contains(s);
+        if (is) return true;
+        for (SymbolTable parent : parents_)
+        {
+            is = parent.isTypedefSymbol(s);
+            if (is) return true;
+        }
+        return false;
+    }
+
+    public TypeDef getTypedefSymbol(Formula name)
+    {
+        return getTypedef(name.symbol());
+    }
+
+    public TypeDef getTypedef(String name)
+    {
+        TypeDef td = typedefs_.get(name);
+        if (td != null) return td;
+        for (SymbolTable parent : parents_)
+        {
+            td = parent.getTypedef(name);
+            if (td != null) return td;
+        }
+        return null;
+    }
+
+    public void addTypedefSymbol(String s)
+    {
+        typedef_symbols_.add(s);
+    }
+
+    public void addTypedef(TypeDef td)
+    {
+        typedef_symbols_.add(td.name());
+        typedefs_.put(td.name(), td);
+    }
+
+    public void addTypedefSymbols(String... s)
+    {
+        typedef_symbols_.addAll(Arrays.asList(s));
+    }
+
+    public void addTypedefSymbols(List<String> s)
+    {
+        typedef_symbols_.addAll(s);
+    }
+
 
     public boolean isAnySymbol(String p)
     {

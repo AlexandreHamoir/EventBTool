@@ -108,6 +108,7 @@ public class Theory
         return name_;
     }
 
+    /** The full name of the theory (directory/theory) */
     public String name()
     {
         return dir()+'/'+name_;
@@ -611,7 +612,7 @@ public class Theory
         {
             for (TypeDef axd_td : axd.typeDefOrdering())
             {
-                symbol_table_.addSet(axd_td);
+                symbol_table_.addTypedef(axd_td);
             }
 
             for (Operator axd_op : axd.operatorOrdering())

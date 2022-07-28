@@ -486,6 +486,12 @@ public class RenderFormulaUnicode extends RenderFormula
         cnvs().set("tp_"+Symbols.name(i.intData())); return i;
     }
 
+    // AH
+    @Override public Formula visit_TYPEDEF_SYMBOL(Formula i)
+    {
+        cnvs().set("td_"+Symbols.name(i.intData())); return i;
+    }
+
     @Override public Formula visit_CONSTANT_SYMBOL(Formula i)
     {
         cnvs().constant(Symbols.name(i.intData())); visitMeta(i); return i;

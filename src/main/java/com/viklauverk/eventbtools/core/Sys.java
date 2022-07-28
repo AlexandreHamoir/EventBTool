@@ -179,6 +179,33 @@ public class Sys
         return theorie_ordering_;
     }
 
+    /** This will only affect theory_ordering_ hence the other lists and/or mappings won't have the same order anymore */
+    private void orderTheoriesDependingOnImports()
+    {
+        List<Theory> new_th_ordering = new ArrayList<>();
+
+        // Add the theories in the right order to the new list
+        int i = 0;
+        while (!theorie_ordering_.isEmpty())
+        {
+            Theory current_th = theorie_ordering_.get(i);
+            // can we add the current theory ?
+            boolean found = true;
+            for (Theory th_import : current_th.importsOrdering())
+            {
+                if (!new_th_ordering.contains(th_import)) found = false;
+            }
+            if (found) 
+            {
+                new_th_ordering.add(current_th);
+                theorie_ordering_.remove(i);
+                i = 0;
+            }
+            else i++;
+        }
+        theorie_ordering_ = new_th_ordering;
+    }
+
     /** Returns the mapping of Directory -> Theories */
     public Map<String,List<String>> theoryMapping()
     {
@@ -188,17 +215,12 @@ public class Sys
     /** Returns the name of all theories in the form of Directory/TheoryName */
     public List<String> theoryFullNames()
     {
-        Stream<String> resultStream = Stream.empty();
-        for (String dir : theorie_names_.keySet())
+        List<String> result = new ArrayList<>();
+        for (Theory th : theoryOrdering())
         {
-            List<String> th_full_names = new ArrayList<>();
-            for (String th_name : theorie_names_.get(dir))
-            {
-                th_full_names.add(dir+'/'+th_name);
-            }
-            resultStream = Stream.concat(resultStream, th_full_names.stream());
+            result.add(th.name());
         }
-        return resultStream.collect(Collectors.toList());
+        return result;
     }
 
     /** This return the local name of all theories */
@@ -281,6 +303,10 @@ public class Sys
         loadTheories(); // At this point all imported theories are loaded and will be treated normally
         loadContexts();
         loadMachines();
+
+        // Order the theories depending on their imports so they are ordered properly in the file.
+        //TODO: remove this and instead make one file for each theory and import them from distant files
+        orderTheoriesDependingOnImports();
 
         // Now we can actually build the symbol tables and parse the formulas and
         // figure out suitable implementation types and parse the checked types.
