@@ -219,6 +219,19 @@ public class FormulaBuilder extends EvBFormulaBaseVisitor<Formula>
 
     // AH
     @Override
+    public Formula visitOperatorPredicateExpression(EvBFormulaParser.OperatorPredicateExpressionContext ctx)
+    {
+        Formula operator = FormulaFactory.newAnySymbol(ctx.operator.getText(), null);
+        List<Formula> elements = new LinkedList<>();
+        for (EvBFormulaParser.ExpressionContext sec : ctx.expression())
+        {
+            elements.add(this.visit(sec));
+        }
+        return FormulaFactory.newOperatorExpression(operator, elements);
+    }
+
+    // AH
+    @Override
     public Formula visitInfixOperatorExpression(EvBFormulaParser.InfixOperatorExpressionContext ctx)
     {
         Formula operator = FormulaFactory.newAnySymbol(ctx.operator.getText(), null);

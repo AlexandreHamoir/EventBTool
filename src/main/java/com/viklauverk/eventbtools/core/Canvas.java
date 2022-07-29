@@ -1747,6 +1747,30 @@ public class Canvas
     }
 
     // AH
+    /** Operator predicate, note that this requires start and end of line since it won't write the arguments */
+    public void predicateDef(String name)
+    {
+        if (name.equals("")) return;
+
+        switch (render_target_)
+        {
+        case PLAIN:
+            return;
+        case TERMINAL:
+            return;
+        case TEX:
+            return;
+        case HTMQ:
+            return;
+        case WHY:
+            append("let predicate "+name);
+            return;
+        }
+        assert (false) : "Unknown encoding "+render_target_;
+    }
+
+
+    // AH
     /** Axiomatic operator definition, note that this requires start and end of line since it won't write the arguments */
     public void operatorAxmDef(String name)
     {
@@ -1769,6 +1793,28 @@ public class Canvas
         assert (false) : "Unknown encoding "+render_target_;
     }
 
+    // AH
+    /** Axiomatic predicate definition, note that this requires start and end of line since it won't write the arguments */
+    public void predicateAxmDef(String name)
+    {
+        if (name.equals("")) return;
+
+        switch (render_target_)
+        {
+        case PLAIN:
+            return;
+        case TERMINAL:
+            return;
+        case TEX:
+            return;
+        case HTMQ:
+            return;
+        case WHY:
+            append("val predicate "+name);
+            return;
+        }
+        assert (false) : "Unknown encoding "+render_target_;
+    }
 
     // AH
     /** This starts the line, what is left is to write the formula */
@@ -1793,7 +1839,7 @@ public class Canvas
     }
 
     // AH
-    /** This ends the line */
+    /** This ends the line. */
     public void endWDC()
     {
         switch (render_target_)

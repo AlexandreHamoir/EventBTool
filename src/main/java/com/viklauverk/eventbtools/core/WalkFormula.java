@@ -168,7 +168,7 @@ public class WalkFormula implements FormulaVisitor
     public Formula visit_TYPED_DATATYPE(Formula i) { visitChildren(i, ()->{}); return i; }
     public Formula visit_TYPED_TYPE_PARAMETER_SYMBOL(Formula i) { return i; }
     public Formula visit_TYPED_TYPEDEF_SYMBOL(Formula i) { return i; }
-
+    public Formula visit_TYPED_PARENTHESISED_EXPRESSION(Formula i) { visitChild(i); return i; }
 
     Formula startVisiting(Formula i)
     {
@@ -330,6 +330,7 @@ public class WalkFormula implements FormulaVisitor
         case DATATYPE: i = visit_TYPED_DATATYPE(i); break;
         case TYPEDEF_SYMBOL: i = visit_TYPED_TYPEDEF_SYMBOL(i); break;
         case TYPE_PARAMETER_SYMBOL: i = visit_TYPED_TYPE_PARAMETER_SYMBOL(i); break;
+        case PARENTHESISED_EXPRESSION: i = visit_TYPED_PARENTHESISED_EXPRESSION(i); break;
         default: System.err.println("NOT IMPLEMENTED TYPED SWITCH FOR "+s); System.exit(1); break;
         }
         exitNode(ii);

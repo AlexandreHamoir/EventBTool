@@ -22,7 +22,7 @@ import java.text.Normalizer.Form;
 
 public class RenderFormulaWhy extends RenderFormulaUnicode {
 
-    //TODO: all complex expressions are parenthesized, to remove them search for "cnvs().symbol("(")" with " //p" at the end and "cnvs().symbol(")")" with the " //q" at the end.
+    //TODO: all complex expressions are parenthesised, to remove them search for "cnvs().symbol("(")" with " //p" at the end and "cnvs().symbol(")")" with the " //q" at the end.
 
     public RenderFormulaWhy(Canvas canvas)
     {
@@ -705,6 +705,15 @@ public class RenderFormulaWhy extends RenderFormulaUnicode {
     @Override public Formula visit_TYPED_TYPEDEF_SYMBOL(Formula i)
     {
         cnvs().set("td_"+Symbols.name(i.intData())); return i;
+    }
+
+    @Override public Formula visit_TYPED_PARENTHESISED_EXPRESSION(Formula i)
+    {
+        cnvs().symbol("(");
+        visitChildTyped(i);
+        cnvs().symbol(")");
+        visitMeta(i);
+        return i;
     }
 
 }

@@ -196,7 +196,8 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
         cnvs().comment(operator.comment());
         cnvs().endLine();
         cnvs().startIndentedLine();
-        cnvs().operatorDef("op_"+operator.name());
+        if (operator.isPredicate()) cnvs().predicateDef("op_"+operator.name());
+        else cnvs().operatorDef("op_"+operator.name());
         for (Arguments arg : operator.argumentsOrdering())
         {
             cnvs().append(" ("+arg.name()+":");
@@ -290,7 +291,8 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
             cnvs().comment(op.comment());
             cnvs().endLine();
             cnvs().startIndentedLine();
-            cnvs().operatorAxmDef("op_"+op.name());
+            if (op.isPredicate()) cnvs().predicateAxmDef("op_"+op.name());
+            else cnvs().operatorAxmDef("op_"+op.name());
             for (Arguments arg : op.argumentsOrdering())
             {
                 cnvs().append(" ("+arg.name()+":");
