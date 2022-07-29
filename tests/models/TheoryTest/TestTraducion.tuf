@@ -11,7 +11,7 @@
             <org.eventb.theory.core.constructorArgument name="(" org.eventb.core.comment="Comment Destructor Datatype 2" org.eventb.core.identifier="dest2" org.eventb.theory.core.type="S"/>
         </org.eventb.theory.core.datatypeConstructor>
         <org.eventb.theory.core.datatypeConstructor name=")" org.eventb.core.identifier="dtc1">
-            <org.eventb.theory.core.constructorArgument name="'" org.eventb.core.identifier="dest1" org.eventb.theory.core.type="S"/>
+            <org.eventb.theory.core.constructorArgument name="'" org.eventb.core.identifier="dest3" org.eventb.theory.core.type="S"/>
         </org.eventb.theory.core.datatypeConstructor>
     </org.eventb.theory.core.datatypeDefinition>
     <org.eventb.theory.core.newOperatorDefinition name="*" org.eventb.core.comment="Comment Operator Direct" org.eventb.core.label="OpDirect" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX">

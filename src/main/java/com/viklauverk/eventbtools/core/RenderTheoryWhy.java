@@ -102,13 +102,58 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
             cnvs().append("Cst_"+cons.name());
             for (Arguments dest : cons.argumentsOrdering())
             {
-                // TODO: Only for type parameters for now
                 cnvs().append(" ");
                 dest.getType().writeFormulaStringToCanvasTyped(cnvs());
             }
         }
         cnvs().endLine();
         cnvs().skipLine();
+
+        // Destructors
+        for (Operator cons : dt.constructorsOrdering())
+        {
+            for (int j = 0; j < cons.argumentsOrdering().size(); j++)
+            {
+                defineDestructor(th, dt, cons, j);
+                cnvs().skipLine();
+            }
+        }
+
+    }
+
+    /** Defines the destructor at index i in constructor cons */
+    private void defineDestructor(Theory th, Datatype dt, Operator cons, int i)
+    {
+        cnvs().startIndentedLine();
+        cnvs().append("let function dst_"+cons.argumentsOrdering().get(i).name()+" (dt_element : dt_"+dt.name());
+        for (TypeParameters ta : dt.typeArgumentsOrdering()) //TODO: write a Canvas method to write a datatype dt_dt.name() ta1 ta2 ... taN
+        {
+            cnvs().append(" 'tp_"+ta.name());
+        }
+        cnvs().append(")");
+        cnvs().endLine();
+        cnvs().startIndent();
+        cnvs().startIndentedLine();
+        cnvs().append("=");
+        cnvs().endLine();
+        cnvs().startIndentedLine();
+        cnvs().append("match dt_element with");
+        cnvs().endLine();
+        cnvs().startIndent();
+        cnvs().startIndentedLine();
+        cnvs().append("| (Cst_"+cons.name());
+        for (Arguments dest : cons.argumentsOrdering())
+        {
+            cnvs().append(" element_"+dest.name());
+        }
+        cnvs().append(") -> ");
+        cnvs().append("element_"+cons.argumentsNames().get(i));
+        cnvs().endLine();
+        cnvs().endIndent();
+        cnvs().startIndentedLine();
+        cnvs().append("end");
+        cnvs().endLine();
+        cnvs().endIndent();
     }
 
     @Override
