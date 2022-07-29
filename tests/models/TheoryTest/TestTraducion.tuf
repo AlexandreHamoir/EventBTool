@@ -14,7 +14,7 @@
             <org.eventb.theory.core.constructorArgument name="'" org.eventb.core.identifier="dest1" org.eventb.theory.core.type="S"/>
         </org.eventb.theory.core.datatypeConstructor>
     </org.eventb.theory.core.datatypeDefinition>
-    <org.eventb.theory.core.newOperatorDefinition name="*" org.eventb.core.comment="Comment Operator Direct//Return:POW(S)//" org.eventb.core.label="OpDirect" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX">
+    <org.eventb.theory.core.newOperatorDefinition name="*" org.eventb.core.comment="Comment Operator Direct" org.eventb.core.label="OpDirect" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX">
         <org.eventb.theory.core.operatorArgument name="'" org.eventb.core.comment="Comment Operator Direct Arg" org.eventb.core.expression="S" org.eventb.core.identifier="opArg"/>
         <org.eventb.theory.core.directOperatorDefinition name="(" org.eventb.core.comment="Comment Operator Direct Def" org.eventb.theory.core.formula="opArg"/>
         <org.eventb.theory.core.operatorWDcondition name=")" org.eventb.core.comment="Comment Operator Direct WDC" org.eventb.core.predicate="opArg∈S"/>
@@ -29,11 +29,10 @@
         <org.eventb.theory.core.axiomaticDefinitionAxiom name="*" org.eventb.core.comment="Comment axm1" org.eventb.core.label="axm1" org.eventb.core.predicate="∀x· x∈dt(T) ⇒ ⊤"/>
     </org.eventb.theory.core.axiomaticDefinitionsBlock>
     <org.eventb.theory.core.theorem name="," org.eventb.core.comment="Comment Theorem" org.eventb.core.label="thm" org.eventb.core.predicate="∀ n · n ∈ ℕ ∧ OpDirect(n) = 0 ⇒ n=3"/>
-    <org.eventb.theory.core.newOperatorDefinition name="-" org.eventb.core.comment="Comment Operator//Return:  dt(INT) // Parameters" org.eventb.core.label="OpParameters" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX">
+    <org.eventb.theory.core.newOperatorDefinition name="-" org.eventb.core.comment="Comment Operator Parameters" org.eventb.core.label="OpParameters" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX">
         <org.eventb.theory.core.operatorArgument name="'" org.eventb.core.comment="Comment Operator Parameters Arg1" org.eventb.core.expression="S" org.eventb.core.identifier="opArg1"/>
         <org.eventb.theory.core.operatorArgument name="(" org.eventb.core.comment="Comment Operator Parameters Arg2" org.eventb.core.expression="S" org.eventb.core.identifier="opArg2"/>
         <org.eventb.theory.core.directOperatorDefinition name=")" org.eventb.theory.core.formula="opArg2"/>
-        <org.eventb.theory.core.operatorWDcondition name="*" org.eventb.core.comment="Comment Operator Parameters WDC" org.eventb.core.predicate="opArg1 &gt; opArg2"/>
     </org.eventb.theory.core.newOperatorDefinition>
     <org.eventb.theory.core.theorem name="." org.eventb.core.comment="Comment Theorem 1" org.eventb.core.label="thm1" org.eventb.core.predicate="∀ x,y· x∈ℕ ∧ y∈ℕ ⇒ OpDirect(y) = OpParameters(x,y)"/>
     <org.eventb.theory.core.theorem name="/" org.eventb.core.comment="Comment Theorem 2" org.eventb.core.label="thm2" org.eventb.core.predicate="∀s· s∈T ⇒ dest1(dtc(s, s)) = s"/>
@@ -50,12 +49,6 @@
         <org.eventb.theory.core.directOperatorDefinition name=")" org.eventb.core.comment="Comment Infix Definition" org.eventb.theory.core.formula="opArg1 + opArg2 ∗ 4"/>
     </org.eventb.theory.core.newOperatorDefinition>
     <org.eventb.theory.core.theorem name="2" org.eventb.core.comment="Comment Theorem 3" org.eventb.core.label="thm3" org.eventb.core.predicate="∀n,m· n∈ℤ ∧ m∈ℤ ⇒ n OpInfix m = n + m ∗ 4"/>
-    <org.eventb.theory.core.newOperatorDefinition name="3" org.eventb.core.comment="Comment Operator Argument Type" org.eventb.core.label="OpArgType" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX">
-        <org.eventb.theory.core.operatorArgument name="'" org.eventb.core.comment="Comment Arg1&#9;" org.eventb.core.expression="ℙ(ℤ)" org.eventb.core.identifier="opArg1"/>
-        <org.eventb.theory.core.operatorArgument name="(" org.eventb.core.comment="Comment Arg2" org.eventb.core.expression="ℕ ∪ ℙ(S)" org.eventb.core.identifier="opArg2"/>
-        <org.eventb.theory.core.operatorArgument name=")" org.eventb.core.comment="Comment Arg3" org.eventb.core.expression="S → ℕ" org.eventb.core.identifier="opArg3"/>
-        <org.eventb.theory.core.directOperatorDefinition name="*" org.eventb.core.comment="Comment Direct Def" org.eventb.theory.core.formula="opArg1"/>
-    </org.eventb.theory.core.newOperatorDefinition>
     <org.eventb.theory.core.importTheoryProject name="4" org.eventb.theory.core.importTheoryProject="/TheoryTest2">
         <org.eventb.theory.core.importTheory name="'" org.eventb.theory.core.importTheory="/TheoryTest2/TestImportDistant.dtf|org.eventb.theory.core.deployedTheoryRoot#TestImportDistant"/>
     </org.eventb.theory.core.importTheoryProject>

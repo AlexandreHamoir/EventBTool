@@ -30,8 +30,8 @@ public class Datatype
 
     // NB: The type expression or a type argument is a single symbole
     // thus we can use CarrierSet and have the type expression be its name
-    private Map<String,CarrierSet> type_arguments_ = new HashMap<>();
-    private List<CarrierSet> type_arguments_ordering_ = new ArrayList<>();
+    private Map<String,TypeParameters> type_arguments_ = new HashMap<>();
+    private List<TypeParameters> type_arguments_ordering_ = new ArrayList<>();
 
     // TODO: For now constructors and destructors are parsed as operators inside formulas 
     // and don't have a class of their own, destructors are the constructor's arguments
@@ -72,18 +72,18 @@ public class Datatype
       return cons_ordering_;
     }
 
-    public void addTypeArgument(CarrierSet type)
+    public void addTypeArgument(TypeParameters type)
     {
       type_arguments_.put(type.name(), type);
       type_arguments_ordering_.add(type);
     }
 
-    public CarrierSet getTypeArgument(String name)
+    public TypeParameters getTypeArgument(String name)
     {
       return type_arguments_.get(name);
     }
 
-    public List<CarrierSet> typeArgumentsOrdering()
+    public List<TypeParameters> typeArgumentsOrdering()
     {
       return type_arguments_ordering_;
     }

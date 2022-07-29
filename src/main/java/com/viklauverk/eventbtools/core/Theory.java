@@ -379,7 +379,7 @@ public class Theory
             {
                 String n = type.valueOf("@org.eventb.theory.core.givenType");
 
-                datatype.addTypeArgument(new CarrierSet(n, null));
+                datatype.addTypeArgument(getTypeParameters(n));
             }
 
             List<Node> cons_node = dt.selectNodes("org.eventb.theory.core.datatypeConstructor");

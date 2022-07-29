@@ -88,7 +88,12 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
     public void visit_Datatype(Theory th, Datatype dt)
     {
         cnvs().startIndentedLine();
-        cnvs().append("type dt_"+dt.name()+" = ");
+        cnvs().append("type dt_"+dt.name());
+        for (TypeParameters ta : dt.typeArgumentsOrdering())
+        {
+            cnvs().append(" 'tp_"+ta.name());
+        }
+        cnvs().append(" = ");
         int i = 0;
         for (Operator cons : dt.constructorsOrdering())
         {
@@ -99,7 +104,7 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
             {
                 // TODO: Only for type parameters for now
                 cnvs().append(" ");
-                dest.getType().writeFormulaStringToCanvas(cnvs());
+                dest.getType().writeFormulaStringToCanvasTyped(cnvs());
             }
         }
         cnvs().endLine();
@@ -150,13 +155,13 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
         for (Arguments arg : operator.argumentsOrdering())
         {
             cnvs().append(" ("+arg.name()+":");
-            arg.getType().writeFormulaStringToCanvas(cnvs());
+            arg.getType().writeFormulaStringToCanvasTyped(cnvs());
             cnvs().append(")");
         }
         if (operator.hasReturnType())
         {
             cnvs().append(" : ");
-            operator.getReturnType().writeFormulaStringToCanvas(cnvs());
+            operator.getReturnType().writeFormulaStringToCanvasTyped(cnvs());
         }
         cnvs().endLine();
         cnvs().startIndent();
@@ -170,27 +175,36 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
             operator.getDef().writeFormulaStringToCanvas(cnvs());
             cnvs().endOpDef();
         }
-        for (String argName : operator.getRecursiveArgs())
-        {
-            cnvs().startIndentedLine();
-            cnvs().append("match "+argName+" with");
-            cnvs().endLine();
-            cnvs().startIndent();
-
-            for (IsAFormula[] rec_def : operator.getRecursiveDefs(argName))
+        else {
+            int i = 0;
+            for (String argName : operator.getRecursiveArgs())
             {
+                if (i == 0) {
+                    cnvs().startIndentedLine();
+                    cnvs().append("=");
+                    cnvs().endLine();
+                    i++;
+                }
                 cnvs().startIndentedLine();
-                cnvs().append("| ");
-                rec_def[0].writeFormulaStringToCanvas(cnvs());
-                cnvs().append(" -> ");
-                rec_def[1].writeFormulaStringToCanvas(cnvs());
+                cnvs().append("match "+argName+" with");
+                cnvs().endLine();
+                cnvs().startIndent();
+
+                for (IsAFormula[] rec_def : operator.getRecursiveDefs(argName))
+                {
+                    cnvs().startIndentedLine();
+                    cnvs().append("| ");
+                    rec_def[0].writeFormulaStringToCanvas(cnvs());
+                    cnvs().append(" -> ");
+                    rec_def[1].writeFormulaStringToCanvas(cnvs());
+                    cnvs().endLine();
+                }
+
+                cnvs().endIndent();
+                cnvs().startIndentedLine();
+                cnvs().append("end");
                 cnvs().endLine();
             }
-
-            cnvs().endIndent();
-            cnvs().startIndentedLine();
-            cnvs().append("end");
-            cnvs().endLine();
         }
         cnvs().endIndent();
         cnvs().skipLine();
@@ -226,7 +240,31 @@ public class RenderTheoryWhy extends RenderTheoryUnicode {
 
         for (Operator op : axiomatic_definition.operatorOrdering())
         {
-            visit_Operator(th, op);
+
+            cnvs().startIndentedLine();
+            cnvs().comment(op.comment());
+            cnvs().endLine();
+            cnvs().startIndentedLine();
+            cnvs().operatorAxmDef("op_"+op.name());
+            for (Arguments arg : op.argumentsOrdering())
+            {
+                cnvs().append(" ("+arg.name()+":");
+                arg.getType().writeFormulaStringToCanvasTyped(cnvs());
+                cnvs().append(")");
+            }
+            if (op.hasReturnType())
+            {
+                cnvs().append(" : ");
+                op.getReturnType().writeFormulaStringToCanvasTyped(cnvs());
+            }
+            cnvs().endLine();
+            cnvs().startIndent();
+            for (WDConditions wdc : op.wdcsOrdering())
+            {
+                visit_WDCondition(th, wdc);
+            }
+            cnvs().endIndent();
+            cnvs().skipLine();
         }
 
         for (Axiom axm : axiomatic_definition.axiomOrdering())

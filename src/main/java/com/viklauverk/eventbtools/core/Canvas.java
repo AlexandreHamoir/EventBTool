@@ -1747,6 +1747,30 @@ public class Canvas
     }
 
     // AH
+    /** Axiomatic operator definition, note that this requires start and end of line since it won't write the arguments */
+    public void operatorAxmDef(String name)
+    {
+        if (name.equals("")) return;
+
+        switch (render_target_)
+        {
+        case PLAIN:
+            return;
+        case TERMINAL:
+            return;
+        case TEX:
+            return;
+        case HTMQ:
+            return;
+        case WHY:
+            append("val function "+name);
+            return;
+        }
+        assert (false) : "Unknown encoding "+render_target_;
+    }
+
+
+    // AH
     /** This starts the line, what is left is to write the formula */
     public void beginWDC()
     {

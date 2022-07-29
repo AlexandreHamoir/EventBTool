@@ -282,8 +282,8 @@ expression
    // Should we be able to talk about all functions such that their applications give such and such result? For the moment, we can't.
    | left=expression operator=infixOp right=expression # InfixOperatorExpression // I had to define infixOp outside of expression or else there is a left recursive error // AH
    | { symbol_table.isOperatorSymbol(_input.LT(1).getText()) }?   operator=SYMBOL meta? ('(' expression (',' expression)* ')')? # OperatorExpression // AH
-   | { symbol_table.isDatatypeSymbol(_input.LT(1).getText()) }?   datatype=SYMBOL meta? ('(' expression (',' expression)* ')')? # Datatype // AH 
-   | { symbol_table.isConstructorSymbol(_input.LT(1).getText()) }?   constructor=SYMBOL meta? ('(' expression (',' expression)* ')')? # Constructor // AH 
+   | { symbol_table.isDatatypeSymbol(_input.LT(1).getText()) }?   datatype=SYMBOL meta? ('(' expression (',' expression)* ')')? # Datatype // AH
+   | { symbol_table.isConstructorSymbol(_input.LT(1).getText()) }?   constructor=SYMBOL meta? ('(' expression (',' expression)* ')')? # Constructor // AH
    | { symbol_table.isDestructorSymbol(_input.LT(1).getText()) }?   destructor=SYMBOL meta? '(' dt=expression ')' # Destructor // AH
    | { symbol_table.isVariableSymbol(_input.LT(1).getText()) }?   variable=SYMBOL PRIM? INV? meta? '(' inner=expression ')' # VariableFunctionApplication
    | { symbol_table.isConstantSymbol(_input.LT(1).getText()) }?   constant=SYMBOL meta? '(' inner=expression ')' # ConstantFunctionApplication

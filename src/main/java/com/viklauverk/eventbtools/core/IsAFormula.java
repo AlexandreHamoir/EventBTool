@@ -60,6 +60,11 @@ public class IsAFormula
         return formula_.toString(c);
     }
 
+    public String writeFormulaStringToCanvasTyped(Canvas c)
+    {
+        return formula_.toStringTyped(c);
+    }
+
     public Formula formula()
     {
         return formula_;

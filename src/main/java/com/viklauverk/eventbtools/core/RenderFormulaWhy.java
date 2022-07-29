@@ -18,6 +18,8 @@
 
 package com.viklauverk.eventbtools.core;
 
+import java.text.Normalizer.Form;
+
 public class RenderFormulaWhy extends RenderFormulaUnicode {
 
     //TODO: all complex expressions are parenthesized, to remove them search for "cnvs().symbol("(")" with " //p" at the end and "cnvs().symbol(")")" with the " //q" at the end.
@@ -248,29 +250,102 @@ public class RenderFormulaWhy extends RenderFormulaUnicode {
         return i;
     }
 
-    //TODO: visit_CARTESIAN_PRODUCT
+    @Override public Formula visit_CARTESIAN_PRODUCT(Formula i)
+    {
+        cnvs().symbol("("); //p
+        cnvs().symbol("times "); visitMeta(i); visitLeft(i); cnvs().symbol(" "); visitRight(i); 
+        cnvs().symbol(")"); //q
+        return i;
+    }
 
-    //TODO: visit_RELATION
+    @Override public Formula visit_RELATION(Formula i)
+    {
+        cnvs().symbol("("); //p
+        cnvs().symbol("relation "); visitMeta(i); visitLeft(i); cnvs().symbol(" "); visitRight(i);
+        cnvs().symbol(")"); //q
+        return i;
+    }
 
-    //TODO: visit_TOTAL_RELATION
+    //TODO: some of the relation symbols below are not defined in why3 yet
+    @Override public Formula visit_TOTAL_RELATION(Formula i)
+    {
+        cnvs().symbol("("); //p
+        visitLeft(i); cnvs().symbol(c(" ", "<<->")); visitMeta(i); visitRight(i);
+        cnvs().symbol(")"); //q
+        return i;
+    }
 
-    //TODO: visit_SURJECTIVE_RELATION
+    @Override public Formula visit_SURJECTIVE_RELATION(Formula i)
+    {
+        cnvs().symbol("("); //p
+        visitLeft(i); cnvs().symbol(c(" ", "<->>")); visitMeta(i); visitRight(i);
+        cnvs().symbol(")"); //q
+        return i;
+    }
 
-    //TODO: visit_SURJECTIVE_TOTAL_RELATION
+    @Override public Formula visit_SURJECTIVE_TOTAL_RELATION(Formula i)
+    {
+        cnvs().symbol("("); //p
+        visitLeft(i); cnvs().symbol(c(" ", "<<->>")); visitMeta(i); visitRight(i);
+        cnvs().symbol(")"); //q
+        return i;
+    }
 
-    //TODO: visit_PARTIAL_FUNCTION
+    @Override public Formula visit_PARTIAL_FUNCTION(Formula i)
+    {
+        cnvs().symbol("("); //p
+        visitLeft(i); cnvs().symbol(c("⇸ ", "+->")); visitMeta(i); visitRight(i);
+        cnvs().symbol(")"); //q
+        return i;
+    }
 
-    //TODO: visit_TOTAL_FUNCTION
+    @Override public Formula visit_TOTAL_FUNCTION(Formula i)
+    {
+        cnvs().symbol("("); //p
+        visitLeft(i); cnvs().symbol(c("→ ", "-->")); visitMeta(i); visitRight(i);
+        cnvs().symbol(")"); //q
+        return i;
+    }
 
-    //TODO: visit_PARTIAL_INJECTION
+    @Override public Formula visit_PARTIAL_INJECTION(Formula i)
+    {
+        cnvs().symbol("("); //p
+        visitLeft(i); cnvs().symbol(c("⤔ ", ">+>")); visitMeta(i); visitRight(i);
+        cnvs().symbol(")"); //q
+        return i;
+    }
 
-    //TODO: visit_TOTAL_INJECTION
+    @Override public Formula visit_TOTAL_INJECTION(Formula i)
+    {
+        cnvs().symbol("("); //p
+        visitLeft(i); cnvs().symbol(c("↣ ", ">->")); visitMeta(i); visitRight(i);
+        cnvs().symbol(")"); //q
+        return i;
+    }
 
-    //TODO: visit_PARTIAL_SURJECTION
+    @Override public Formula visit_PARTIAL_SURJECTION(Formula i)
+    {
+        cnvs().symbol("("); //p
+        visitLeft(i); cnvs().symbol(c("⤀ ", "+->>")); visitMeta(i); visitRight(i);        
+        cnvs().symbol(")"); //q
+        return i;
+    }
 
-    //TODO: visit_TOTAL_SURJECTION
+    @Override public Formula visit_TOTAL_SURJECTION(Formula i)
+    {
+        cnvs().symbol("("); //p
+        visitLeft(i); cnvs().symbol(c("↠ ", "-->>")); visitMeta(i); visitRight(i);
+        cnvs().symbol(")"); //q
+        return i;
+    }
 
-    //TODO: visit_TOTAL_BIJECTION
+    @Override public Formula visit_TOTAL_BIJECTION(Formula i)
+    {
+        cnvs().symbol("("); //p
+        visitLeft(i); cnvs().symbol(c("⤖ ", ">->>")); visitMeta(i); visitRight(i);
+        cnvs().symbol(")"); //q
+        return i;
+    }
     
     @Override public Formula visit_FORWARD_COMPOSITION(Formula i)
     {
@@ -396,16 +471,21 @@ public class RenderFormulaWhy extends RenderFormulaUnicode {
         cnvs().symbol("integer"); return i;
     }
     
-    //TODO: visit_MAPSTO
+    @Override public Formula visit_MAPSTO(Formula i)
+    {
+        cnvs().symbol("("); visitLeft(i); cnvs().symbol(", "); visitMeta(i); visitRight(i); cnvs().symbol(")"); return i;
+    }
 
     @Override public Formula visit_TYPE_PARAMETER_SYMBOL(Formula i)
     {
-        cnvs().set("'tp_"+Symbols.name(i.intData())); return i;
+        visit_TYPED(i);
+        return i;
     }
 
     @Override public Formula visit_TYPEDEF_SYMBOL(Formula i)
     {
-        cnvs().set("td_"+Symbols.name(i.intData())); return i;
+        visit_TYPED(i);
+        return i;
     }
 
     @Override public Formula visit_INVERT(Formula i)
@@ -535,14 +615,7 @@ public class RenderFormulaWhy extends RenderFormulaUnicode {
 
     @Override public Formula visit_DATATYPE(Formula i)
     {
-        cnvs().symbol("("); //p
-        cnvs().symbol("dt_");
-        visitChildNum(i, 0);
-        for (int j = 1; j < i.numChildren(); j++) {
-            cnvs().symbol(" ");
-            visitChildNum(i, j);
-        }
-        cnvs().symbol(")"); //q
+        visit_TYPED(i);
         return i;
     }
 
@@ -570,6 +643,68 @@ public class RenderFormulaWhy extends RenderFormulaUnicode {
         }
         cnvs().symbol(")"); //q
         return i;
+    }
+
+    // visit_TYPED
+
+    @Override public Formula visit_TYPED(Formula i)
+    {
+        cnvs().symbol("("); //p
+        cnvs().symbol("all : set "); innerVisitTyped(i);
+        cnvs().symbol(")"); //q
+        return i;
+    }
+
+    @Override public Formula visit_TYPED_INT_SET(Formula i)
+    {
+        cnvs().symbol("int"); visitMeta(i); return i;
+    }
+
+    @Override public Formula visit_TYPED_POWER_SET(Formula i)
+    {
+        cnvs().symbol("("); //p
+        cnvs().symbol("set "); visitMeta(i); visitChildTyped(i);
+        cnvs().symbol(")"); //q
+        return i;
+    }
+
+    @Override public Formula visit_TYPED_CARTESIAN_PRODUCT(Formula i)
+    {
+        cnvs().symbol("("); //p
+        cnvs().symbol("set ("); visitMeta(i); visitLeftTyped(i); cnvs().symbol(","); visitRightTyped(i); cnvs().symbol(")");
+        cnvs().symbol(")"); //q
+        return i;
+    }
+
+    @Override public Formula visit_TYPED_RELATION(Formula i)
+    {
+        cnvs().symbol("("); //p
+        cnvs().symbol("rel "); visitLeftTyped(i); cnvs().symbol(" "); visitRightTyped(i);
+        cnvs().symbol(")"); //q
+        return i;
+    }
+
+    @Override public Formula visit_TYPED_DATATYPE(Formula i)
+    {
+        cnvs().symbol("("); //p
+        cnvs().symbol("dt_");
+        visitChildNum(i, 0);
+        for (int j = 1; j < i.numChildren(); j++) {
+            cnvs().symbol(" ");
+            visitChildNumTyped(i, j);
+        }
+        cnvs().symbol(")"); //q
+        return i;
+    }
+
+    @Override public Formula visit_TYPED_TYPE_PARAMETER_SYMBOL(Formula i)
+    {
+        cnvs().set("'tp_"+Symbols.name(i.intData())); return i;
+    }
+
+    @Override public Formula visit_TYPED_TYPEDEF_SYMBOL(Formula i)
+    {
+        cnvs().set("td_"+Symbols.name(i.intData())); return i;
     }
 
 }

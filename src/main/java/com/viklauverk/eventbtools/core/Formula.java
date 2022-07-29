@@ -104,6 +104,43 @@ class Formula
         return gen.cnvs().render();
     }
 
+    // AH
+    public String toStringTyped(Canvas c)
+    {
+        return toStringInternalTyped(c, false, false);
+    }
+
+    private String toStringInternalTyped(Canvas c, boolean with_types, boolean with_metas)
+    {
+        RenderFormula gen = null;
+        switch (c.renderTarget())
+        {
+        case PLAIN:
+            gen = new RenderFormulaUnicode(c);
+            break;
+        case TERMINAL:
+            gen = new RenderFormulaUnicode(c);
+            break;
+        case TEX:
+            gen = new RenderFormulaTeX(c);
+            break;
+        case HTMQ:
+            gen = new RenderFormulaHtmq(c);
+            break;
+        case WHY:
+            gen = new RenderFormulaWhy(c);
+            break;
+        default:
+        assert (false) : "Unknown render target \""+c.renderTarget()+"\" when translating a formula into a string.";
+        }
+
+        if (with_types) gen.addTypes();
+        if (with_metas) gen.addMetas();
+
+        VisitFormula.walkTyped(gen, this);
+        return gen.cnvs().render();
+    }
+
     public Node node()
     {
         return node_;
